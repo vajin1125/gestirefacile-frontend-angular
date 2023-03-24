@@ -1,0 +1,319 @@
+<div id="myuser" class="page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+
+                <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="'/myusermanager'">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div class="user-image mr-8 mr-sm-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    <img *ngIf="!logoSrc" [src]="'assets/images/ecommerce/product-image-placeholder.png'">
+                    <img *ngIf="logoSrc" src={{logoSrc}}>
+                </div>
+
+                <div fxLayout="column" fxLayoutAlign="start start"
+                    [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    <div class="h2" *ngIf="pageType ==='edit'">
+                        {{user.name}}
+                    </div>
+                    <div class="h2" *ngIf="pageType ==='new'">
+                        Nuovo Utente
+                    </div>
+                    <div class="subtitle secondary-text">
+                        <span>Dettaglio utente</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+            <div>
+                <button mat-raised-button class="save-user-button" [disabled]="userForm.invalid"
+                    *ngIf="pageType ==='new'" (click)="addUser()">
+                    <span>Aggiungi Utente</span>
+                </button>
+
+                <button mat-raised-button class="save-user-button" [disabled]="userForm.invalid || userForm.pristine"
+                    *ngIf="pageType ==='edit'" (click)="saveUser()">
+                    <span>Aggiorna Utente</span>
+                </button>
+                &nbsp;
+                <button *ngIf="tabIndex == 1" mat-raised-button class="save-user-button" (click)="addRole()">
+                    <span>Aggiungi Ruolo</span>
+                </button>
+            </div>
+
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+
+            <!-- CONTENT -->
+            <div class="content">
+
+                <form name="userForm" [formGroup]="userForm" class="user w-100-p" fxLayout="column" fxFlex>
+
+                    <mat-tab-group (selectedTabChange)="tabChanged($event)">
+
+                        <mat-tab label="Basic Info">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>ID</mat-label>
+                                    <input matInput placeholder="automatic id" name="oid" formControlName="oid"
+                                        readonly>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Nome</mat-label>
+                                    <input matInput placeholder="Nome" name="name" formControlName="name" required>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Cognome</mat-label>
+                                    <input matInput placeholder="Cognome" name="surname" formControlName="surname"
+                                        required>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Email</mat-label>
+                                    <input matInput formControlName="email">
+                                    <!--<mat-icon matSuffix class="secondary-text">mail</mat-icon>-->
+                                    <button mat-raised-button matSuffix><span><a href="mailto:{{user.email}}"  target="_blank">Manda un email</a></span></button>
+                                    <mat-error *ngIf="userForm.get('email').hasError('required')">
+                                        Email is required
+                                    </mat-error>
+                                    <mat-error *ngIf="userForm.get('email').hasError('email')">
+                                        Please enter a valid email address
+                                    </mat-error>
+                                </mat-form-field>
+
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Username</mat-label>
+                                    <mat-icon matSuffix class="secondary-text">account_circle</mat-icon>
+                                    <input matInput placeholder="Username" name="username" formControlName="username">
+                                    <mat-error *ngIf="userForm.get('email').hasError('required')">
+                                        Username is required
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Password</mat-label>
+                                    <input matInput type="password" formControlName="password" placeholder="Password"
+                                        required>
+                                    <mat-icon matSuffix class="secondary-text">vpn_key</mat-icon>
+                                    <mat-error>
+                                        Password is required
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Password (Confirm)</mat-label>
+                                    <input matInput type="password" formControlName="passwordConfirm"
+                                        placeholder="Conferma Password">
+                                    <mat-icon matSuffix class="secondary-text">vpn_key</mat-icon>
+                                    <mat-error *ngIf="userForm.get('passwordConfirm').hasError('required')">
+                                        Password confirmation is required
+                                    </mat-error>
+                                    <mat-error
+                                        *ngIf="!userForm.get('passwordConfirm').hasError('required') &&
+                                                       userForm.get('passwordConfirm').hasError('passwordsNotMatching')">
+                                        Passwords must match
+                                    </mat-error>
+                                </mat-form-field>
+
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Telefono</mat-label>
+                                    <input matInput placeholder="Telefono" name="tel" formControlName="tel">
+                                    <button mat-raised-button matSuffix ><span><a href="tel:{{user.tel}}"  target="_blank">Chiama</a></span></button>
+                                </mat-form-field>
+                                
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Cellulare</mat-label>
+                                    <input matInput placeholder="Cellulare" name="cell" formControlName="cell">
+                                    <button mat-raised-button matSuffix ><span><a href="tel:{{user.cell}}"  target="_blank">Chiama</a></span></button>
+                                    <button mat-raised-button matSuffix style="margin-left:15px"><span><a href="https://wa.me/{{getWACell(user.cell)}}"  target="_blank">WhatsApp</a></span></button>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Numero di attività</mat-label>
+                                    <input matInput type="number" min="0" max="100" required name="max_business_num"
+                                        formControlName="max_business_num">
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Foto</mat-label>
+                                    <mat-toolbar><input matInput placeholder="Scegli una foto" name="image"
+                                            formControlName="image" />
+                                        <button mat-flat-button>
+                                            Scegli
+                                        </button></mat-toolbar>
+                                    {{imageError}}
+                                    <input type="file" #UploadFileInput id="fileUpload"
+                                        (change)="fileChangeEvent($event)" name="fileUpload" multiple="multiple"
+                                        accept="image/*" />
+                                </mat-form-field>
+
+
+                                <div class="" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center">
+                                    <mat-checkbox name="enabled" formControlName="enabled">Abilitato
+                                    </mat-checkbox>
+                                </div>
+
+                            </div>
+
+                        </mat-tab>
+
+                        <mat-tab label="Attività Associate">
+                            <mat-table class="myusers-table" #table [dataSource]='dataSource' matSort
+                                [@animateStagger]="{value:'50'}" fusePerfectScrollbar formArrayName="role_user_assoc">
+
+
+                                <ng-container matColumnDef="business">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Attività
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let row; let i = index;" [formGroupName]="i">
+                                        <mat-select [compareWith]="compareObjects" placeholder="Seleziona l'attività"
+                                            formControlName="business" required>
+                                            <mat-option>
+                                                <ngx-mat-select-search [formControl]="businessFilterCtrl"
+                                                    [placeholderLabel]="'Search...'"
+                                                    [noEntriesFoundLabel]="'Not found'">
+                                                </ngx-mat-select-search>
+                                            </mat-option>
+                                            <mat-option [value]="business"
+                                                *ngFor="let business of filteredBusinesses | async">
+                                                {{business.name}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="role">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Ruolo
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let row; let i = index;" [formGroupName]="i">
+                                        <mat-select [compareWith]="compareObjects" placeholder="Seleziona un ruolo"
+                                            formControlName="role" required>
+                                            <mat-option>
+                                                <ngx-mat-select-search [formControl]="roleFilterCtrl"
+                                                    [placeholderLabel]="'Search...'"
+                                                    [noEntriesFoundLabel]="'Not found'">
+                                                </ngx-mat-select-search>
+                                            </mat-option>
+                                            <mat-option [value]="role" *ngFor="let role of filteredRoles | async">
+                                                {{role.descr}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-cell>
+                                </ng-container>
+
+
+
+                                <ng-container matColumnDef="delete">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header>Rimuovi
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                        <button mat-raised-button class="save-user-button"
+                                            style="color:white;background-color:red;" (click)="deleteRole(index)">
+                                            <span>Cancella Ruolo</span>
+                                        </button>
+                                    </mat-cell>
+                                </ng-container>
+
+                                <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true">
+                                </mat-header-row>
+
+                                <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;" class="user">
+                                </mat-row>
+                            </mat-table>
+
+
+
+
+                            <!--<mat-table class="users-table" #table [dataSource]='userForm.get("role_user_assoc").controls' matSort
+                                [@animateStagger]="{value:'50'}" fusePerfectScrollbar formArrayName="role_user_assoc">
+
+                                <ng-container matColumnDef="business">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Attività
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let row; let index = index" [formGroupName]="index">
+                                        <mat-select placeholder="Seleziona l'attività" name="business"
+                                            formControlName="business" required>
+                                            <ngx-mat-select-search [formControl]="businessFilterCtrl"
+                                                [placeholderLabel]="'Search...'" [noEntriesFoundLabel]="'Not found'">
+                                            </ngx-mat-select-search>
+                                            <mat-option *ngFor="let business of filteredBusinesses | async"
+                                                [value]="business">
+                                                {{business.name}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="role">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Ruolo
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let row; let index = index" [formGroupName]="index">
+                                        <mat-select placeholder="Seleziona il ruolo" name="role" formControlName="role"
+                                            required>
+                                            <ngx-mat-select-search [formControl]="roleFilterCtrl"
+                                                [placeholderLabel]="'Search...'" [noEntriesFoundLabel]="'Not found'">
+                                            </ngx-mat-select-search>
+                                            <mat-option *ngFor="let role of filteredRoles | async" [value]="role">
+                                                {{role.descr}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-cell>
+                                </ng-container>
+
+
+
+                                <ng-container matColumnDef="delete">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header>Rimuovi
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let row; let index = index" [formGroupName]="index">
+                                        <button mat-raised-button class="save-user-button" style="color:white;background-color:red;" (click)="deleteRole(index)">
+                                            <span>Cancella Ruolo</span>
+                                        </button>
+                                    </mat-cell>
+                                </ng-container>
+
+                                <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true">
+                                </mat-header-row>
+
+                                <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;" class="user">
+                                </mat-row>
+                            </mat-table>-->
+
+                        </mat-tab>
+
+
+                    </mat-tab-group>
+
+                </form>
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+    </div>
+    <!-- / CENTER -->
+
+</div>

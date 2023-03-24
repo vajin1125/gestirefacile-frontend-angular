@@ -1,0 +1,166 @@
+<div id="circle" class="page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+
+                <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="'/circlesmanager'">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div class="circle-image mr-8 mr-sm-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    <img [src]="'assets/images/ecommerce/product-image-placeholder.png'">
+                </div>
+
+                <div fxLayout="column" fxLayoutAlign="start start"
+                    [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    <div class="h2" *ngIf="pageType ==='edit'">
+                        {{circle.descr}}
+                    </div>
+                    <div class="h2" *ngIf="pageType ==='new'">
+                        Nuova Cerchia
+                    </div>
+                    <div class="subtitle secondary-text">
+                        <span>Dettaglio cerchia</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+            <div>
+                <button mat-raised-button class="save-circle-button" [disabled]="circleForm.invalid"
+                    *ngIf="pageType ==='new'" (click)="addCircle()">
+                    <span>Aggiungi Cerchia</span>
+                </button>
+
+                <button mat-raised-button class="save-circle-button" [disabled]="circleForm.invalid || circleForm.pristine"
+                    *ngIf="pageType ==='edit'" (click)="saveCircle()">
+                    <span>Aggiorna Cerchia</span>
+                </button>
+                &nbsp;
+                <button *ngIf="tabIndex == 1" mat-raised-button class="save-circle-button" (click)="addCustomer()">
+                    <span>Aggiungi Cliente</span>
+                </button>
+            </div>
+
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+
+            <!-- CONTENT -->
+            <div class="content">
+
+                <form name="circleForm" [formGroup]="circleForm" class="circle w-100-p" fxLayout="column" fxFlex>
+
+                    <mat-tab-group (selectedTabChange)="tabChanged($event)">
+
+                        <mat-tab label="Basic Info">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>ID</mat-label>
+                                    <input matInput placeholder="automatic id" name="oid" formControlName="oid"
+                                        readonly>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Acronimo</mat-label>
+                                    <input matInput placeholder="Acronimo" name="acronym" formControlName="acronym" required>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Descrizione</mat-label>
+                                    <input matInput placeholder="Descrizione" name="descr" formControlName="descr"
+                                        required>
+                                </mat-form-field>
+
+                                
+
+                            </div>
+
+                        </mat-tab>
+
+                        <mat-tab label="Clienti Associati">
+                            <mat-table class="circles-table" #table [dataSource]='dataSource' matSort
+                                [@animateStagger]="{value:'50'}" fusePerfectScrollbar formArrayName="circle_customer_assoc">
+
+
+                                <ng-container matColumnDef="customer">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Cliente
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let row; let i = index;" [formGroupName]="i">
+                                        <mat-select [compareWith]="compareObjects" placeholder="Seleziona il cliente"
+                                            formControlName="customer" required>
+                                            <mat-option>
+                                                <ngx-mat-select-search [formControl]="customerFilterCtrl"
+                                                    [placeholderLabel]="'Search...'"
+                                                    [noEntriesFoundLabel]="'Not found'">
+                                                </ngx-mat-select-search>
+                                            </mat-option>
+                                            <mat-option [value]="customer"
+                                                *ngFor="let customer of filteredCustomers | async">
+                                                {{customer.name}}-{{customer.surname}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-cell>
+                                </ng-container>
+
+                                
+
+
+                                <ng-container matColumnDef="delete">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header>Rimuovi
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                        <button mat-raised-button class="save-circle-button"
+                                            style="color:white;background-color:red;" (click)="deleteCustomer(index)">
+                                            <span>Cancella Cliente</span>
+                                        </button>
+                                    </mat-cell>
+                                </ng-container>
+
+
+                                <ng-container matColumnDef="link">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                        <button [routerLink]="'/customersmanager/'+getOidCustomer(index)" mat-raised-button matSuffix><span>Scheda Cliente</span></button>
+                                    </mat-cell>
+                                </ng-container>
+
+                                <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true">
+                                </mat-header-row>
+
+                                <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;" class="circle">
+                                </mat-row>
+                            </mat-table>
+
+
+                        </mat-tab>
+
+
+                    </mat-tab-group>
+
+                </form>
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+    </div>
+    <!-- / CENTER -->
+
+</div>

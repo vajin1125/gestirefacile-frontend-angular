@@ -1,0 +1,257 @@
+<div id="profile" class="page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+
+                <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="'/'">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div class="profile-image mr-8 mr-sm-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    <img *ngIf="!logoSrc" [src]="'assets/images/ecommerce/product-image-placeholder.png'">
+                    <img *ngIf="logoSrc" src={{logoSrc}}>
+                </div>
+
+                <div fxLayout="column" fxLayoutAlign="start start"
+                    [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    <div class="h2" *ngIf="pageType ==='edit'">
+                        {{user.name}}
+                    </div>
+                    <div class="h2" *ngIf="pageType ==='new'">
+                        Nuovo Utente
+                    </div>
+                    <div class="subtitle secondary-text">
+                        <span>Dettaglio utente</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+            <div>
+
+
+                <button mat-raised-button class="save-profile-button" [disabled]="userForm.invalid || userForm.pristine"
+                    *ngIf="pageType ==='edit'" (click)="saveUser()">
+                    <span>Aggiorna Profilo</span>
+                </button>
+                &nbsp;
+                <button *ngIf="tabIndex == 1" mat-raised-button class="save-user-button" (click)="addAttribute()">
+                    <span>Aggiungi Campo</span>
+                </button>
+            </div>
+
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+
+            <!-- CONTENT -->
+            <div class="content">
+
+                <form name="userForm" [formGroup]="userForm" class="profile w-100-p" fxLayout="column" fxFlex>
+
+                    <mat-tab-group (selectedTabChange)="tabChanged($event)">
+
+                        <mat-tab label="Basic Info">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>ID</mat-label>
+                                    <input matInput placeholder="automatic id" name="oid" formControlName="oid"
+                                        readonly>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Nome</mat-label>
+                                    <input matInput placeholder="Nome" name="name" formControlName="name" required>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Cognome</mat-label>
+                                    <input matInput placeholder="Cognome" name="surname" formControlName="surname"
+                                        required>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Email</mat-label>
+                                    <input matInput formControlName="email">
+                                    <mat-icon matSuffix class="secondary-text">mail</mat-icon>
+                                    <mat-error *ngIf="userForm.get('email').hasError('required')">
+                                        Email is required
+                                    </mat-error>
+                                    <mat-error *ngIf="userForm.get('email').hasError('email')">
+                                        Please enter a valid email address
+                                    </mat-error>
+                                </mat-form-field>
+
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Username</mat-label>
+                                    <mat-icon matSuffix class="secondary-text">account_circle</mat-icon>
+                                    <input matInput placeholder="Username" name="username" formControlName="username">
+                                    <mat-error *ngIf="userForm.get('email').hasError('required')">
+                                        Username is required
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Password</mat-label>
+                                    <input matInput type="password" formControlName="password" placeholder="Password"
+                                        required>
+                                    <mat-icon matSuffix class="secondary-text">vpn_key</mat-icon>
+                                    <mat-error>
+                                        Password is required
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Password (Confirm)</mat-label>
+                                    <input matInput type="password" formControlName="passwordConfirm"
+                                        placeholder="Conferma Password">
+                                    <mat-icon matSuffix class="secondary-text">vpn_key</mat-icon>
+                                    <mat-error *ngIf="userForm.get('passwordConfirm').hasError('required')">
+                                        Password confirmation is required
+                                    </mat-error>
+                                    <mat-error
+                                        *ngIf="!userForm.get('passwordConfirm').hasError('required') &&
+                                                       userForm.get('passwordConfirm').hasError('passwordsNotMatching')">
+                                        Passwords must match
+                                    </mat-error>
+                                </mat-form-field>
+
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Telefono</mat-label>
+                                    <input matInput placeholder="Telefono" name="tel" formControlName="tel">
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Cellulare</mat-label>
+                                    <input matInput placeholder="Cellulare" name="cell" formControlName="cell">
+                                </mat-form-field>
+
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Foto</mat-label>
+                                    <mat-toolbar><input matInput placeholder="Scegli una foto" name="image"
+                                            formControlName="image" />
+                                        <button mat-flat-button>
+                                            Scegli
+                                        </button></mat-toolbar>
+                                    {{imageError}}
+                                    <input type="file" #UploadFileInput id="fileUpload"
+                                        (change)="fileChangeEvent($event)" name="fileUpload" multiple="multiple"
+                                        accept="image/*" />
+                                </mat-form-field>
+
+
+                            </div>
+
+                        </mat-tab>
+
+                        <mat-tab label="Campi Aggiuntivi">
+                            <mat-table class="profile-table" #table [dataSource]='dataSource' matSort
+                            [@animateStagger]="{value:'50'}" fusePerfectScrollbar formArrayName="attribute_assoc">
+
+
+                            <ng-container matColumnDef="type">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Tipo
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row; let i = index;" [formGroupName]="i">
+                                    <mat-select [compareWith]="compareObjects" placeholder="Seleziona un tipo"
+                                        formControlName="type" required>
+                                        <mat-option>
+                                            <ngx-mat-select-search [formControl]="typeFilterCtrl"
+                                                [placeholderLabel]="'Search...'"
+                                                [noEntriesFoundLabel]="'Not found'">
+                                            </ngx-mat-select-search>
+                                        </mat-option>
+                                        <mat-option [value]="type" *ngFor="let type of filteredTypes | async">
+                                            {{type.descr}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-cell>
+                            </ng-container>
+
+
+                            <ng-container matColumnDef="name">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Nome campo
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row; let i = index;" [formGroupName]="i">
+                                    <input matInput placeholder="Nome Campo" name="name" formControlName="name" required>
+                                </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="business">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Attività
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row; let i = index;" [formGroupName]="i">
+                                    <mat-select [compareWith]="compareObjects" placeholder="Seleziona l'attività"
+                                        formControlName="business"  >
+                                        <mat-option>
+                                            <ngx-mat-select-search [formControl]="businessFilterCtrl"
+                                                [placeholderLabel]="'Search...'"
+                                                [noEntriesFoundLabel]="'Not found'">
+                                            </ngx-mat-select-search>
+                                        </mat-option>
+                                        <mat-option [value]="business"
+                                            *ngFor="let business of filteredBusinesses | async">
+                                            {{business.name}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-cell>
+                            </ng-container>
+
+                            
+
+                            
+
+
+
+                            <ng-container matColumnDef="delete">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>Rimuovi
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                    <button mat-raised-button class="save-user-button"
+                                        style="color:white;background-color:red;" (click)="deleteAttribute(index)">
+                                        <span>Cancella Campo</span>
+                                    </button>
+                                </mat-cell>
+                            </ng-container>
+
+                            <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true">
+                            </mat-header-row>
+
+                            <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;" class="user">
+                            </mat-row>
+                        </mat-table>
+                        </mat-tab>
+
+                        
+
+
+                    </mat-tab-group>
+
+                </form>
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+    </div>
+    <!-- / CENTER -->
+
+</div>

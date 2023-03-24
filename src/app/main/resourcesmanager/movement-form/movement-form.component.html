@@ -1,0 +1,53 @@
+<div class="dialog-content-wrapper">
+    <mat-toolbar class="mat-accent m-0">
+        <mat-toolbar-row fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">{{dialogTitle}}</span>
+            <button mat-icon-button (click)="matDialogRef.close()" aria-label="Close dialog">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-toolbar-row>
+    </mat-toolbar>
+
+    <div mat-dialog-content class="p-16 pb-0 m-0" fusePerfectScrollbar>
+
+        <form name="movementForm" [formGroup]="movementForm" class="event-form w-100-p" fxLayout="column" fxFlex>
+
+
+
+            <mat-form-field appearance="outline" class="w-100-p">
+                <mat-label>Quantità</mat-label>
+                <input matInput
+                       name="qta"
+                       formControlName="qta">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-100-p">
+                <mat-label>Motivazione</mat-label>
+                <textarea matInput
+                          name="reason"
+                          formControlName="reason"
+                          mat-maxlength="250"
+                          max-rows="4">
+                </textarea>
+            </mat-form-field>
+
+        </form>
+
+    </div>
+
+    <div mat-dialog-actions class="m-0 p-16" fxLayout="row" fxLayoutAlign="end center">
+
+
+        <button 
+                mat-button color="primary"
+                class="save-button"
+                (click)="matDialogRef.close(movementForm)"
+                [disabled]="movementForm.invalid"
+                aria-label="ADD">
+            Aggiungi
+        </button>
+
+
+
+    </div>
+</div>

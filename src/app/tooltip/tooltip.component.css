@@ -1,0 +1,13 @@
+:host {
+  display: block
+}
+
+div {
+  background-color: #292929;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
+
+
+::ng-deep .cdk-overlay-connected-position-bounding-box{margin-top:10px !important;}

@@ -1,0 +1,1787 @@
+<div id="event" class="page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+
+                <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="'/eventsmanager'">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div class="user-image mr-8 mr-sm-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    <img [src]="'assets/images/ecommerce/product-image-placeholder.png'">
+                </div>
+
+                <div fxLayout="column" fxLayoutAlign="start start"
+                    [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}" id="head">
+                    <div class="h2" *ngIf="pageType ==='edit'">
+                        <div>Cliente: {{event.customer.name}} {{event.customer.surname}}</div>
+                        <div>Tipo di Evento: {{event.type.descr}}</div>
+                        <div>Stato: {{event.status.descr}}</div>
+                        <div>
+                            <div class="firstline">Inizio: {{event.from | date: 'dd/MM/yyyy HH:mm'}}</div>
+                            <div class="secondline">Fine: {{event.to | date: 'dd/MM/yyyy HH:mm'}}</div>
+                        </div>
+                    </div>
+                    <div class="h2" *ngIf="pageType ==='new'">
+                        Nuovo Evento
+                    </div>
+                    <!--<div class="subtitle secondary-text">
+                        <span>Dettaglio Evento</span>
+                    </div>-->
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+            <div>
+                <button mat-raised-button class="save-user-button" [disabled]="eventForm.invalid"
+                    *ngIf="pageType ==='new'" (click)="addEvent()">
+                    <span>Aggiungi</span>
+                </button>
+
+                <button mat-raised-button class="save-user-button" [disabled]="eventForm.invalid || eventForm.pristine"
+                    *ngIf="pageType ==='edit' && this.event.status.oid != 5" (click)="saveEvent()">
+                    <span>Aggiorna</span>
+                </button>
+                &nbsp;
+                <button *ngIf="tabIndex == 2 && this.event.status.oid != 5" mat-raised-button
+                    class="save-resource-button" (click)="addVendorAssoc()">
+                    <span>Aggiungi Fornitore</span>
+                </button>
+                &nbsp;
+                <button *ngIf="tabIndex == 5 && this.event.status.oid != 5" mat-raised-button
+                    class="save-resource-button" (click)="addPaymentAssoc()">
+                    <span>Aggiungi Pagamento</span>
+                </button>
+            </div>
+
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+
+
+            <!-- CONTENT -->
+            <div class="content">
+
+                <form name="eventForm" [formGroup]="eventForm" class="user w-100-p" fxLayout="column" fxFlex>
+
+                    <mat-tab-group (selectedTabChange)="tabChanged($event)">
+
+                        <mat-tab label="Basic Info">
+
+                            <div class="tab-content p-24" >
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>ID</mat-label>
+                                    <input matInput placeholder="automatic id" name="oid" formControlName="oid"
+                                        readonly>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+
+                                    <mat-label>Attività</mat-label>
+
+                                    <mat-select [compareWith]="compareObjects" placeholder="Seleziona l'attività"
+                                        formControlName="business" required (selectionChange)="onChangeBusiness($event.value)">
+                                        <mat-option>
+                                            <ngx-mat-select-search [formControl]="businessFilterCtrl"
+                                                [placeholderLabel]="'Search...'" [noEntriesFoundLabel]="'Not found'">
+                                            </ngx-mat-select-search>
+                                        </mat-option>
+                                        <mat-option [value]="business"
+                                            *ngFor="let business of filteredBusinesses | async">
+                                            {{business.descr}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+
+                                    <mat-label>Cliente</mat-label>
+
+                                    <mat-select [disabled]="isSelectCustomerDisabled" [compareWith]="compareObjects"
+                                        placeholder="Seleziona il cliente già esistente" formControlName="customer"
+                                        required (selectionChange)="onChangeCustomer($event.value)">
+                                        <mat-option>
+                                            <ngx-mat-select-search [formControl]="customerFilterCtrl"
+                                                [placeholderLabel]="'Search...'" [noEntriesFoundLabel]="'Not found'">
+                                            </ngx-mat-select-search>
+                                        </mat-option>
+                                        <mat-option>Cancella</mat-option>
+                                        <mat-option [value]="customer"
+                                            *ngFor="let customer of filteredCustomers | async">
+                                            {{customer.name}} {{customer.surname}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                                <br *ngIf="pageType ==='new'">
+                                <div *ngIf="pageType ==='new'" class="" fxLayout="row" fxLayout.xs="column"
+                                    fxLayoutAlign="space-between center">
+                                    <mat-checkbox [disabled]="isNewCustomerDisabled" name="new_customer"
+                                        formControlName="new_customer" (change)="onCheckNewCustomer($event)">Crea un
+                                        nuovo cliente
+                                    </mat-checkbox>
+                                </div>
+                                <br *ngIf="pageType ==='new'">
+
+                                <div *ngIf="pageType ==='new' && isSelectCustomerDisabled" fxLayout="row"
+                                    fxLayoutGap="10px">
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Nome</mat-label>
+                                        <input matInput type="text" [ngModel]="event.customer_name"
+                                            placeholder="Nome Cliente" name="customer_name"
+                                            formControlName="customer_name" required>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Cognome</mat-label>
+                                        <input matInput type="text" [ngModel]="event.customer_surname"
+                                            placeholder="Cognome Cliente" name="customer_surname"
+                                            formControlName="customer_surname" required>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Cellulare</mat-label>
+                                        <input matInput type="text" [ngModel]="event.customer_cell"
+                                            placeholder="Numero di Cellulare" name="customer_cell"
+                                            formControlName="customer_cell" required>
+                                    </mat-form-field>
+                                </div>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+
+                                    <mat-label>Tipo di Evento</mat-label>
+
+                                    <mat-select [ngModel]="event.type" name="type" formControlName="type"
+                                        [compareWith]="compareObjects" placeholder="Seleziona il tipo di evento"
+                                        required>
+                                        <mat-option>
+                                            <ngx-mat-select-search [formControl]="eventTypeFilterCtrl"
+                                                [placeholderLabel]="'Search...'" [noEntriesFoundLabel]="'Not found'">
+                                            </ngx-mat-select-search>
+                                        </mat-option>
+                                        <mat-option [value]="type" *ngFor="let type of filteredEventTypes | async">
+                                            {{type.descr}}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error>
+                                        Required Message
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+
+                                    <mat-label>Stato dell'evento</mat-label>
+
+                                    <mat-select [compareWith]="compareObjects"
+                                        placeholder="Seleziona lo stato dell'evento" formControlName="status" required>
+                                        <mat-option>
+                                            <ngx-mat-select-search [formControl]="eventStatusFilterCtrl"
+                                                [placeholderLabel]="'Search...'" [noEntriesFoundLabel]="'Not found'">
+                                            </ngx-mat-select-search>
+                                        </mat-option>
+                                        <mat-option [value]="status"
+                                            *ngFor="let status of filteredEventStatuses | async">
+                                            {{status.descr}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+
+                                <div class="" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center">
+                                    <mat-checkbox [disabled]="isDisabled" name="all_day" formControlName="all_day"
+                                        (change)="onCheckAllDay($event)">Tutta la giornata
+                                    </mat-checkbox>
+                                </div>
+                                <br>
+
+                                <div fxLayout="row" fxLayoutGap="10px">
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p"
+                                        style="max-width: 165px;">
+                                        <mat-label>Data Inizio Evento</mat-label>
+                                        <input 
+                                          matInput
+                                          [ngModel]="event.from | date:'yyyy-MM-dd'"
+                                          placeholder="DD/MM/YYYY" 
+                                          name="from" 
+                                          formControlName="from"
+                                          [matDatepicker]="picker" 
+                                          [matDatepickerFilter]="myHolidayFilter"
+                                          (dateChange)="onDateSelected($event)"
+                                          required>
+                                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                        <mat-datepicker #picker ></mat-datepicker>
+                                    </mat-form-field>
+
+                                    <!-- <mat-form-field appearance="outline" floatLabel="always" class="w-100-p"
+                                        style="max-width: 165px;">
+                                        <mat-label>Data Fine Evento</mat-label>
+                                        <input matInput type="date" [ngModel]="event.from | date:'yyyy-MM-dd'"
+                                            placeholder="Data Fine Evento" name="from" formControlName="from" required>
+                                    </mat-form-field> -->
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p"
+                                        style="max-width: 60px;">
+                                        <mat-label>Ore</mat-label>
+                                        <input matInput type="text"
+                                            oninput="this.value=this.value.replace(/[^0-9]/g,'');"
+                                            (input)="checkHour($event, 'from_ts_hh')"
+                                            onKeyPress="if(this.value.length==2) return false;"
+                                            [ngModel]="event.from_ts_hh" placeholder="HH" name="from_ts_hh"
+                                            formControlName="from_ts_hh" required [matAutocomplete]="autoHH">
+                                        <mat-autocomplete #autoHH="matAutocomplete">
+                                            <mat-option *ngFor="let h of hours" [value]="h.value">
+                                                {{h.display}}
+                                            </mat-option>
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+                                    <div><br><strong>:</strong></div>
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p"
+                                        style="max-width: 60px;">
+                                        <mat-label>Min</mat-label>
+                                        <input matInput type="text"
+                                            oninput="this.value=this.value.replace(/[^0-9]/g,'');"
+                                            (input)="checkMin($event, 'from_ts_mi')"
+                                            onKeyPress="if(this.value.length==2) return false;"
+                                            [ngModel]="event.from_ts_mi" placeholder="MI" name="from_ts_mi"
+                                            formControlName="from_ts_mi" required [matAutocomplete]="auto">
+                                        <mat-autocomplete #auto="matAutocomplete">
+                                            <mat-option *ngFor="let min of minutes" [value]="min.value">
+                                                {{min.display}}
+                                            </mat-option>
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+
+                                    <!-- <mat-form-field appearance="outline" floatLabel="always" class="w-100-p"
+                                        style="max-width: 165px;">
+                                        <mat-label>Data Fine Evento</mat-label>
+                                        <input matInput type="date" [ngModel]="event.to | date:'yyyy-MM-dd'"
+                                            placeholder="Data Fine Evento" name="to" formControlName="to" required>
+                                    </mat-form-field> -->
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p"
+                                        style="max-width: 165px;">
+                                        <mat-label>Data Fine Evento</mat-label>
+                                        <input 
+                                          matInput
+                                          [ngModel]="event.to | date:'yyyy-MM-dd'"
+                                          placeholder="DD/MM/YYYY" 
+                                          name="to" 
+                                          formControlName="to"
+                                          [matDatepicker]="picker1" 
+                                          [matDatepickerFilter]="myHolidayFilter"
+                                          (dateChange)="onDateSelected($event)"
+                                          required>
+                                        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                        <mat-datepicker #picker1 ></mat-datepicker>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p"
+                                        style="max-width: 60px;">
+                                        <mat-label>Ore</mat-label>
+                                        <input matInput type="text"
+                                            oninput="this.value=this.value.replace(/[^0-9]/g,'');"
+                                            (input)="checkHour($event, 'to_ts_hh')"
+                                            onKeyPress="if(this.value.length==2) return false;"
+                                            [ngModel]="event.to_ts_hh" placeholder="HH" name="to_ts_hh"
+                                            formControlName="to_ts_hh" required [matAutocomplete]="autoHH">
+                                        <mat-autocomplete #autoHH="matAutocomplete">
+                                            <mat-option *ngFor="let h of hours" [value]="h.value">
+                                                {{h.display}}
+                                            </mat-option>
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+                                    <div><br><strong>:</strong></div>
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p"
+                                        style="max-width: 60px;">
+                                        <mat-label>Min</mat-label>
+                                        <input matInput type="text"
+                                            oninput="this.value=this.value.replace(/[^0-9]/g,'');"
+                                            (input)="checkMin($event, 'to_ts_mi')"
+                                            onKeyPress="if(this.value.length==2) return false;"
+                                            [ngModel]="event.to_ts_mi" placeholder="MI" name="to_ts_mi"
+                                            formControlName="to_ts_mi" required [matAutocomplete]="auto">
+                                        <mat-autocomplete #auto="matAutocomplete">
+                                            <mat-option *ngFor="let min of minutes" [value]="min.value">
+                                                {{min.display}}
+                                            </mat-option>
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+
+
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Duranta in giorni</mat-label>
+                                        <input matInput placeholder="Durante in giorni dell'evento" name="total_days" formControlName="total_days" type="number" required
+                                            (input)="onChangeDurationDay($event.target.value)">
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Duranta in ore</mat-label>
+                                        <input matInput placeholder="Durante in ore dell'evento" name="total_hours"
+                                            formControlName="total_hours" type="number" required
+                                            (input)="onChangeDurationHour($event.target.value)">
+                                    </mat-form-field>
+
+                                </div>
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Indirizzo o Struttura</mat-label>
+                                    <input matInput placeholder="Indirizzo" name="address" formControlName="address"
+                                        required>
+                                    <button mat-raised-button matSuffix><span><a
+                                                href="https://maps.google.com/?q={{event.address}}"
+                                                target="_blank">Maps</a></span></button>
+                                    <button mat-raised-button matSuffix style="margin-left:15px"><span><a
+                                                href="https://www.google.com/?q={{event.address}}"
+                                                target="_blank">Cerca</a></span></button>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Informazioni sull'evento</mat-label>
+                                    <textarea matInput placeholder="Informazioni sull'evento" name="info_event"
+                                        formControlName="info_event"></textarea>
+                                </mat-form-field>
+                                <div fxLayout="row" fxLayoutGap="10px">
+
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Prezzo Totale Imponibile</mat-label>
+                                        <input matInput placeholder="Prezzo Totale imponibile" name="total"
+                                            formControlName="total" type="text" mvndrMatCurrencyFormat
+                                            [allowNegative]="false" [currencyCode]="'EUR'" autocomplete="off" readonly>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>IVA %</mat-label>
+                                        <input matInput placeholder="IVA %" name="vat"
+                                            formControlName="vat" type="number"  autocomplete="off" (change)="updateTotalVat($event)">
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Totale imposte</mat-label>
+                                        <input matInput placeholder="Totale imposte" name="total_taxable"
+                                            formControlName="total_taxable" type="text" mvndrMatCurrencyFormat
+                                            [allowNegative]="false" [currencyCode]="'EUR'" autocomplete="off" readonly>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Prezzo Totale applicato all'evento</mat-label>
+                                        <input matInput placeholder="Prezzo Totale applicato all'evento"
+                                            name="total_real" formControlName="total_real" type="text"
+                                            mvndrMatCurrencyFormat [allowNegative]="false" [currencyCode]="'EUR'"
+                                            autocomplete="off">
+                                        <span>SCONTO {{getDiscount(event) |
+                                            number:'1.0-0'}}%</span>
+                                    </mat-form-field>
+                                </div>
+                                <div fxLayout="row" fxLayoutGap="10px">
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Note</mat-label>
+                                        <textarea matInput placeholder="Note" name="note"
+                                            formControlName="note"></textarea>
+                                    </mat-form-field>
+                                </div>
+                                <!-- GESTIONE CAMPI AGGIUTIVI -->
+                                <mat-toolbar>
+                                    <span>Campi Agguntivi</span>
+                                    <button class="float-left" mat-icon-button color="primary" aria-label="Add"
+                                        (click)="addAttribute()" matTooltip="Add">
+                                        <mat-icon>add_circle_outline</mat-icon>
+                                    </button>
+                                </mat-toolbar>
+                                <mat-table class="events-table" #table [dataSource]='dataSourceAttr' matSort
+                                   
+                                    formArrayName="attribute_assoc">
+
+
+                                    <ng-container matColumnDef="name">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Campo
+                                        </mat-header-cell>
+                                        <mat-cell *matCellDef="let row; let i = index;" [formGroupName]="i">
+                                            <input matInput placeholder="Nome Campo" name="name" formControlName="name">
+                                        </mat-cell>
+                                    </ng-container>
+
+
+                                    <ng-container matColumnDef="value">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Valore
+                                        </mat-header-cell>
+                                        <mat-cell *matCellDef="let row; let i = index;" [formGroupName]="i">
+                                            <input matInput placeholder="Valore Campo" name="value"
+                                                formControlName="value">
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="actions">
+                                        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                                        <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                            <button class="float-left" mat-icon-button color="primary"
+                                                aria-label="Remove" (click)="deleteAttribute(index)">
+                                                <mat-icon>highlight_off</mat-icon>
+                                            </button>
+
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <mat-header-row *matHeaderRowDef="displayedColumnsAttr; sticky:true">
+                                    </mat-header-row>
+
+                                    <mat-row *matRowDef="let row; let i = index; columns: displayedColumnsAttr;"
+                                        class="event">
+                                    </mat-row>
+                                </mat-table>
+
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="Dettaglio Evento">
+                            <div style="width:100% !important;">
+                                <mat-toolbar class="accent">
+
+                                    <span style="padding-right: 15px;">Pacchetti</span>
+
+
+                                    <button *ngIf="tabIndex == 1" mat-raised-button class="save-resource-button"
+                                        (click)="addPackage()">
+                                        <span>Aggiungi Pacchetto</span>
+                                    </button>
+
+
+
+                                </mat-toolbar>
+                                <mat-table class="events-table" #table [dataSource]='dataSourcePackage' matSort
+                                     formArrayName="packages_assoc">
+
+
+                                    <ng-container matColumnDef="package">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Nome Pacchetto
+                                        </mat-header-cell>
+                                        <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                            <mat-select [compareWith]="compareObjects" placeholder="Nome Pacchetto"
+                                                formControlName="package" (selectionChange)="onChangePackage($event.value, index)" >
+                                                <mat-option>
+                                                    <ngx-mat-select-search [formControl]="packagesFilterCtrl"
+                                                        [placeholderLabel]="'Search...'"
+                                                        [noEntriesFoundLabel]="'Not found'">
+                                                    </ngx-mat-select-search>
+                                                </mat-option>
+                                                <mat-option [value]="package"
+                                                    *ngFor="let package of filteredPackages | async">
+                                                    {{package.name}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-cell>
+                                    </ng-container>
+
+
+                                    <ng-container matColumnDef="descr">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header>Descrizione
+                                        </mat-header-cell>
+                                        <mat-cell *matCellDef="let element; let index = index"
+                                            [formGroupName]="index">
+                                            <textarea matInput placeholder="Descrizione Pacchetto" name="descr" formControlName="descr"
+                                        readonly></textarea>
+                                        </mat-cell>
+                                    </ng-container>
+
+
+                                    <ng-container matColumnDef="total_price">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                            Prezzo Totale
+                                        </mat-header-cell>
+                                        <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                            <input matInput placeholder="Prezzo Totale" name="total_price"
+                                                formControlName="total_price" type="text" mvndrMatCurrencyFormat
+                                                [allowNegative]="false" [currencyCode]="'EUR'" required
+                                                autocomplete="off" readonly>
+                                        </mat-cell>
+                                    </ng-container>
+
+
+                                    <ng-container matColumnDef="delete">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width: 75px;">
+                                            Rimuovi
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 75px;" *matCellDef="let element; let index = index"
+                                            [formGroupName]="index">
+                                            <button mat-raised-button class="save-user-button"
+                                                style="color:white;background-color:red;" (click)="deletePackage(index)">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </mat-cell>
+                                    </ng-container>
+
+
+
+                                    <mat-header-row *matHeaderRowDef="displayedColumnsPackage; sticky:true">
+                                    </mat-header-row>
+
+                                    <mat-row *matRowDef="let row; let i = index; columns: displayedColumnsPackage;"
+                                        class="event">
+                                    </mat-row>
+                                </mat-table>
+
+
+
+                                <mat-toolbar class="accent">
+
+                                    <span style="padding-right: 15px;">Risorse</span>
+
+
+                                    <button *ngIf="tabIndex == 1" mat-raised-button class="save-resource-button"
+                                        (click)="addResource()">
+                                        <span>Aggiungi Risorsa</span>
+                                    </button>
+
+
+
+                                </mat-toolbar>
+                                <mat-table class="events-table" #table [dataSource]='dataSource' matSort
+                                     formArrayName="event_details">
+
+
+
+
+                                    <ng-container matColumnDef="resourceType">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md
+                                            style="max-width: 180px;">Tipo di Risorsa
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 180px;" *matCellDef="let row; let i = index;"
+                                            [formGroupName]="i">
+                                            <mat-select [compareWith]="compareObjects" placeholder="Tipo Risorsa"
+                                                formControlName="resourceType">
+                                                <mat-option>
+                                                    <ngx-mat-select-search [formControl]="resourceTypesFilterCtrl"
+                                                        [placeholderLabel]="'Search...'"
+                                                        [noEntriesFoundLabel]="'Not found'">
+                                                    </ngx-mat-select-search>
+                                                </mat-option>
+                                                <mat-option [value]="resourceType"
+                                                    *ngFor="let resourceType of filteredResourceTypes | async">
+                                                    {{resourceType.descr}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="category">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md
+                                            style="max-width: 180px;">Categoria
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 180px;" *matCellDef="let row; let i = index;"
+                                            [formGroupName]="i">
+                                            <mat-select [compareWith]="compareObjects" placeholder="Categoria"
+                                                formControlName="category"
+                                                (selectionChange)="onChangeCategory($event.value, i)">
+                                                <mat-option>
+                                                    <ngx-mat-select-search [formControl]="categoriesFilterCtrl"
+                                                        [placeholderLabel]="'Search...'"
+                                                        [noEntriesFoundLabel]="'Not found'">
+                                                    </ngx-mat-select-search>
+                                                </mat-option>
+                                                <mat-option>Cancella</mat-option>
+                                                <mat-option [value]="category"
+                                                    *ngFor="let category of filteredCategories | async">
+                                                    {{category.descr}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="skill">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md
+                                            style="max-width: 180px;">Mansione
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 180px;" *matCellDef="let row; let i = index;"
+                                            [formGroupName]="i">
+                                            <mat-select [compareWith]="compareObjects" placeholder="Mansione"
+                                                formControlName="skill">
+                                                <mat-option>
+                                                    <ngx-mat-select-search [formControl]="skillsFilterCtrl"
+                                                        [placeholderLabel]="'Search...'"
+                                                        [noEntriesFoundLabel]="'Not found'">
+                                                    </ngx-mat-select-search>
+                                                </mat-option>
+                                                <mat-option>Cancella</mat-option>
+                                                <mat-option [value]="skill"
+                                                    *ngFor="let skill of filteredSkills | async">
+                                                    {{skill.descr}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-cell>
+                                    </ng-container>
+
+
+                                    <ng-container matColumnDef="resource">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md
+                                            style="max-width: 250px;">Risorsa
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 250px;" *matCellDef="let row; let i = index;"
+                                            [formGroupName]="i">
+                                            <mat-select [compareWith]="compareObjects" placeholder="Risorsa"
+                                                formControlName="resource"
+                                                (selectionChange)="onChangeResource($event.value, i)">
+                                                <mat-option>
+                                                    <ngx-mat-select-search [formControl]="resourcesFilterCtrl"
+                                                        [placeholderLabel]="'Search...'"
+                                                        [noEntriesFoundLabel]="'Not found'">
+                                                    </ngx-mat-select-search>
+                                                </mat-option>
+                                                <mat-option>Cancella</mat-option>
+                                                <mat-option [value]="resource"
+                                                    *ngFor="let resource of filteredResources | async">
+                                                    <div><img awesomeTooltip="Hello World!"
+                                                            image="{{getResourceImage(resource)}}"
+                                                            style="width:50px;height:50px;" *ngIf="resource.image"
+                                                            src="{{getResourceImage(resource)}}"><b>{{getResourceName(resource)}}</b>
+
+                                                    </div>
+
+                                                </mat-option>
+
+                                            </mat-select>
+
+                                            <div *ngIf="showWarn(i)" style="float: right;">
+                                                <mat-icon style="color:red">error</mat-icon>
+                                            </div>
+                                        </mat-cell>
+
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="qta">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width: 60px;">
+                                            Quantità
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 60px;" *matCellDef="let element; let index = index"
+                                            [formGroupName]="index">
+                                            <input matInput placeholder="Quantità" name="qta" formControlName="qta"
+                                                type="number" required (change)="updateTotal($event)">
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="days">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width: 60px;">
+                                            Giorni
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 60px;" *matCellDef="let element; let index = index"
+                                            [formGroupName]="index">
+                                            <input matInput placeholder="Giorni" name="days" formControlName="days"
+                                                type="number" required>
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="hours">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width: 60px;">Ore
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 60px;" *matCellDef="let element; let index = index"
+                                            [formGroupName]="index">
+                                            <input matInput placeholder="Ore" name="hours" formControlName="hours"
+                                                type="number" required>
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="price">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width: 100px;">
+                                            Prezzo Unitario
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 100px;" *matCellDef="let element; let index = index"
+                                            [formGroupName]="index">
+                                            <input matInput placeholder="Prezzo Unitario" name="price"
+                                                formControlName="price" type="text" mvndrMatCurrencyFormat
+                                                [allowNegative]="false" [currencyCode]="'EUR'" required
+                                                (blur)="updateTotal($event)" autocomplete="off">
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="pricebt">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width: 75px;">€
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 75px;" *matCellDef="let element; let index = index"
+                                            [formGroupName]="index">
+                                            <button mat-raised-button class="save-user-button"
+                                                style="color:white;background-color:blue" #ddTrigger="matMenuTrigger"
+                                                [matMenuTriggerFor]="dd">
+                                                <span>€</span>
+                                            </button>
+                                            <mat-menu #dd="matMenu" [overlapTrigger]="false">
+                                                <mat-list>
+                                                    <mat-list-item
+                                                        *ngFor="let elem of this.eventDetails.controls[index].value.resource.prices"
+                                                        (click)="onSelectedOptionsChange(elem.price, index)">
+                                                        <button mat-button> {{
+                                                            elem.price.replace(".",",")}}-{{elem.descr}} </button>
+                                                    </mat-list-item>
+                                                </mat-list>
+                                            </mat-menu>
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="total_price">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width: 100px;">
+                                            Prezzo Totale
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 100px;" *matCellDef="let element; let index = index"
+                                            [formGroupName]="index">
+                                            <input matInput placeholder="Prezzo Totale" name="total_price"
+                                                formControlName="total_price" type="text" mvndrMatCurrencyFormat
+                                                [allowNegative]="false" [currencyCode]="'EUR'" required
+                                                autocomplete="off" readonly>
+                                        </mat-cell>
+                                    </ng-container>
+
+
+                                    <ng-container matColumnDef="note">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width: 250px;">
+                                            Nota
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 250px;" *matCellDef="let element; let index = index"
+                                            [formGroupName]="index">
+                                            <input matInput placeholder="Nota" name="note" formControlName="note">
+                                        </mat-cell>
+                                    </ng-container>
+
+
+                                    <ng-container matColumnDef="delete">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width: 75px;">
+                                            Rimuovi
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 75px;" *matCellDef="let element; let index = index"
+                                            [formGroupName]="index">
+                                            <button mat-raised-button class="save-user-button"
+                                                style="color:white;background-color:red;"
+                                                (click)="deleteResource(index)">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </mat-cell>
+                                    </ng-container>
+
+
+
+                                    <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true">
+                                    </mat-header-row>
+
+                                    <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"
+                                        class="event">
+                                    </mat-row>
+                                </mat-table>
+                                <mat-toolbar class="accent">
+
+                                    <span style="padding-right: 15px;">Extra</span>
+
+
+                                    <button *ngIf="tabIndex == 1" mat-raised-button class="save-resource-button"
+                                        (click)="addExtra()">
+                                        <span>Aggiungi Extra</span>
+                                    </button>
+
+
+
+                                </mat-toolbar>
+                                <mat-table class="events-table" #table [dataSource]='dataSourceExtra' matSort
+                                     formArrayName="extra_details">
+
+
+                                    <ng-container matColumnDef="extra_descr">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                            Descrizione Extra
+                                        </mat-header-cell>
+                                        <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                            <input matInput placeholder="Descrizione Extra" name="extra_descr"
+                                                formControlName="extra_descr" required [matAutocomplete]="auto"
+                                                (keyup)="filter($event.target.value);">
+                                            <mat-autocomplete #auto="matAutocomplete">
+                                                <mat-option *ngFor="let extra of filteredExtras | async"
+                                                    [value]="extra.extra_descr">
+                                                    <span>{{ extra.extra_descr }}</span>
+                                                </mat-option>
+                                            </mat-autocomplete>
+                                        </mat-cell>
+                                    </ng-container>
+
+
+                                    <ng-container matColumnDef="qta">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header>Quantità
+                                        </mat-header-cell>
+                                        <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                            <input matInput placeholder="Quantità" name="qta" formControlName="qta"
+                                                type="number" required (change)="updateTotal($event)">
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="price">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header>Prezzo Unitario
+                                        </mat-header-cell>
+                                        <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                            <input matInput placeholder="Prezzo Unitario" name="price"
+                                                formControlName="price" type="text" mvndrMatCurrencyFormat
+                                                [allowNegative]="false" [currencyCode]="'EUR'" autocomplete="off"
+                                                required (blur)="updateTotal($event)">
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="total_price">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                            Prezzo Totale
+                                        </mat-header-cell>
+                                        <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                            <input matInput placeholder="Prezzo Totale" name="total_price"
+                                                formControlName="total_price" type="text" mvndrMatCurrencyFormat
+                                                [allowNegative]="false" [currencyCode]="'EUR'" required
+                                                autocomplete="off" readonly>
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="note">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                            Nota
+                                        </mat-header-cell>
+                                        <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                            <input matInput placeholder="Note" name="note" formControlName="note">
+                                        </mat-cell>
+                                    </ng-container>
+
+
+                                    <ng-container matColumnDef="delete">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width: 75px;">
+                                            Rimuovi
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 75px;" *matCellDef="let element; let index = index"
+                                            [formGroupName]="index">
+                                            <button mat-raised-button class="save-user-button"
+                                                style="color:white;background-color:red;" (click)="deleteExtra(index)">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </mat-cell>
+                                    </ng-container>
+
+
+
+                                    <mat-header-row *matHeaderRowDef="displayedColumnsExtra; sticky:true">
+                                    </mat-header-row>
+
+                                    <mat-row *matRowDef="let row; let i = index; columns: displayedColumnsExtra;"
+                                        class="event">
+                                    </mat-row>
+                                </mat-table>
+
+
+                            </div>
+
+
+
+
+
+
+
+
+                        </mat-tab>
+                        <mat-tab label="Fornitori">
+                            <mat-table class="events-table" #table [dataSource]='dataSourceVendor' matSort
+                                 formArrayName="vendor_assoc">
+
+                                <ng-container matColumnDef="vendorAssoc">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Fornitore Associato
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let row; let i = index;" [formGroupName]="i">
+                                        <mat-select [compareWith]="compareObjects" placeholder="Seleziona un fornitore"
+                                            formControlName="vendor" required>
+                                            <mat-option>
+                                                <ngx-mat-select-search [formControl]="vendorsFilterCtrl"
+                                                    [placeholderLabel]="'Search...'"
+                                                    [noEntriesFoundLabel]="'Not found'">
+                                                </ngx-mat-select-search>
+                                            </mat-option>
+                                            <mat-option [value]="vendor" *ngFor="let vendor of filteredVendors | async">
+                                                {{getVendorName(vendor)}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-cell>
+                                </ng-container>
+
+
+
+                                <ng-container matColumnDef="contatti" class="w-100-p">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header>Contatti
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let row; let index = index" [formGroupName]="index">
+                                        <div style="width: auto;">
+                                            <button *ngIf="getVendorData(index) && getVendorData(index).email"
+                                                mat-raised-button matSuffix><span><a
+                                                        href="mailto:{{getVendorData(index).email}}"
+                                                        target="_blank">Email</a></span></button>
+                                            &nbsp;
+                                            <button *ngIf="getVendorData(index) && getVendorData(index).address"
+                                                mat-raised-button matSuffix><span><a
+                                                        href="https://maps.google.com/?q={{getVendorData(index).address}}"
+                                                        target="_blank">Maps</a></span></button>
+                                            &nbsp;
+                                            <button *ngIf="getVendorData(index) && getVendorName(getVendorData(index))"
+                                                mat-raised-button matSuffix><span><a
+                                                        href="https://www.google.com/search?q={{getVendorName(getVendorData(index))}}"
+                                                        target="_blank">Google</a></span></button>
+                                            &nbsp;
+                                            <button *ngIf="getVendorData(index) && getVendorData(index).tel"
+                                                mat-raised-button matSuffix><span><a
+                                                        href="tel:{{getVendorData(index).tel}}"
+                                                        target="_blank">Chiama</a></span></button>
+                                            &nbsp;
+                                            <button *ngIf="getVendorData(index) && getVendorData(index).cell"
+                                                mat-raised-button matSuffix><span><a
+                                                        href="https://wa.me/{{getWACell(getVendorData(index).cell)}}"
+                                                        target="_blank">WhatsApp</a></span></button>
+                                            &nbsp;
+                                        </div>
+                                    </mat-cell>
+                                </ng-container>
+
+
+
+                                <ng-container matColumnDef="delete">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header>Rimuovi
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                        <button mat-raised-button class="save-user-button"
+                                            style="color:white;background-color:red;"
+                                            (click)="deleteVendorAssoc(index)">
+                                            <span>Cancella Fornitore</span>
+                                        </button>
+                                    </mat-cell>
+                                </ng-container>
+
+
+                                <mat-header-row *matHeaderRowDef="displayedColumnsVendors; sticky:true">
+                                </mat-header-row>
+
+                                <mat-row *matRowDef="let row; let i = index; columns: displayedColumnsVendors;"
+                                    class="event">
+                                </mat-row>
+                            </mat-table>
+
+
+
+
+
+
+                        </mat-tab>
+                        <mat-tab label="Documento Evento">
+                            <div id="invoice" class="compact page-layout blank" fxLayout="row">
+
+                                <div id="invoice-container" class="invoice-container">
+                                    <div id="top">
+                                        <mat-fab-menu id="fab" name="fab" class="add-event-button mat-accent"
+                                            [fabButtons]="fabButtonsRandom" [direction]="'right'"
+                                            (onFabMenuItemSelected)="onSelected($event, 'card')">
+                                        </mat-fab-menu>
+                                    </div>
+                                    <!-- INVOICE -->
+                                    <div id="card" class="card">
+
+                                        <div class="header">
+                                            <div *ngIf="this.event.status.acronym=='COMPLETED'" class="invoice-date">
+                                                {{event.to | date: 'dd/MM/yyyy'}}</div>
+                                            <div *ngIf="this.event.status.acronym!='COMPLETED'" class="invoice-date">
+                                                {{event.creation_ts | date: 'dd/MM/yyyy'}}</div>
+                                            <div fxLayout="row" fxLayoutAlign="space-between stretch">
+                                                <div class="client">
+                                                    <div class="invoice-number" fxLayout="row"
+                                                        fxLayoutAlign="start center">
+                                                        <span *ngIf="this.event.status.acronym=='COMPLETED'"
+                                                            class="title">Fattura</span>
+                                                        <span *ngIf="this.event.status.acronym!='COMPLETED'"
+                                                            class="title">Preventivo: </span>
+                                                        <span class="number">{{event.oid}}</span>
+                                                    </div>
+
+                                                    <div class="due-date" fxLayout="row" fxLayoutAlign="start center">
+                                                        <span class="title">Scadenza: </span>
+                                                        <span class="date">{{event.from | date: 'dd/MM/yyyy'}}</span>
+                                                    </div>
+
+                                                    <div class="info">
+                                                        <div class="title">Cliente: {{this.event.customer.name}}
+                                                            {{this.event.customer.surname}}</div>
+                                                        <div class="address">Indirizzo: {{this.event.customer.address}}
+                                                        </div>
+                                                        <div class="phone">Telefono:
+                                                            {{this.event.customer.tel}}-{{this.event.customer.cell}}
+                                                        </div>
+                                                        <div class="email">Email: {{this.event.customer.email}}</div>
+                                                        <div class="website"></div>
+                                                        <div class="piva">P.Iva o C.F. {{this.event.customer.piva}}
+                                                        </div>
+                                                        <br>
+                                                        <div class="website">Tipo di Evento: {{this.event.type.descr}}
+                                                        </div>
+                                                        <div class="website">Inizio Evento: {{event.from | date:
+                                                            'dd/MM/yyyy HH:mm'}}</div>
+                                                        <div class="website">Fine Evento: {{event.to | date: 'dd/MM/yyyy HH:mm'}}</div>
+                                                        <div class="website">Durata: {{event.total_days}} giorni e
+                                                            {{event.total_hours}} ore</div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="issuer" [style.color]="'white'"
+                                                    [style.background-color]="this.event.business.color? this.event.business.color : '#039be5'"
+                                                    fxLayout="row" fxLayoutAlign="start center">
+                                                    <div class="logo">
+                                                        <img src={{logoSrc}}>
+                                                    </div>
+
+                                                    <div class="info">
+                                                        <div class="title">{{this.event.business.name}}</div>
+                                                        <div class="title">{{this.event.business.descr}}</div>
+                                                        <div class="address">{{this.event.business.address}}</div>
+                                                        <div class="phone">{{this.event.business.tel}}</div>
+                                                        <div class="phone">{{this.event.business.cell}}</div>
+                                                        <div class="email">{{this.event.business.email}}</div>
+                                                        <div class="website"></div>
+                                                        <div class="piva">P.Iva o C.F. {{this.event.business.piva}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="content">
+
+                                            <table class="simple invoice-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th></th>
+                                                        <th>PRODOTTO</th>
+                                                        <th>DURATA</th>
+                                                        <th class="text-right">PREZZO UNITARIO</th>
+                                                        <th class="text-right">QUANTITA'</th>
+                                                        <th class="text-right">TOTALE</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngFor="let detail of event.event_details">
+                                                        <td *ngIf="detail.price !='0.00' && detail.price !='0,00'">
+                                                            <div class="title">
+                                                                <img src="{{getResourceImg(detail)}}" style="width: 50%;">
+                                                            </div>
+                                                        </td>
+                                                        <td *ngIf="detail.price !='0.00' && detail.price !='0,00'">
+                                                            <div class="title">
+                                                                {{getInvTitle(detail)}}
+                                                            </div>
+                                                        </td>
+                                                        <td *ngIf="detail.price !='0.00' && detail.price !='0,00'">
+                                                            {{detail.days}} giorni e {{detail.hours}} ore
+                                                        </td>
+                                                        <td *ngIf="detail.price !='0.00' && detail.price !='0,00'" class="text-right">
+                                                            {{(detail.price.replace(',','.')/detail.qta) | currency:'EUR':'symbol'}}
+                                                        </td>
+                                                        <td *ngIf="detail.price !='0.00' && detail.price !='0,00'" class="text-right">
+                                                            {{detail.qta}}
+                                                        </td>
+                                                        <td *ngIf="detail.price !='0.00' && detail.price !='0,00'" class="text-right">
+                                                            {{detail.price.replace(',','.') | currency:'EUR':'symbol'}}
+                                                        </td>
+                                                    </tr>
+                                                    <tr *ngFor="let extra of event.extra_details">
+                                                        <td *ngIf="extra.price !='0.00' && extra.price !='0,00'">
+                                                            <div class="title">
+                                                                {{extra.extra_descr}}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            -
+                                                        </td>
+                                                        <td *ngIf="extra.price !='0.00' && extra.price !='0,00'" class="text-right">
+                                                            {{(extra.price.replace(',','.')/extra.qta) | currency:'EUR':'symbol'}}
+                                                        </td>
+                                                        <td *ngIf="extra.price !='0.00' && extra.price !='0,00'" class="text-right">
+                                                            {{extra.qta}}
+                                                        </td>
+                                                        <td *ngIf="extra.price !='0.00' && extra.price !='0,00'" class="text-right">
+                                                            {{extra.price.replace(',','.') | currency:'EUR':'symbol'}}
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+
+                                            <table class="simple invoice-table-footer">
+                                                <tbody>
+                                                    <tr class="subtotal">
+                                                        <td>SUBTOTALE</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td>{{event.total | currency:'EUR':'symbol'}}</td>
+                                                    </tr>
+                                                    <!--<tr class="tax">
+                                                        <td>TASSE</td>
+                                                        <td>3,00 €</td>
+                                                    </tr>-->
+                                                    <tr class="discount">
+                                                        <td>SCONTO {{getDiscount(event)
+                                                            | number:'1.0-0'}}% </td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        <td>-{{getDiscountValue(event) |
+                                                            currency:'EUR':'symbol'}}</td>
+                                                    </tr>
+                                                    <tr class="total">
+                                                        <td>TOTALE</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td>{{event.total_real | currency:'EUR':'symbol'}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div class="footer">
+                                            <div class="note" style="margin-bottom:0px" >Note: </div>
+                                            <span>{{event.note}}</span>
+                                            <br>
+                                            <div style="margin-bottom:0px" class="note">Informazioni aggiuntive: </div>
+                                            <br>
+                                            <div *ngFor="let attribute of event.attribute_assoc">
+                                                - <span>{{attribute.name}}</span>: <span>{{attribute.value}}</span>
+                                            </div>
+                                            <br>
+                                            <div *ngIf="this.event.status.acronym=='COMPLETED'" class="note">Si prega di
+                                                pagare entro 15 giorni. Grazie per averci scelto.</div>
+                                            <div *ngIf="this.event.status.acronym!='COMPLETED'" class="note">I prezzi
+                                                dei preventivi potrebbero variare con il passare del tempo. Grazie per
+                                                averci scelto.</div>
+                                            <div fxLayout="row" fxLayoutAlign="start start">
+                                                <div class="logo">
+                                                    <img src={{logoSrc}}>
+
+                                                </div>
+                                                <div class="small-note">
+                                                    {{this.event.business.name}} {{this.event.business.descr}}
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                    <!-- / INVOICE -->
+
+                                </div>
+
+
+                            </div>
+
+
+
+                        </mat-tab>
+                        <mat-tab label="Riepilogo Operativo">
+                            <!-- WIDGET GROUP -->
+
+                            <div class="widget-group" fxLayout="row wrap" fxFlex="100" *fuseIfOnDom
+                                >
+
+                                <div id="top" style="width: 100%;
+                                padding-top: 20px;">
+                                    <mat-fab-menu id="fab" name="fab" class="add-event-button mat-accent"
+                                        [fabButtons]="fabButtonsRandom" [direction]="'right'"
+                                        (onFabMenuItemSelected)="onSelected($event, 'summary')">
+                                    </mat-fab-menu>
+                                </div>
+
+                                <!-- WIDGET 11 -->
+                                <fuse-widget [@animate]="{value:'*',params:{y:'100%'}}" class="widget" fxLayout="row"
+                                    fxFlex="100" id="summary">
+
+                                    <!-- Front -->
+                                    <div class="fuse-widget-front">
+
+                                        <div class="p-24 mb-8 border-bottom accent" fxLayout="row"
+                                            fxLayoutAlign="space-between center">
+                                            <div class="h2">Materiali</div>
+                                            <!--<div class="text-boxed accent m-0">
+                                                {{widgets.widget11.table.rows.length}}
+                                                members
+                                            </div>-->
+                                        </div>
+
+                                        <mat-table #table [dataSource]="getMaterials()">
+
+
+                                            <ng-container matColumnDef="avatar">
+                                                <mat-header-cell fxFlex="96px" *matHeaderCellDef></mat-header-cell>
+                                                <mat-cell fxFlex="96px" *matCellDef="let detail">
+                                                    <img class="avatar" *ngIf="detail.resource && detail.resource.image"
+                                                        awesomeTooltip="Hello World!"
+                                                        image="{{getResourceImage(detail.resource)}}"
+                                                        src="{{getResourceImage(detail.resource)}}" />
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="category">
+                                                <mat-header-cell *matHeaderCellDef>Categoria</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p *ngIf="detail.category" class="text-truncate font-weight-600">
+                                                        {{detail.category.descr}}
+                                                    </p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="skill">
+                                                <mat-header-cell *matHeaderCellDef>Mansione</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p *ngIf="detail.skill" class="text-truncate font-weight-600">
+                                                        {{detail.skill.descr}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="name">
+                                                <mat-header-cell *matHeaderCellDef>Nome/Descrizione</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p *ngIf="detail.resource" class="text-truncate font-weight-600">
+                                                        {{getResourceName(detail.resource)}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="qta">
+                                                <mat-header-cell *matHeaderCellDef>Quantità</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p class="text-truncate font-weight-600">{{detail.qta}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="hours">
+                                                <mat-header-cell *matHeaderCellDef>Ore</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p class="text-truncate font-weight-600">{{detail.hours}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+                                            <ng-container matColumnDef="days">
+                                                <mat-header-cell *matHeaderCellDef>Giorni</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p class="text-truncate font-weight-600">{{detail.days}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+                                            <ng-container matColumnDef="note">
+                                                <mat-header-cell *matHeaderCellDef>Note</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p class="text-truncate font-weight-600">{{detail.note}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+
+
+                                            <mat-header-row *matHeaderRowDef="displayedColumnsSummary">
+                                            </mat-header-row>
+                                            <mat-row *matRowDef="let detail; columns: displayedColumnsSummary;">
+                                            </mat-row>
+                                        </mat-table>
+
+                                        <div class="p-24 mb-8 border-bottom accent" fxLayout="row"
+                                            fxLayoutAlign="space-between center">
+                                            <div class="h2">Persone</div>
+                                            <!--<div class="text-boxed accent m-0">
+                                                {{widgets.widget11.table.rows.length}}
+                                                members
+                                            </div>-->
+                                        </div>
+
+                                        <mat-table #table [dataSource]="getHumans()">
+
+
+                                            <ng-container matColumnDef="avatar">
+                                                <mat-header-cell fxFlex="96px" *matHeaderCellDef></mat-header-cell>
+                                                <mat-cell fxFlex="96px" *matCellDef="let detail">
+                                                    <img class="avatar" *ngIf="detail.resource && detail.resource.image"
+                                                        awesomeTooltip="Hello World!"
+                                                        image="{{getResourceImage(detail.resource)}}"
+                                                        src="{{getResourceImage(detail.resource)}}" />
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="category">
+                                                <mat-header-cell *matHeaderCellDef>Categoria</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p *ngIf="detail.category" class="text-truncate font-weight-600">
+                                                        {{detail.category.descr}}
+                                                    </p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="skill">
+                                                <mat-header-cell *matHeaderCellDef>Mansione</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p *ngIf="detail.skill" class="text-truncate font-weight-600">
+                                                        {{detail.skill.descr}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="name">
+                                                <mat-header-cell *matHeaderCellDef>Nome</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p *ngIf="detail.resource" class="text-truncate font-weight-600">
+                                                        {{getResourceName(detail.resource)}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="qta">
+                                                <mat-header-cell *matHeaderCellDef>Quantità</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p class="text-truncate font-weight-600">{{detail.qta}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="hours">
+                                                <mat-header-cell *matHeaderCellDef>Ore</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p class="text-truncate font-weight-600">{{detail.hours}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+                                            <ng-container matColumnDef="days">
+                                                <mat-header-cell *matHeaderCellDef>Giorni</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p class="text-truncate font-weight-600">{{detail.days}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+                                            <ng-container matColumnDef="note">
+                                                <mat-header-cell *matHeaderCellDef>Note</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p class="text-truncate font-weight-600">{{detail.note}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+
+
+                                            <mat-header-row *matHeaderRowDef="displayedColumnsSummary">
+                                            </mat-header-row>
+                                            <mat-row *matRowDef="let detail; columns: displayedColumnsSummary;">
+                                            </mat-row>
+                                        </mat-table>
+
+
+
+
+
+                                        <div class="p-24 mb-8 border-bottom accent" fxLayout="row"
+                                            fxLayoutAlign="space-between center">
+                                            <div class="h2">Servizi</div>
+                                            <!--<div class="text-boxed accent m-0">
+                                                {{widgets.widget11.table.rows.length}}
+                                                members
+                                            </div>-->
+                                        </div>
+
+                                        <mat-table #table [dataSource]="getServices()">
+
+
+                                            <ng-container matColumnDef="avatar">
+                                                <mat-header-cell fxFlex="96px" *matHeaderCellDef></mat-header-cell>
+                                                <mat-cell fxFlex="96px" *matCellDef="let detail">
+                                                    <img class="avatar" *ngIf="detail.resource && detail.resource.image"
+                                                        src="{{getResourceImage(detail.resource)}}" />
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="category">
+                                                <mat-header-cell *matHeaderCellDef>Categoria</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p *ngIf="detail.category" class="text-truncate font-weight-600">
+                                                        {{detail.category.descr}}
+                                                    </p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="skill">
+                                                <mat-header-cell *matHeaderCellDef>Mansione</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p *ngIf="detail.skill" class="text-truncate font-weight-600">
+                                                        {{detail.skill.descr}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="name">
+                                                <mat-header-cell *matHeaderCellDef>Nome</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p *ngIf="detail.resource" class="text-truncate font-weight-600">
+                                                        {{getResourceName(detail.resource)}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="qta">
+                                                <mat-header-cell *matHeaderCellDef>Quantità</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p class="text-truncate font-weight-600">{{detail.qta}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="hours">
+                                                <mat-header-cell *matHeaderCellDef>Ore</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p class="text-truncate font-weight-600">{{detail.hours}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+                                            <ng-container matColumnDef="days">
+                                                <mat-header-cell *matHeaderCellDef>Giorni</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p class="text-truncate font-weight-600">{{detail.days}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+                                            <ng-container matColumnDef="note">
+                                                <mat-header-cell *matHeaderCellDef>Note</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p class="text-truncate font-weight-600">{{detail.note}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+
+
+                                            <mat-header-row *matHeaderRowDef="displayedColumnsSummary">
+                                            </mat-header-row>
+                                            <mat-row *matRowDef="let detail; columns: displayedColumnsSummary;">
+                                            </mat-row>
+                                        </mat-table>
+
+
+                                        <div class="p-24 mb-8 border-bottom accent" fxLayout="row"
+                                            fxLayoutAlign="space-between center">
+                                            <div class="h2">Immobili</div>
+                                            <!--<div class="text-boxed accent m-0">
+                                                {{widgets.widget11.table.rows.length}}
+                                                members
+                                            </div>-->
+                                        </div>
+
+                                        <mat-table #table [dataSource]="getAssets()">
+
+
+                                            <ng-container matColumnDef="avatar">
+                                                <mat-header-cell fxFlex="96px" *matHeaderCellDef></mat-header-cell>
+                                                <mat-cell fxFlex="96px" *matCellDef="let detail">
+                                                    <img class="avatar" *ngIf="detail.resource && detail.resource.image"
+                                                        src="{{getResourceImage(detail.resource)}}" />
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="category">
+                                                <mat-header-cell *matHeaderCellDef>Categoria</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p class="text-truncate font-weight-600">{{detail.category.descr}}
+                                                    </p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="skill">
+                                                <mat-header-cell *matHeaderCellDef>Mansione</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p *ngIf="detail.skill" class="text-truncate font-weight-600">
+                                                        {{detail.skill.descr}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="name">
+                                                <mat-header-cell *matHeaderCellDef>Nome</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p *ngIf="detail.resource" class="text-truncate font-weight-600">
+                                                        {{getResourceName(detail.resource)}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="qta">
+                                                <mat-header-cell *matHeaderCellDef>Quantità</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p class="text-truncate font-weight-600">{{detail.qta}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="hours">
+                                                <mat-header-cell *matHeaderCellDef>Ore</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p class="text-truncate font-weight-600">{{detail.hours}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+                                            <ng-container matColumnDef="days">
+                                                <mat-header-cell *matHeaderCellDef>Giorni</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p class="text-truncate font-weight-600">{{detail.days}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+                                            <ng-container matColumnDef="note">
+                                                <mat-header-cell *matHeaderCellDef>Note</mat-header-cell>
+                                                <mat-cell *matCellDef="let detail">
+                                                    <p class="text-truncate font-weight-600">{{detail.note}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+
+
+                                            <mat-header-row *matHeaderRowDef="displayedColumnsSummary">
+                                            </mat-header-row>
+                                            <mat-row *matRowDef="let detail; columns: displayedColumnsSummary;">
+                                            </mat-row>
+                                        </mat-table>
+
+                                        <div class="p-24 mb-8 border-bottom accent" fxLayout="row"
+                                            fxLayoutAlign="space-between center">
+                                            <div class="h2">Extra</div>
+                                            <!--<div class="text-boxed accent m-0">
+                                                {{widgets.widget11.table.rows.length}}
+                                                members
+                                            </div>-->
+                                        </div>
+
+                                        <mat-table #table [dataSource]="dataSourceExtra">
+
+
+
+
+                                            <ng-container matColumnDef="descr">
+                                                <mat-header-cell *matHeaderCellDef>Descrizione</mat-header-cell>
+                                                <mat-cell *matCellDef="let extra">
+                                                    <p class="text-truncate font-weight-600">{{extra.extra_descr}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="qta">
+                                                <mat-header-cell *matHeaderCellDef>Quantità</mat-header-cell>
+                                                <mat-cell *matCellDef="let extra">
+                                                    <p class="text-truncate font-weight-600">{{extra.qta}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <ng-container matColumnDef="note">
+                                                <mat-header-cell *matHeaderCellDef>Note</mat-header-cell>
+                                                <mat-cell *matCellDef="let extra">
+                                                    <p class="text-truncate font-weight-600">{{extra.note}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+
+
+
+
+
+                                            <mat-header-row *matHeaderRowDef="displayedColumnsSummaryExtra">
+                                            </mat-header-row>
+                                            <mat-row *matRowDef="let extra; columns: displayedColumnsSummaryExtra;">
+                                            </mat-row>
+                                        </mat-table>
+                                    </div>
+                                    <!-- / Front -->
+
+                                </fuse-widget>
+                                <!-- / WIDGET 11 -->
+
+                            </div>
+                            <!-- / WIDGET GROUP -->
+                        </mat-tab>
+                        
+                        <mat-tab label="Pagamenti">
+                            <mat-table class="events-table" #table [dataSource]='dataSourcePayment' matSort
+                                 formArrayName="payment_assoc">
+
+                                <ng-container matColumnDef="paymentType">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Tipo di pagamento
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let row; let i = index;" [formGroupName]="i">
+                                        <mat-select [compareWith]="compareObjects"
+                                            placeholder="Seleziona un tipo di pagamento" formControlName="paymentType"
+                                            required>
+                                            <mat-option>
+                                                <ngx-mat-select-search [formControl]="paymentTypesFilterCtrl"
+                                                    [placeholderLabel]="'Search...'"
+                                                    [noEntriesFoundLabel]="'Not found'">
+                                                </ngx-mat-select-search>
+                                            </mat-option>
+                                            <mat-option [value]="paymentType"
+                                                *ngFor="let paymentType of filteredPaymentTypes | async">
+                                                {{paymentType.descr}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-cell>
+                                </ng-container>
+
+
+                                <ng-container matColumnDef="paymentMethod">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Metodo di pagamento
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let row; let i = index;" [formGroupName]="i">
+                                        <mat-select [compareWith]="compareObjects"
+                                            placeholder="Seleziona un metodo di pagamento"
+                                            formControlName="paymentMethod" required>
+                                            <mat-option>
+                                                <ngx-mat-select-search [formControl]="paymentMethodsFilterCtrl"
+                                                    [placeholderLabel]="'Search...'"
+                                                    [noEntriesFoundLabel]="'Not found'">
+                                                </ngx-mat-select-search>
+                                            </mat-option>
+                                            <mat-option [value]="paymentMethod"
+                                                *ngFor="let paymentMethod of filteredPaymentMethods | async">
+                                                {{paymentMethod.descr}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="amount">
+                                  <mat-header-cell *matHeaderCellDef mat-sort-header>Importo</mat-header-cell>
+                                  <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                      <input matInput placeholder="Importo pagamento" name="amount"
+                                          formControlName="amount" type="text" mvndrMatCurrencyFormat
+                                          [allowNegative]="true" [currencyCode]="'EUR'" autocomplete="off">
+                                  </mat-cell>
+                                </ng-container>
+                                
+                                <ng-container matColumnDef="paymentDate">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header>Data di pagamento</mat-header-cell>
+                                    <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                        <input matInput placeholder="Data di pagamento" name="paymentDate"
+                                            formControlName="paymentDate" type="date" autocomplete="off">
+                                    </mat-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="paymentNote">
+                                  <mat-header-cell *matHeaderCellDef mat-sort-header>Nota di pagamento</mat-header-cell>
+                                  <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                      <textarea matInput placeholder="Nota di pagamento" name="paymentNote"
+                                          formControlName="paymentNote" autocomplete="off"></textarea>
+                                  </mat-cell>
+                              </ng-container>
+
+
+                                <ng-container matColumnDef="delete">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header>Rimuovi
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                        <button mat-raised-button class="save-user-button"
+                                            style="color:white;background-color:red;"
+                                            (click)="deletePaymentAssoc(index)">
+                                            <span>Cancella Pagamento</span>
+                                        </button>
+                                    </mat-cell>
+                                </ng-container>
+
+
+                                <mat-header-row *matHeaderRowDef="displayedColumnsPayments; sticky:true">
+                                </mat-header-row>
+
+                                <mat-row *matRowDef="let row; let i = index; columns: displayedColumnsPayments;"
+                                    class="event">
+                                </mat-row>
+                            </mat-table>
+
+
+
+
+
+
+                        </mat-tab>
+                        <mat-tab label="Saldo Economico">
+                            <!--<mat-table class="events-table" #table [dataSource]='dataSource' matSort
+                                [@animateStagger]="{value:'50'}" fusePerfectScrollbar formArrayName="eventDetails">
+
+
+
+
+                                <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true">
+                                </mat-header-row>
+
+                                <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;" class="event">
+                                </mat-row>
+                            </mat-table>-->
+
+
+
+
+
+
+                        </mat-tab>
+                        <mat-tab label="Allegati">
+                            <!--<mat-table class="events-table" #table [dataSource]='dataSource' matSort
+                                [@animateStagger]="{value:'50'}" fusePerfectScrollbar formArrayName="eventDetails">
+                                <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true">
+                                </mat-header-row>
+
+                                <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;" class="event">
+                                </mat-row>
+                            </mat-table>-->
+                            <div style="width: 100%; text-align: center;">
+                              <mat-form-field appearance="outline" floatLabel="always" class="w-50-p">
+                                <mat-label>Attache File: </mat-label>
+                                <mat-toolbar>
+                                  <input matInput placeholder="Scegli una foto" id="attach_file" name="attach_file" formControlName="attach_file" />
+                                    <button mat-flat-button> Scegli </button>
+                                </mat-toolbar>
+                                <input type="file" #UploadFileInput (change)="fileChangeEvent($event)" name="uploadAttachFile" multiple="multiple" accept="*" />
+                              </mat-form-field>
+                              
+                              <div  
+                                  class="w-100-p">
+                                  <!-- <img awesomeTooltip="Hello World!" image="{{fileSrc}}" style="width:100px;height:100px;" *ngIf="fileSrc" src={{fileSrc}} > -->
+                                  <!-- <ul>
+                                    <li *ngFor="let file of attFile"> -->
+                                      <p *ngIf="pageType !=='new' || event.attach_file !== ''">{{event.attach_file}}
+                                      <a href={{attSrc}}>Download</a></p>
+                                    <!-- </li> -->
+                                  <!-- </ul> -->
+                              </div>
+
+                              <!-- <button [disabled]="disabledUploadBtn" mat-raised-button
+                                  class="upload-button" (click)="attachUpload()">
+                                  <span>Upload</span>
+                              </button> -->
+
+                            </div>
+                            
+                        </mat-tab>
+                        
+                    </mat-tab-group>
+
+                </form>
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+    </div>
+    <!-- / CENTER -->
+
+</div>

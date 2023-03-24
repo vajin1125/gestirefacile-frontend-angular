@@ -1,0 +1,142 @@
+<div id="plansmanager" class="page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <div class="header accent"
+             fxLayout="column" fxLayoutAlign="center center"
+             fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+
+            <!-- APP TITLE -->
+            <div class="logo mb-24 mb-md-0"
+                 fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon class="logo-icon s-32 mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    dns
+                </mat-icon>
+                <span class="logo-text h1" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    {{'PLANSMANAGER.TITLE' | translate}}
+                </span>
+            </div>
+            <!-- / APP TITLE -->
+
+            <!-- SEARCH -->
+            <div class="search-wrapper mx-32 mx-md-0">
+                <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                    <mat-icon>search</mat-icon>
+                    <input #filter  (keyup)="doFilter($event.target.value)" placeholder="Cerca messaggio">
+                </div>
+            </div>
+            <!-- / SEARCH -->
+
+            <!-- ADD BUTTON -->
+            <button mat-raised-button
+                    [routerLink]="'/messagemanager/new'"
+                    class="add-message-button fuse-white mt-24 mt-md-0">
+                <span>Aggiungi Piano</span>
+            </button>
+            <!-- / ADD BUTTON -->
+
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+
+            <mat-table class="plans-table"
+                       #table [dataSource]="dataSource"
+                       matSort
+                       [@animateStagger]="{value:'50'}"
+                       fusePerfectScrollbar>
+
+                <!-- ID Column -->
+                <ng-container matColumnDef="oid">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+                    <mat-cell *matCellDef="let message">
+                        <p class="text-truncate">{{message.oid}}</p>
+                    </mat-cell>
+                </ng-container>
+
+
+
+                <!-- Acronimo Column -->
+                <ng-container matColumnDef="title">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Titolo Messaggio</mat-header-cell>
+                    <mat-cell *matCellDef="let message">
+                        <p class="text-truncate">{{message.title}}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Acronimo Column -->
+                <ng-container matColumnDef="text">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Messaggio/Link</mat-header-cell>
+                    <mat-cell *matCellDef="let message">
+                        <p class="text-truncate">{{message.text}}<br />{{message.url}}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Acronimo Column -->
+                <ng-container matColumnDef="user_sent">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Utente destinatario</mat-header-cell>
+                    <mat-cell *matCellDef="let message">
+                        <p  *ngIf="message.user_sent" class="text-truncate">{{message.user_sent.username}}<br />{{message.user_sent.email}}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="business">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Attività destinataria</mat-header-cell>
+                    <mat-cell *matCellDef="let message">
+                        <p *ngIf="message.business" class="text-truncate">{{message.business.name}}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="role">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Ruolo destinatario</mat-header-cell>
+                    <mat-cell *matCellDef="let message">
+                        <p *ngIf="message.role" class="text-truncate">{{message.role.descr}}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="creation_ts">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Data creazione</mat-header-cell>
+                    <mat-cell *matCellDef="let message">
+                        <p class="text-truncate">{{message.creation_ts}}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="sent_ts">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Data invio</mat-header-cell>
+                    <mat-cell *matCellDef="let message">
+                        <p class="text-truncate">{{message.sent_ts}}</p>
+                    </mat-cell>
+                </ng-container>
+
+
+                
+                <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></mat-header-row>
+             
+
+                <mat-row *matRowDef="let message; columns: displayedColumns;"
+                         class="message"
+                         matRipple
+                         [routerLink]="'/plansmanager/'+message.oid">
+                </mat-row>
+
+            </mat-table>
+
+            <mat-paginator #paginator
+                           [length]="10"
+                           [pageIndex]="0"
+                           [pageSize]="10"
+                           [pageSizeOptions]="[5, 10, 25, 100]">
+            </mat-paginator>
+
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

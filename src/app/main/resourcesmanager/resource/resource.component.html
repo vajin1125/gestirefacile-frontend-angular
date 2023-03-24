@@ -1,0 +1,643 @@
+<div id="resource" class="page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+
+                <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="'/resourcesmanager'">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div class="resource-image mr-8 mr-sm-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    <img *ngIf="!logoSrc" [src]="'assets/images/ecommerce/product-image-placeholder.png'">
+                    <img style="width:50px;height:50px;" *ngIf="logoSrc" src={{logoSrc}} >
+                </div>
+
+                <div fxLayout="column" fxLayoutAlign="start start"
+                    [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    <div class="h2" *ngIf="pageType ==='edit'">
+                        {{getResourceName(resource)}}
+                    </div>
+                    <div class="h2" *ngIf="pageType ==='new'">
+                        Nuova Risorsa
+                    </div>
+                    <div class="subtitle secondary-text">
+                        <span>Dettaglio risorsa</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+            <div>
+                <button mat-raised-button class="save-resource-button" [disabled]="resourceForm.invalid"
+                    *ngIf="pageType ==='new'" (click)="addResource()">
+                    <span>Aggiungi Risorsa</span>
+                </button>
+
+                <button mat-raised-button class="save-user-button"
+                    [disabled]="resourceForm.invalid || resourceForm.pristine" *ngIf="pageType ==='edit'"
+                    (click)="saveResource()">
+                    <span>Aggiorna Risorsa</span>
+                </button>
+                &nbsp;
+                <button mat-raised-button class="save-user-button"
+                     *ngIf="pageType ==='edit'"
+                    (click)="deleteResource()">
+                    <span>Cancella Risorsa</span>
+                </button>
+                <button *ngIf="tabIndex == 1" mat-raised-button class="save-resource-button"
+                    (click)="addPrice()">
+                    <span>Aggiungi Prezzo</span>
+                </button>
+                <button *ngIf="tabIndex == 2" mat-raised-button class="save-resource-button"
+                    (click)="addResourceAssoc()">
+                    <span>Aggiungi Risorsa Correlata</span>
+                </button>
+                <button *ngIf="tabIndex == 3 && pageType ==='edit'" mat-raised-button class="save-resource-button"
+                    (click)="addMovement()">
+                    <span>Aggiungi Movimento</span>
+                </button>
+               
+            </div>
+
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+
+            <!-- CONTENT -->
+            <div class="content">
+
+                <form name="resourceForm" [formGroup]="resourceForm" class="user w-100-p" fxLayout="column" fxFlex>
+
+                    <mat-tab-group (selectedTabChange)="tabChanged($event)">
+
+                        <mat-tab label="Basic Info">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+
+                                    <mat-label>Seleziona un Tipo di Risorsa</mat-label>
+
+                                    <mat-select [compareWith]="compareObjects" (selectionChange)="changeType($event)"
+                                        placeholder="Seleziona il tipo di risorsa" formControlName="resourceType"
+                                        required>
+                                        <mat-option>
+                                            <ngx-mat-select-search [formControl]="resourceTypesFilterCtrl"
+                                                [placeholderLabel]="'Search...'" [noEntriesFoundLabel]="'Not found'">
+                                            </ngx-mat-select-search>
+                                        </mat-option>
+                                        <mat-option [value]="resourceType"
+                                            *ngFor="let resourceType of filteredResourceTypes | async">
+                                            {{resourceType.descr}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+
+                                <mat-form-field *ngIf="showHuman || showOther" appearance="outline" floatLabel="always"
+                                    class="w-100-p">
+                                    <mat-label>ID</mat-label>
+                                    <input matInput placeholder="automatic id" name="oid" formControlName="oid"
+                                        readonly>
+                                </mat-form-field>
+
+
+                                <mat-form-field *ngIf="showHuman || showOther" appearance="outline" floatLabel="always"
+                                    class="w-100-p">
+                                    <mat-label>Codice</mat-label>
+                                    <input matInput placeholder="Codice" name="code" formControlName="code">
+                                </mat-form-field>
+
+                                <mat-form-field *ngIf="showHuman" appearance="outline" floatLabel="always"
+                                    class="w-100-p">
+                                    <mat-label>Nome</mat-label>
+                                    <input matInput placeholder="Nome" name="name" formControlName="name" required>
+                                </mat-form-field>
+
+                                <mat-form-field *ngIf="showHuman" appearance="outline" floatLabel="always"
+                                    class="w-100-p">
+                                    <mat-label>Cognome</mat-label>
+                                    <input matInput placeholder="Cognome" name="surname" formControlName="surname"
+                                        required>
+                                </mat-form-field>
+
+                                <mat-form-field *ngIf="showHuman" appearance="outline" floatLabel="always"
+                                    class="w-100-p">
+
+                                    <mat-label>Seleziona genere</mat-label>
+
+                                    <mat-select placeholder="Seleziona genere" formControlName="gender">
+                                        <mat-option value="F">Femmina</mat-option>
+                                        <mat-option value="M">Maschio</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+
+                                <mat-form-field *ngIf="showHuman" appearance="outline" floatLabel="always"
+                                    class="w-100-p">
+                                    <mat-label>Email</mat-label>
+                                    <input matInput formControlName="email" required>
+                                    <button mat-raised-button matSuffix><span><a href="mailto:{{resource.email}}"
+                                                target="_blank">Manda un email</a></span></button>
+                                    <mat-error *ngIf="resourceForm.get('email').hasError('required')">
+                                        Email is required
+                                    </mat-error>
+                                    <mat-error *ngIf="resourceForm.get('email').hasError('email')">
+                                        Please enter a valid email address
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field *ngIf="showHuman" appearance="outline" floatLabel="always"
+                                    class="w-100-p">
+                                    <mat-label>Telefono</mat-label>
+                                    <input matInput placeholder="Telefono" name="tel" formControlName="tel">
+                                    <button mat-raised-button matSuffix><span><a href="tel:{{resource.tel}}"
+                                                target="_blank">Chiama</a></span></button>
+                                </mat-form-field>
+
+                                <mat-form-field *ngIf="showHuman" appearance="outline" floatLabel="always"
+                                    class="w-100-p">
+                                    <mat-label>Cellulare</mat-label>
+                                    <input matInput placeholder="Cellulare" name="cell" formControlName="cell">
+                                    <button mat-raised-button matSuffix><span><a href="tel:{{resource.cell}}"
+                                                target="_blank">Chiama</a></span></button>
+                                    <button mat-raised-button matSuffix style="margin-left:15px"><span><a
+                                                href="https://wa.me/{{getWACell(resource.cell)}}"
+                                                target="_blank">WhatsApp</a></span></button>
+                                </mat-form-field>
+
+                                <mat-form-field *ngIf="showAssets" appearance="outline" floatLabel="always"
+                                    class="w-100-p">
+                                    <mat-label>Numero referente</mat-label>
+                                    <input matInput placeholder="Numero referente" name="cell" formControlName="cell">
+                                    <button mat-raised-button matSuffix><span><a href="tel:{{resource.cell}}"
+                                                target="_blank">Chiama</a></span></button>
+                                    <button mat-raised-button matSuffix style="margin-left:15px"><span><a
+                                                href="https://wa.me/{{getWACell(resource.cell)}}"
+                                                target="_blank">WhatsApp</a></span></button>
+                                </mat-form-field>
+
+
+                                <mat-form-field *ngIf="showOther" appearance="outline" floatLabel="always"
+                                    class="w-100-p">
+                                    <mat-label>Descrizione</mat-label>
+                                    <input matInput placeholder="Descrizione" name="descr" formControlName="descr"
+                                        required>
+                                </mat-form-field>
+
+
+                                <div *ngIf="showOther" fxLayout="row" fxLayoutGap="10px">
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Larghezza in cm</mat-label>
+                                        <input matInput placeholder="Larghezza in cm" name="width"
+                                            formControlName="width" type="number">
+                                        <span matPrefix>cm&nbsp;</span>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Altezza in cm</mat-label>
+                                        <input matInput placeholder="Altezza in cm" name="height"
+                                            formControlName="height" type="number">
+                                        <span matPrefix>cm&nbsp;</span>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Profondità in cm</mat-label>
+                                        <input matInput placeholder="Profondità in cm" name="deep"
+                                            formControlName="deep" type="number">
+                                        <span matPrefix>cm&nbsp;</span>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Peso in Kg</mat-label>
+                                        <input matInput placeholder="Peso in Kg" name="weight" formControlName="weight"
+                                            type="number">
+                                        <span matPrefix>Kg.&nbsp;</span>
+                                    </mat-form-field>
+                                </div>
+
+
+                                <div *ngIf="showOther" fxLayout="row" fxLayoutGap="10px">
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Capacità</mat-label>
+                                        <input matInput placeholder="Inserisci quanti oggetti o persone può contenere"
+                                            name="capacity" formControlName="capacity">
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Posizione/Scaffale</mat-label>
+                                        <input matInput placeholder="Posizione/Scaffale" name="position"
+                                            formControlName="position">
+                                    </mat-form-field>
+                                </div>
+
+                                <!--<div *ngIf="showHuman || showOther" fxLayout="row" fxLayoutGap="10px">
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Prezzo Interno Feriale Giornaliero</mat-label>
+                                        <input matInput placeholder="Prezzo Interno Feriale Giornaliero"
+                                            name="internal_working_price" formControlName="internal_working_price"
+                                            type="text" mvndrMatCurrencyFormat [allowNegative]="false"
+                                            [currencyCode]="'EUR'" autocomplete="off">
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Prezzo Feriale Giornaliero</mat-label>
+                                        <input matInput placeholder="Prezzo Feriale Giornaliero" name="working_price"
+                                            formControlName="working_price" type="text" mvndrMatCurrencyFormat
+                                            [allowNegative]="false" [currencyCode]="'EUR'" autocomplete="off">
+                                    </mat-form-field>
+                                </div>-->
+
+                                <div  
+                                    class="w-100-p">
+                                    <img awesomeTooltip="Hello World!" image="{{logoSrc}}" style="width:100px;height:100px;" *ngIf="logoSrc" src={{logoSrc}} >
+                                </div>
+
+                                <mat-form-field *ngIf="showHuman || showOther" appearance="outline" floatLabel="always"
+                                    class="w-100-p">
+                                    <mat-label>Foto</mat-label>
+                                    <mat-toolbar><input matInput placeholder="Scegli una foto" name="image"
+                                            formControlName="image" />
+                                        <button mat-flat-button>
+                                            Scegli
+                                        </button>
+                                    </mat-toolbar>
+                                    {{imageError}}
+                                    <input type="file" #UploadFileInput id="fileUpload"
+                                        (change)="fileChangeEvent($event)" name="fileUpload" multiple="multiple"
+                                        accept="image/*" />
+                                </mat-form-field>
+                                
+
+                                <mat-form-field *ngIf="showHuman || showOther" appearance="outline" floatLabel="always"
+                                    class="w-100-p">
+                                    <mat-label>Note</mat-label>
+                                    <textarea matInput placeholder="Note" name="note" formControlName="note"></textarea>
+                                </mat-form-field>
+
+                                <mat-form-field *ngIf="showHuman || showOther" appearance="outline" floatLabel="always"
+                                    class="w-100-p">
+                                    <mat-label>Categorie Associate</mat-label>
+                                    <mat-chip-list #chipList aria-label="Seleziona le categorie"
+                                        formArrayName="categories_assoc">
+                                        <mat-chip *ngFor="let category of categoriesAssoc.value"
+                                            [selectable]="selectable" [removable]="removable"
+                                            (removed)="removeCategory(category)">
+                                            {{category.descr}}
+                                            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                                        </mat-chip>
+                                        <input placeholder="Scegli la Categoria..." #categoryInput
+                                            [formControl]="categoriesFilterCtrl" [matAutocomplete]="auto"
+                                            [matChipInputFor]="chipList"
+                                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                            [matChipInputAddOnBlur]="addOnBlur"
+                                            (matChipInputTokenEnd)="addCategory($event)">
+                                    </mat-chip-list>
+                                    <mat-autocomplete #auto="matAutocomplete"
+                                        (optionSelected)="selectedCategory($event)">
+                                        <mat-option *ngFor="let category of filteredCategories | async"
+                                            [value]="category">
+                                            {{category.descr}}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+
+
+                                <mat-form-field *ngIf="showHuman" appearance="outline" floatLabel="always"
+                                    class="w-100-p">
+                                    <mat-label>Mansioni Associate</mat-label>
+                                    <mat-chip-list #chipList aria-label="Seleziona le mansioni"
+                                        formArrayName="skills_assoc">
+                                        <mat-chip *ngFor="let skill of skillsAssoc.value" [selectable]="selectable"
+                                            [removable]="removable" (removed)="removeSkill(skill)">
+                                            {{skill.descr}}
+                                            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                                        </mat-chip>
+                                        <input placeholder="Scegli la Mansione..." #skillInput
+                                            [formControl]="skillsFilterCtrl" [matAutocomplete]="auto"
+                                            [matChipInputFor]="chipList"
+                                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                            [matChipInputAddOnBlur]="addOnBlur"
+                                            (matChipInputTokenEnd)="addSkill($event)">
+                                    </mat-chip-list>
+                                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectedSkill($event)">
+                                        <mat-option *ngFor="let skill of filteredSkills | async" [value]="skill">
+                                            {{skill.descr}}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+
+                                <div class="" *ngIf="showHuman" fxLayout="row" fxLayout.xs="column"
+                                    fxLayoutAlign="space-between center">
+                                    <mat-checkbox name="own_car" formControlName="own_car">Auto munito
+                                    </mat-checkbox>
+                                </div>
+
+                                <div *ngIf="showHuman || showOther" fxLayout="row" fxLayoutGap="10px">
+                                    <div class="" fxLayout="row" fxLayout.xs="column"
+                                        fxLayoutAlign="space-between center">
+                                        <mat-checkbox name="available" formControlName="available">Disponibile
+                                        </mat-checkbox>
+                                    </div>
+                                    <mat-form-field *ngIf="showOther" appearance="outline" floatLabel="always"
+                                        class="w-100-p">
+                                        <mat-label>Quantità disponibile</mat-label>
+                                        <input matInput placeholder="Quantità disponibile" name="avail_qta"
+                                            formControlName="avail_qta" type="number">
+
+                                    </mat-form-field>
+                                </div>
+
+
+                                <div class="" *ngIf="showHuman && !resource.user_resource" fxLayout="row"
+                                    fxLayout.xs="column" fxLayoutAlign="space-between center">
+                                    <mat-checkbox name="create_user" formControlName="create_user">Crea utente portale
+                                    </mat-checkbox>
+                                </div>
+
+                                <div class="" *ngIf="showHuman && resource.create_user" fxLayout="row"
+                                    fxLayout.xs="column" fxLayoutAlign="space-between center">
+                                    <button mat-raised-button matSuffix><span><a
+                                                [routerLink]="'/myusermanager/'+resource.user_resource.oid">Mostra
+                                                Utente</a></span></button>
+                                </div>
+
+                                <div class="" *ngIf="showMaterial" fxLayout="row" fxLayout.xs="column"
+                                    fxLayoutAlign="space-between center">
+                                    <mat-checkbox name="consumable" formControlName="consumable">Consumabile
+                                    </mat-checkbox>
+                                </div>
+
+
+
+
+                            </div>
+
+
+                        </mat-tab>
+
+                        <mat-tab label="Prezzi">
+                            <mat-table class="resources-table" #table [dataSource]='dataSourcePrice' matSort
+                                [@animateStagger]="{value:'50'}" fusePerfectScrollbar formArrayName="prices">
+
+
+                                <ng-container matColumnDef="descr">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header>Descrizione Prezzo
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                        <input matInput placeholder="Descrizione Prezzo" name="descr" formControlName="descr">
+                                    </mat-cell>
+                                </ng-container>
+
+
+                                <ng-container matColumnDef="price">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header>Prezzo
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                        <input matInput placeholder="Prezzo"
+                                        name="price" formControlName="price"
+                                        type="text" mvndrMatCurrencyFormat [allowNegative]="false"
+                                        [currencyCode]="'EUR'" autocomplete="off">
+                                    </mat-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="default">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header>Prezzo Base
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                        <mat-checkbox   name="default" formControlName="default"  (change)="changeSelection($event.checked, index)">
+                                        </mat-checkbox>
+                                    </mat-cell>
+                                </ng-container>
+
+
+                                <ng-container matColumnDef="delete">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header>Rimuovi
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                        <button mat-raised-button class="save-user-button"
+                                            style="color:white;background-color:red;"
+                                            (click)="deletePrice(index)">
+                                            <span>Cancella Prezzo</span>
+                                        </button>
+                                    </mat-cell>
+                                </ng-container>
+
+                                <mat-header-row *matHeaderRowDef="displayedColumnsPrice; sticky:true">
+                                </mat-header-row>
+
+                                <mat-row *matRowDef="let row; let i = index; columns: displayedColumnsPrice;"
+                                    class="resource">
+                                </mat-row>
+                            </mat-table>
+
+
+                        </mat-tab>
+
+                        <mat-tab label="Risorse Correlate">
+                            <mat-table class="resources-table" #table [dataSource]='dataSource' matSort
+                                [@animateStagger]="{value:'50'}" fusePerfectScrollbar formArrayName="resources_assoc">
+
+
+                                <ng-container matColumnDef="resourceAssoc">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Risorsa Associata
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let row; let i = index;" [formGroupName]="i">
+                                        <mat-select [compareWith]="compareObjects" placeholder="Seleziona risorsa"
+                                            formControlName="resourceAssoc" required>
+                                            <mat-option>
+                                                <ngx-mat-select-search [formControl]="resourcesFilterCtrl"
+                                                    [placeholderLabel]="'Search...'"
+                                                    [noEntriesFoundLabel]="'Not found'">
+                                                </ngx-mat-select-search>
+                                            </mat-option>
+                                            <mat-option [value]="resourceAssoc"
+                                                *ngFor="let resourceAssoc of filteredResources | async">
+                                                {{getResourceName(resourceAssoc)}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-cell>
+                                </ng-container>
+
+
+                                <ng-container matColumnDef="qta">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header>Quantità
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                        <input matInput placeholder="Quantità" name="qta" formControlName="qta"
+                                            type="number">
+                                    </mat-cell>
+                                </ng-container>
+
+
+                                <ng-container matColumnDef="delete">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header>Rimuovi
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                        <button mat-raised-button class="save-user-button"
+                                            style="color:white;background-color:red;"
+                                            (click)="deleteResourceAssoc(index)">
+                                            <span>Cancella Risorsa</span>
+                                        </button>
+                                    </mat-cell>
+                                </ng-container>
+
+                                <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true">
+                                </mat-header-row>
+
+                                <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"
+                                    class="resource">
+                                </mat-row>
+                            </mat-table>
+
+
+
+
+
+
+                        </mat-tab>
+
+                        <mat-tab *ngIf="this.resource && this.resource.resourceType.oid == 2"
+                            label="Movimenti Magazzino">
+
+
+
+                            <fuse-widget [@animate]="{value:'*',params:{y:'100%'}}" class="widget" fxLayout="row"
+                                fxFlex="100" id="summary">
+
+                                <!-- Front -->
+                                <div class="fuse-widget-front">
+
+                                    <div class="p-24 mb-8 border-bottom accent" fxLayout="row"
+                                        fxLayoutAlign="space-between center">
+                                        <div class="h2">Quantità Attuale: {{this.resource.avail_qta}}</div>
+                                        <!--<div class="text-boxed accent m-0">
+                                                {{widgets.widget11.table.rows.length}}
+                                                members
+                                            </div>-->
+                                    </div>
+
+
+                                    <div *ngIf="dataSourceMov">
+
+                                        <mat-table class="resources-table" #table [dataSource]="dataSourceMov" matSort
+                                            [@animateStagger]="{value:'50'}" fusePerfectScrollbar>
+
+                                            <!-- ID Column -->
+                                            <ng-container matColumnDef="oid">
+                                                <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+                                                <mat-cell *matCellDef="let movement">
+                                                    <p class="text-truncate">{{movement.oid}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+
+
+                                            <ng-container matColumnDef="qta">
+                                                <mat-header-cell *matHeaderCellDef mat-sort-header>Quantità
+                                                </mat-header-cell>
+                                                <mat-cell *matCellDef="let movement">
+                                                    <p class="text-truncate">{{movement.qta}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+
+
+
+                                            <ng-container matColumnDef="reason">
+                                                <mat-header-cell *matHeaderCellDef mat-sort-header>Motivo
+                                                </mat-header-cell>
+                                                <mat-cell *matCellDef="let movement">
+                                                    <p class="text-truncate">{{movement.reason}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+                                            <ng-container matColumnDef="time">
+                                                <mat-header-cell *matHeaderCellDef mat-sort-header>Data
+                                                </mat-header-cell>
+                                                <mat-cell *matCellDef="let movement">
+                                                    <p class="text-truncate">{{getFormatDate(movement.date_ts)}}</p>
+                                                </mat-cell>
+                                            </ng-container>
+
+
+                                            <mat-header-row *matHeaderRowDef="displayedColumnsMov; sticky:true">
+                                            </mat-header-row>
+
+
+                                            <mat-row *matRowDef="let movement; columns: displayedColumnsMov;"
+                                                class="resource">
+                                            </mat-row>
+
+                                        </mat-table>
+                                    </div>
+
+                                </div>
+                                <!-- / Front -->
+
+                            </fuse-widget>
+                            <!-- / WIDGET 11 -->
+
+
+
+
+
+
+                        </mat-tab>
+
+                        <mat-tab *ngIf="this.resource && this.resource.resourceType.oid == 2"
+                            label="QR Code">
+
+                            <fuse-widget [@animate]="{value:'*',params:{y:'100%'}}" class="widget" fxLayout="row"
+                                fxFlex="100" id="summary">
+
+                                <!-- Front -->
+                                <div class="fuse-widget-front">
+
+                                  <qrcode
+                                    #qrCodeElement
+                                    style="text-align: center;margin-top: 50px;"
+                                    [qrdata]="qrData"
+                                    [width]="qrWidth"
+                                    [level]="'M'"
+                                  >
+                                  </qrcode>
+                                  <!-- <button (click)="downloadQRCode(qrCodeElement)">Download QR Code</button> -->
+                                  <button mat-button class="save-resource-button" (click)="downloadQRCode(qrCodeElement)">
+                                      <span>Download QR Code</span>
+                                  </button>
+                                </div>
+                                <!-- / Front -->
+
+                            </fuse-widget>
+                            <!-- / WIDGET 11 -->
+
+                        </mat-tab>
+
+
+                    </mat-tab-group>
+
+                </form>
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+    </div>
+    <!-- / CENTER -->
+
+</div>

@@ -1,0 +1,345 @@
+<div id="customer" class="page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+
+                <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="'/customersmanager'">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div class="customer-image mr-8 mr-sm-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    <img [src]="'assets/images/ecommerce/product-image-placeholder.png'">
+                </div>
+
+                <div fxLayout="column" fxLayoutAlign="start start"
+                    [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    <div class="h2" *ngIf="pageType ==='edit'">
+                        {{customer.name}}-{{customer.surname}}
+                    </div>
+                    <div class="h2" *ngIf="pageType ==='new'">
+                        Nuovo Cliente
+                    </div>
+                    <div class="subtitle secondary-text">
+                        <span>Dettaglio cliente</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+            <div>
+                <button mat-raised-button class="save-customer-button" [disabled]="customerForm.invalid"
+                    *ngIf="pageType ==='new'" (click)="addCustomer()">
+                    <span>Aggiungi Cliente</span>
+                </button>
+
+                <button mat-raised-button class="save-customer-button"
+                    [disabled]="customerForm.invalid || customerForm.pristine" *ngIf="pageType ==='edit'"
+                    (click)="saveCustomer()">
+                    <span>Aggiorna Cliente</span>
+                </button>
+                &nbsp;
+                <button *ngIf="tabIndex == 1" mat-raised-button class="save-customer-button" (click)="addCircle()">
+                    <span>Aggiungi a Cerchia</span>
+                </button>
+            </div>
+
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+
+            <!-- CONTENT -->
+            <!-- <div class="content"> -->
+              <!-- <div class="content-card"> -->
+                <form name="customerForm" [formGroup]="customerForm" class="customer w-100-p" fxLayout="column" fxFlex>
+                  <mat-tab-group (selectedTabChange)="tabChanged($event)">
+
+
+                        <mat-tab label="Basic Info">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>ID</mat-label>
+                                    <input matInput placeholder="automatic id" name="oid" formControlName="oid"
+                                        readonly>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Nome</mat-label>
+                                    <input matInput placeholder="Nome" name="name" formControlName="name" required>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Cognome</mat-label>
+                                    <input matInput placeholder="Cognome" name="surname" formControlName="surname"
+                                        required>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Email</mat-label>
+                                    <input matInput formControlName="email">
+                                    <!--<mat-icon matSuffix class="secondary-text">mail</mat-icon>-->
+                                    <button mat-raised-button matSuffix><span><a href="mailto:{{customer.email}}"
+                                                target="_blank">Manda un email</a></span></button>
+                                    <mat-error *ngIf="customerForm.get('email').hasError('required')">
+                                        Email is required
+                                    </mat-error>
+                                    <mat-error *ngIf="customerForm.get('email').hasError('email')">
+                                        Please enter a valid email address
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Indirizzo</mat-label>
+                                    <input matInput placeholder="Indirizzo" name="address" formControlName="address"
+                                        required>
+                                    <button mat-raised-button matSuffix><span><a
+                                                href="https://maps.google.com/?q={{customer.address}}"
+                                                target="_blank">Maps</a></span></button>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Descrizione</mat-label>
+                                    <input matInput placeholder="Descrizione" name="desc" formControlName="desc"
+                                        required>
+                                </mat-form-field>
+
+
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Telefono</mat-label>
+                                    <input matInput placeholder="Telefono" name="tel" formControlName="tel">
+                                    <button mat-raised-button matSuffix><span><a href="tel:{{customer.tel}}"
+                                                target="_blank">Chiama</a></span></button>
+                                </mat-form-field>
+
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Cellulare</mat-label>
+                                    <input matInput placeholder="Cellulare" name="cell" formControlName="cell">
+                                    <button mat-raised-button matSuffix><span><a href="tel:{{customer.cell}}"
+                                                target="_blank">Chiama</a></span></button>
+                                    <button mat-raised-button matSuffix style="margin-left:15px"><span><a
+                                                href="https://wa.me/{{getWACell(customer.cell)}}"
+                                                target="_blank">WhatsApp</a></span></button>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Partita IVA o Codice Fiscale</mat-label>
+                                    <input matInput placeholder="Partita IVA o Codice Fiscale" name="piva"
+                                        formControlName="piva">
+                                </mat-form-field>
+
+                                <div *ngIf="customer.oid">
+                                    <button mat-raised-button [routerLink]="['/eventsmanager/new']"
+                                        [queryParams]="{customerId: customer.oid}"
+                                        class="add-category-button fuse-white mt-24 mt-md-0">
+                                        <span>Crea Evento</span>
+                                    </button>
+                                </div>
+                                <br>
+                                <!-- GESTIONE CAMPI AGGIUTIVI -->
+                                <mat-toolbar>
+                                    <span>Campi Agguntivi</span>
+                                    <button class="float-left" mat-icon-button color="primary" aria-label="Add"
+                                                (click)="addAttribute()" matTooltip="Add">
+                                            <mat-icon>add_circle_outline</mat-icon>
+                                            </button>
+                                </mat-toolbar>
+                                <mat-table class="customers-table" #table [dataSource]='dataSourceAttr' matSort
+                                    [@animateStagger]="{value:'50'}" fusePerfectScrollbar
+                                    formArrayName="attribute_assoc">
+                                    
+
+                                    <ng-container matColumnDef="name">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Campo
+                                        </mat-header-cell>
+                                        <mat-cell *matCellDef="let row; let i = index;" [formGroupName]="i">
+                                            <input matInput placeholder="Nome Campo" name="name"
+                                            formControlName="name">
+                                        </mat-cell>
+                                    </ng-container>
+
+
+                                    <ng-container matColumnDef="value">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Valore
+                                        </mat-header-cell>
+                                        <mat-cell *matCellDef="let row; let i = index;" [formGroupName]="i">
+                                            <input matInput placeholder="Valore Campo" name="value"
+                                            formControlName="value">
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="actions">
+                                        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                                        <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                            <button class="float-left" mat-icon-button color="primary" aria-label="Remove" (click)="deleteAttribute(index)">
+                                                <mat-icon>highlight_off</mat-icon>
+                                            </button>
+                                            
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <mat-header-row *matHeaderRowDef="displayedColumnsAttr; sticky:true">
+                                    </mat-header-row>
+
+                                    <mat-row *matRowDef="let row; let i = index; columns: displayedColumnsAttr;"
+                                        class="customer">
+                                    </mat-row>
+                                </mat-table>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="Cerchie Associate">
+                            <mat-table class="customers-table" #table [dataSource]='dataSource' matSort
+                                [@animateStagger]="{value:'50'}" fusePerfectScrollbar
+                                formArrayName="circle_customer_assoc">
+
+
+                                <ng-container matColumnDef="circle">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Cerchia
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let row; let i = index;" [formGroupName]="i">
+                                        <mat-select [compareWith]="compareObjects" placeholder="Seleziona la cerchia"
+                                            formControlName="circle" required>
+                                            <mat-option>
+                                                <ngx-mat-select-search [formControl]="circleFilterCtrl"
+                                                    [placeholderLabel]="'Search...'"
+                                                    [noEntriesFoundLabel]="'Not found'">
+                                                </ngx-mat-select-search>
+                                            </mat-option>
+                                            <mat-option [value]="circle" *ngFor="let circle of filteredCircles | async">
+                                                {{circle.descr}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="delete">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header>Rimuovi
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                        <button mat-raised-button class="save-circle-button"
+                                            style="color:white;background-color:red;" (click)="deleteCircle(index)">
+                                            <span>Cancella Cerchia</span>
+                                        </button>
+                                    </mat-cell>
+                                </ng-container>
+
+                                <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true">
+                                </mat-header-row>
+
+                                <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"
+                                    class="customer">
+                                </mat-row>
+                            </mat-table>
+                        </mat-tab>
+                        
+                        <mat-tab label="Event">
+                          <mat-table class="customers-event-table"
+                            #table [dataSource]="dataSourceEventNew"
+                            matSort
+                            [@animateStagger]="{value:'50'}"
+                            fusePerfectScrollbar>
+                              <!-- auto num Column -->
+                              <ng-container matColumnDef="num-auto">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>#</mat-header-cell>
+                                <mat-cell *matCellDef="let event; let i = index;">
+                                  <div *ngIf="event.warning" style="float: right;"><mat-icon  style="color:red">error</mat-icon></div>
+                                  <p class="text-truncate">{{i + 1}}</p>
+                                </mat-cell>
+                              </ng-container>
+                              <!-- ID Column -->
+                              <ng-container matColumnDef="oid">
+                                  <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+                                  <mat-cell *matCellDef="let event">
+                                      <div *ngIf="event.warning" style="float: right;"><mat-icon  style="color:red">error</mat-icon></div>
+                                      <p class="text-truncate">{{event.oid}}</p>
+                                  </mat-cell>
+                              </ng-container>
+
+                              <ng-container matColumnDef="cliente">
+                                  <mat-header-cell *matHeaderCellDef mat-sort-header>Cliente</mat-header-cell>
+                                  <mat-cell *matCellDef="let event">
+                                      <!-- <p class="text-truncate">{{event.customer.name}} {{event.customer.surname}}</p> -->
+                                      <p class="text-truncate">{{event.cliente}}</p>
+                                  </mat-cell>
+                              </ng-container>
+
+                              <ng-container matColumnDef="tipo">
+                                  <mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</mat-header-cell>
+                                  <mat-cell *matCellDef="let event">
+                                      <!-- <p class="text-truncate">{{event.type.descr}}</p> -->
+                                      <p class="text-truncate">{{event.tipo}}</p>
+                                  </mat-cell>
+                              </ng-container>
+
+                              <ng-container matColumnDef="orari">
+                                  <mat-header-cell *matHeaderCellDef mat-sort-header>Date e Orari</mat-header-cell>
+                                  <mat-cell *matCellDef="let event">
+                                      <div>
+                                          <!--<div class="firstline">{{event.from.toDate() | date: 'dd/MM/yyyy HH:mm'}}</div>
+                                          <div class="secondline">{{event.to.toDate() | date: 'dd/MM/yyyy HH:mm'}}</div>-->
+                                          <!-- getFormatDate() -->
+                                          <div class="firstline">{{event.orari}}</div>
+                                          <!-- <div class="secondline">{{event.dateTo}}</div> -->
+                                      </div>
+                                  </mat-cell>
+                              </ng-container>
+
+                              <ng-container matColumnDef="stato">
+                                  <mat-header-cell *matHeaderCellDef mat-sort-header>Stato</mat-header-cell>
+                                  <mat-cell *matCellDef="let event">
+                                      <!-- <p class="text-truncate">{{event.status.descr}}</p> -->
+                                      <p class="text-truncate">{{event.stato}}</p>
+                                  </mat-cell>
+                              </ng-container>
+
+                              <ng-container matColumnDef="business">
+                                  <mat-header-cell *matHeaderCellDef mat-sort-header>Attività</mat-header-cell>
+                                  <mat-cell *matCellDef="let event">
+                                      <!-- <p class="text-truncate">{{event.business.descr}}</p> -->
+                                      <p class="text-truncate">{{event.business}}</p>
+                                  </mat-cell>
+                              </ng-container>
+
+                              <mat-header-row *matHeaderRowDef="displayedColumnsEvent; sticky:true"></mat-header-row>
+                              <mat-row *matRowDef="let event; columns: displayedColumnsEvent;"
+                                      class="event"
+                                      matRipple
+                                      [routerLink]="'/eventsmanager/'+event.oid">
+                              </mat-row>
+                          </mat-table>
+                          <mat-paginator #paginator
+                                        [length]="10"
+                                        [pageIndex]="0"
+                                        [pageSize]="10"
+                                        [pageSizeOptions]="[5, 10, 25, 100]">
+                          </mat-paginator>
+                        </mat-tab>
+
+                    </mat-tab-group>
+
+                </form>
+              <!-- </div> -->
+            <!-- </div> -->
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+    </div>
+    <!-- / CENTER -->
+
+</div>

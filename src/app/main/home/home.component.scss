@@ -1,0 +1,99 @@
+@import "src/@fuse/scss/fuse";
+
+#dashboard-analytics {
+
+    .main-widget {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .content {
+        display: flex;
+        flex: 1 1 auto;
+        padding: 32px;
+        min-width: 0;
+
+        @include media-breakpoint('lt-lg') {
+            flex-direction: column;
+        }
+
+        .left {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 auto;
+            min-width: 0;
+
+            .widget {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+        }
+
+        .right {
+            // display: flex;
+            
+            // @include media-breakpoint('gt-lg') {
+            //   display: flex;
+            //   flex: 0 0 auto;
+            //   width: 320px;
+            //   // min-width: 320px;
+            //   // max-width: 320px;
+            // }
+
+            @include media-breakpoint('lt-lg') {
+              display: flex;
+              flex: 0 0 auto;
+              // text-align: center;
+                // flex: 0 0 100%;
+                margin-top: 32px;
+                width: 100%;
+                // min-width: 0;
+                // max-width: none;
+                
+                // .right-content {
+                  //   justify-content: space-between;
+                  // }
+                  // $width: 100%;
+                  .fuse-card {
+                    @include media-breakpoint('lt-lg') {
+                    width: 100%;
+                    // min-width: 33.33%;
+                    // max-width: 33.33%;
+                    min-width: calc((100vw - (32px * 4)) / 3)!important;
+                    max-width: calc((100vw - (32px * 4)) / 3)!important;
+                  }
+                }
+            }
+
+            @include media-breakpoint('lt-md') {
+              display: block;
+              // clear: right;
+              // display: flex;
+              // flex: 0 0 auto;
+              // text-align: center;
+              // flex: 0 0 100%;
+              margin-top: 32px;
+              width: 100%;
+              // min-width: 0;
+              // max-width: none;
+
+              // .right-content {
+              //   justify-content: space-between;
+              // }
+              // $width: 100%;
+              .fuse-card {
+                @include media-breakpoint('lt-md') {
+                  width: 100%;
+                  margin-right: 0;
+
+                  // min-width: 33.33%;
+                  // max-width: 33.33%;
+                  min-width: 100%!important;
+                  max-width: 100%!important;
+                }
+              }
+            }
+        }
+    }
+
+}

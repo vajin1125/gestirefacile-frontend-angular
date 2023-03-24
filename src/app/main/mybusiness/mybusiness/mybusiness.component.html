@@ -1,0 +1,274 @@
+<div id="mybusiness" class="page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div *ngIf="currentColor" class="top-bg" [style.background-color]="getCurrentColor()"></div>
+    <div *ngIf="!currentColor" class="top-bg accent"></div>
+    
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <div  class="header" fxLayout="row" fxLayoutAlign="space-between center" [style.background-color]="getCurrentColor()" [style.color]="'white'">
+        
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+
+                <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="'/mybusiness'">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div class="user-image mr-8 mr-sm-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    <img *ngIf="!logoSrc" [src]="'assets/images/ecommerce/product-image-placeholder.png'">
+                    <img *ngIf="logoSrc" src={{logoSrc}}>
+                </div>
+
+                <div fxLayout="column" fxLayoutAlign="start start"
+                    [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    <div class="h2" *ngIf="pageType ==='edit'">
+                        {{business.descr}}
+                    </div>
+                    <div class="h2" *ngIf="pageType ==='new'">
+                        Nuova Attività
+                    </div>
+                    <div class="subtitle secondary-text" [style.color]="'rgba(255, 255, 255, 0.7)'">
+                        <span>Dettaglio attività</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+            <div>
+                <!--<button mat-raised-button class="save-user-button" [disabled]="businessForm.invalid"
+                    *ngIf="pageType ==='new'" (click)="addBusiness()">
+                    <span>Aggiungi Attività</span>
+                </button>-->
+
+                <button mat-raised-button class="save-user-button"
+                    [disabled]="businessForm.invalid || businessForm.pristine" *ngIf="pageType ==='edit'"
+                    (click)="saveBusiness()">
+                    <span>Aggiorna Attività</span>
+                </button>
+                &nbsp;
+                <button *ngIf="tabIndex == 1" mat-raised-button class="save-user-button" (click)="addRole()">
+                    <span>Aggiungi Utente</span>
+                </button>
+            </div>
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+
+            <!-- CONTENT -->
+            <div class="content">
+
+                <form name="businessForm" [formGroup]="businessForm" class="user w-100-p" fxLayout="column" fxFlex>
+
+                    <mat-tab-group (selectedTabChange)="tabChanged($event)">
+
+                        <mat-tab label="Basic Info">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>ID</mat-label>
+                                    <input matInput placeholder="automatic id" name="oid" formControlName="oid"
+                                        readonly>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Nome Attività</mat-label>
+                                    <input matInput placeholder="Nome Attività" name="name" formControlName="name"
+                                        required>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Descrizione Attività</mat-label>
+                                    <textarea matInput placeholder="Descrizione Attività" name="descr"
+                                        formControlName="descr" required></textarea>
+                                </mat-form-field>
+
+
+
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Email</mat-label>
+                                    <input matInput placeholder="Email" name="email" formControlName="email" required>
+                                    <mat-icon matSuffix class="secondary-text">mail</mat-icon>
+                                    <mat-error *ngIf="businessForm.get('email').hasError('required')">
+                                        Email is required
+                                    </mat-error>
+                                    <mat-error *ngIf="businessForm.get('email').hasError('email')">
+                                        Please enter a valid email address
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Logo</mat-label>
+                                    <mat-toolbar><input matInput placeholder="Scegli un logo" name="logo"
+                                            formControlName="logo" />
+                                        <button mat-flat-button>
+                                            Scegli
+                                        </button>
+                                    </mat-toolbar>
+                                    {{imageError}}
+                                    <input type="file" #UploadFileInput id="fileUpload"
+                                        (change)="fileChangeEvent($event)" name="fileUpload" multiple="multiple"
+                                        accept="image/*" />
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Indirizzo</mat-label>
+                                    <input matInput placeholder="Indirizzo" name="address" formControlName="address">
+                                </mat-form-field>
+
+
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Partita IVA o Codice Fiscale</mat-label>
+                                    <input matInput placeholder="Partita IVA o Codice Fiscale" name="piva"
+                                        formControlName="piva">
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Telefono</mat-label>
+                                    <input matInput placeholder="Telefono" name="tel" formControlName="tel">
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Mobile</mat-label>
+                                    <input matInput placeholder="Cellulare" name="cell" formControlName="cell">
+                                </mat-form-field>
+
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Scegli il colore per la tua attività</mat-label>
+                                    <mat-toolbar><input [ngStyle]="{color: currentColor }" matInput placeholder="Colore" name="color"
+                                            formControlName="color" readonly>
+                                        <fuse-material-color-picker [(color)]="currentColor"
+                                            (colorChanged)="colorChanged($event)"></fuse-material-color-picker>
+                                    </mat-toolbar>
+                                </mat-form-field>
+
+
+
+
+                            </div>
+
+                        </mat-tab>
+
+                        <mat-tab label="Utenti Associati">
+                            <mat-table class="mybusinesses-table" #table [dataSource]='dataSource' matSort
+                                [@animateStagger]="{value:'50'}" fusePerfectScrollbar formArrayName="role_user_assoc">
+
+
+                                <ng-container matColumnDef="user">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Utente
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let row; let i = index;" [formGroupName]="i">
+                                        <mat-select [compareWith]="compareObjects" placeholder="Seleziona l'utente"
+                                            formControlName="user" required>
+                                            <mat-option>
+                                                <ngx-mat-select-search [formControl]="usersFilterCtrl"
+                                                    [placeholderLabel]="'Search...'"
+                                                    [noEntriesFoundLabel]="'Not found'">
+                                                </ngx-mat-select-search>
+                                            </mat-option>
+                                            <mat-option [value]="user" *ngFor="let user of filteredUsers | async">
+                                                {{user.name}} {{user.surname}} 
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="role">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Ruolo
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let row; let i = index;" [formGroupName]="i">
+                                        <mat-select [compareWith]="compareObjects" placeholder="Seleziona un ruolo"
+                                            formControlName="role" required>
+                                            <mat-option>
+                                                <ngx-mat-select-search [formControl]="roleFilterCtrl"
+                                                    [placeholderLabel]="'Search...'"
+                                                    [noEntriesFoundLabel]="'Not found'">
+                                                </ngx-mat-select-search>
+                                            </mat-option>
+                                            <mat-option [value]="role" *ngFor="let role of filteredRoles | async">
+                                                {{role.descr}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-cell>
+                                </ng-container>
+
+
+
+
+
+
+                                <ng-container matColumnDef="delete">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header>Rimuovi
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                        <button mat-raised-button class="save-user-button"
+                                            style="color:white;background-color:red;" (click)="deleteRole(index)">
+                                            <span>Cancella Ruolo</span>
+                                        </button>
+                                    </mat-cell>
+                                </ng-container>
+
+                                <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true">
+                                </mat-header-row>
+
+                                <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;" class="user">
+                                </mat-row>
+                            </mat-table>
+
+
+
+                            <!--<div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Ruolo</mat-label>
+                                    <mat-select placeholder="Seleziona il ruolo" [(ngModel)]="selectedRole" name="role" formControlName="role"
+                                        required>
+                                        <mat-option *ngFor="let role of roles" [value]="role">
+                                            {{role.descr}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Attività</mat-label>
+                                    <mat-select placeholder="Seleziona l'attività" [(ngModel)]="selectedBusiness" 
+                                    name="business" formControlName="business" required>
+                                        <mat-option *ngFor="let business of businesses" [value]="business">
+                                            {{business.name}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+
+                                <button mat-raised-button [routerLink]="'/businessesmanager/new'"
+                                    class="add-business-button fuse-white mt-24 mt-md-0">
+                                    <span>Crea attività</span>
+                                </button>
+
+                            </div>-->
+                        </mat-tab>
+                        
+
+
+                    </mat-tab-group>
+
+                </form>
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+    </div>
+    <!-- / CENTER -->
+
+</div>

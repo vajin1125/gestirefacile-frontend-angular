@@ -1,0 +1,145 @@
+<div id="movements" class="page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row"
+            fxLayoutAlign.gt-sm="space-between center">
+
+            <!-- APP TITLE -->
+            <div class="logo mb-24 mb-md-0" fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon class="logo-icon s-32 mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    store
+                </mat-icon>
+                <span class="logo-text h1" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    {{'MOVEMENTS.TITLE' | translate}}
+                </span>
+            </div>
+            <!-- / APP TITLE -->
+
+            <!-- SEARCH -->
+            <div class="search-wrapper mx-32 mx-md-0">
+                <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                    <mat-icon>search</mat-icon>
+                    <input #filter (keyup)="doFilter($event.target.value)" placeholder="Cerca per movimento">
+                </div>
+            </div>
+            <!-- / SEARCH -->
+            <div>
+                <button mat-raised-button [routerLink]="'/movements/new'"
+                class="add-category-button fuse-white mt-24 mt-md-0">
+                <span>Aggiungi Movimento</span>
+                </button>
+                &nbsp;
+                <button mat-raised-button [routerLink]="'/resourcesmanager/new'"
+                class="add-category-button fuse-white mt-24 mt-md-0">
+                <span>Aggiungi Rsorsa</span>
+                </button>
+            </div>
+            <!-- ADD BUTTON -->
+            
+            <!-- / ADD BUTTON -->
+
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+
+            <mat-table class="movement-table" #table [dataSource]="dataSource" matSort [@animateStagger]="{value:'50'}"
+                fusePerfectScrollbar>
+
+                <!-- ID Column -->
+                <ng-container matColumnDef="oid">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+                    <mat-cell *matCellDef="let movement">
+                        <p class="text-truncate">{{movement.oid}}</p>
+                    </mat-cell>
+                </ng-container>
+
+
+                <ng-container matColumnDef="resource">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Risorsa</mat-header-cell>
+                    <mat-cell *matCellDef="let movement">
+                        
+                        <div><img awesomeTooltip="Hello World!" image="{{getResourceImage(movement.resource)}}" width="80px" *ngIf="movement.resource.image"
+                            src="{{getResourceImage(movement.resource)}}">
+                        </div>
+                        &nbsp;
+                        &nbsp;
+                        <p class="text-truncate">{{movement.resource.descr}}</p>
+                        
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="qta">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Quantità</mat-header-cell>
+                    <mat-cell *matCellDef="let movement">
+                        <p class="text-truncate">{{movement.qta}}</p>
+                    </mat-cell>
+                </ng-container>
+
+                
+
+                
+
+                <ng-container matColumnDef="reason">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Motivo</mat-header-cell>
+                    <mat-cell *matCellDef="let movement">
+                        <p class="text-truncate">{{movement.reason}}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="time">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Data</mat-header-cell>
+                    <mat-cell *matCellDef="let movement">
+                        <p class="text-truncate">{{getFormatDate(movement.date_ts)}}</p>
+                    </mat-cell>
+                </ng-container>
+
+
+                <ng-container matColumnDef="actions">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Azioni</mat-header-cell>
+                    <mat-cell *matCellDef="let movement" (click)="$event.stopPropagation()">
+                        <button style="z-index: 10000;" mat-raised-button [routerLink]="'/resourcesmanager/'+movement.resource.oid"
+                            class="add-category-button fuse-white mt-24 mt-md-0">
+                            Risorsa
+                        </button>
+                        &nbsp;
+                        <button *ngIf="movement.event" mat-raised-button [routerLink]="'/eventsmanager/'+movement.event.oid"
+                            class="add-category-button fuse-white mt-24 mt-md-0">
+                            <span>Evento</span>
+                        </button>
+                    </mat-cell>
+                </ng-container>
+
+
+
+
+
+
+
+
+                <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></mat-header-row>
+
+
+                <mat-row *matRowDef="let movement; columns: displayedColumns;" class="movement" matRipple
+                    [routerLink]="'/movements/'+movement.oid">
+                </mat-row>
+
+            </mat-table>
+
+            <mat-paginator #paginator [length]="10" [pageIndex]="0" [pageSize]="10"
+                [pageSizeOptions]="[5, 10, 25, 100]">
+            </mat-paginator>
+
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

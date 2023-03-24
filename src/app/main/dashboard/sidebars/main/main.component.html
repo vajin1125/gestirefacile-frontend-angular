@@ -1,0 +1,40 @@
+<!-- SIDEBAR CONTENT -->
+<div class="content py-16" fusePerfectScrollbar>
+
+    <div class="nav material2">
+
+        <h1 class="mat-headline">Eventi</h1>
+        <h2 class="mat-subheading-1">Filtra per Stato</h2>
+        <mat-selection-list [compareWith]="compareStatus" [(ngModel)]="dataStatus" multiple (ngModelChange)="onNgModelChangeStatus($event)">
+            <mat-list-option checkboxPosition="before" [value]="s" *ngFor="let s of statuses; trackBy: s?.id;">
+                {{ s.label }}
+            </mat-list-option>
+        </mat-selection-list>
+        <hr class="solid">
+        <h1 class="mat-headline">Todo</h1>
+        <h2 class="mat-subheading-1">Filtra per ToDo</h2>
+        <mat-selection-list [compareWith]="compareStatus" [(ngModel)]="dataToDo" multiple (ngModelChange)="onNgModelChangeTodo($event)">
+            <mat-list-option checkboxPosition="before" [value]="t" *ngFor="let t of todo; trackBy: t?.id;">
+                {{ t.label }}
+            </mat-list-option>
+        </mat-selection-list>
+        <hr class="solid">
+        <h1 class="mat-headline">Attività</h1>
+        <h2 class="mat-subheading-1">Filtra per Attività</h2>
+        <mat-selection-list [compareWith]="compareBusiness" [(ngModel)]="dataBusiness" multiple (ngModelChange)="onNgModelChangeBusiness($event)">
+            <mat-list-option checkboxPosition="before" [value]="b" *ngFor="let b of businesses; trackBy: b?.oid;">
+                {{ b.name }}-{{ b.descr }}
+            </mat-list-option>
+        </mat-selection-list>
+        <hr class="solid">
+        <h1 class="mat-headline">Risorse</h1>
+        <h2 class="mat-subheading-1">Disponibilità risorse</h2>
+        <mat-selection-list [compareWith]="compareResource" [(ngModel)]="dataResource" multiple (ngModelChange)="onNgModelChangeResource($event)">
+            <mat-list-option checkboxPosition="before" [value]="r" *ngFor="let r of resources; trackBy: r?.id;">
+                {{ r.label }}
+            </mat-list-option>
+        </mat-selection-list>
+    </div>
+
+</div>
+<!-- / SIDEBAR CONTENT -->

@@ -1,0 +1,82 @@
+<div id="login" fxLayout="column">
+
+    <div id="login-form-wrapper" fxLayout="column" fxLayoutAlign="center center">
+
+        <div id="login-form" [@animate]="{value:'*',params:{duration:'300ms',y:'100px'}}" style="border-radius: 25px;">
+
+            <div class="logo">
+                <img src="assets/images/logos/myrent.svg">
+            </div>
+
+            <!--<div style="margin:10px" class="title">GestireFacile.it</div>
+            <div style="margin:10px" class="title">Login</div>-->
+
+            <form name="loginForm" [formGroup]="loginForm" novalidate (ngSubmit)="login()">
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Username o Email</mat-label>
+                    <input matInput formControlName="username" (keypress)="onKeypressEvent($event)"
+                        (change)="onChangeEvent($event)">
+                    <mat-icon matSuffix class="secondary-text">account_circle</mat-icon>
+                    <mat-error>
+                        Username is required
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Password</mat-label>
+                    <input matInput [type]="hide ? 'password' : 'text'" formControlName="password"
+                        autocomplete="current-password" (keypress)="onKeypressEvent($event)"
+                        (change)="onChangeEvent($event)">
+                    <button type="button" mat-icon-button matSuffix (click)="hide = !hide"
+                        [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                        <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                    </button>
+                    <mat-error>
+                        Password is required
+                    </mat-error>
+                </mat-form-field>
+
+                <div class="remember-forgot-password" fxLayout="row" fxLayout.xs="column"
+                    fxLayoutAlign="space-between center">
+                    <mat-checkbox class="remember-me" (change)="remember($event)" aria-label="Remember Me">
+                        Remember Me
+                    </mat-checkbox>
+
+                    <a class="forgot-password" [routerLink]="'/auth/forgot-password'">
+                        Password Dimenticata?
+                    </a>
+                </div>
+                <mat-error *ngIf="websiteErrMsg">{{websiteErrMsg}}</mat-error>
+
+                <div #recaptcha></div>
+
+                <button id="btn" name="btn" type="submit" mat-raised-button color="accent" class="submit-button"
+                    aria-label="LOG IN" [disabled]="isDisabled()">
+                    LOGIN
+                </button>
+
+            </form>
+
+            <!--<div class="separator">
+                <span class="text">OR</span>
+            </div>
+
+            <button mat-raised-button class="google">
+                Log in with Google
+            </button>
+
+            <button mat-raised-button class="facebook">
+                Log in with Facebook
+            </button>
+
+            <div class="register" fxLayout="column" fxLayoutAlign="center center">
+                <span class="text">Don't have an account?</span>
+                <a class="link" [routerLink]="'/pages/auth/register'">Create an account</a>
+            </div>-->
+
+        </div>
+
+    </div>
+
+</div>

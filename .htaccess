@@ -1,0 +1,14 @@
+RewriteEngine on
+RewriteCond %{HTTPS} !on
+RewriteCond %{SERVER_PORT} !^443$
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?gestirefacile.it [NC]
+RewriteCond %{REQUEST_URI} !^/myadmin/
+RewriteRule \.(jpg|jpeg|png|gif|pdf|tif|doc|docx|txt|xls|xlsx)$ - [NC,F,L]
+RewriteCond %{REQUEST_FILENAME} -s [OR]
+RewriteCond %{REQUEST_FILENAME} -l [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^.*$ - [NC,L]
+RewriteRule ^(.*) /index.html [NC,L]
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1

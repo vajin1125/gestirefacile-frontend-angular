@@ -1,0 +1,154 @@
+<div id="myusermanager" class="page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <div class="header accent"
+             fxLayout="column" fxLayoutAlign="center center"
+             fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+
+            <!-- APP TITLE -->
+            <div class="logo mb-24 mb-md-0"
+                 fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon class="logo-icon s-32 mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    people
+                </mat-icon>
+                <span class="logo-text h1" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    {{'MYUSERMANAGER.TITLE' | translate}}
+                </span>
+            </div>
+            <!-- / APP TITLE -->
+
+            <!-- SEARCH -->
+            <div class="search-wrapper mx-32 mx-md-0">
+                <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                    <mat-icon>search</mat-icon>
+                    <input #filter  (keyup)="doFilter($event.target.value)" placeholder="Cerca per utente">
+                </div>
+            </div>
+            <!-- / SEARCH -->
+
+            <!-- ADD BUTTON -->
+            <button mat-raised-button
+                    [routerLink]="'/myusermanager/new'"
+                    class="add-user-button fuse-white mt-24 mt-md-0">
+                <span>Aggiungi Utente</span>
+            </button>
+            <!-- / ADD BUTTON -->
+
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-table class="myusers-table"
+                       #table [dataSource]="dataSource"
+                       matSort
+                       [@animateStagger]="{value:'50'}"
+                       fusePerfectScrollbar>
+                <!-- auto num Column -->
+                <ng-container matColumnDef="num-auto">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header  fxShow.gt-md>#</mat-header-cell>
+                  <mat-cell *matCellDef="let user; let i = index;"  fxShow.gt-md>
+                      <p class="text-truncate">{{i + 1}}</p>
+                  </mat-cell>
+                </ng-container>
+
+                <!-- ID Column -->
+                <ng-container matColumnDef="oid">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header  fxShow.gt-md>ID</mat-header-cell>
+                    <mat-cell *matCellDef="let user"  fxShow.gt-md>
+                        <p class="text-truncate">{{user.oid}}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Image Column 
+                <ng-container matColumnDef="image">
+                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                    <mat-cell *matCellDef="let user">
+                        <img class="user-image"
+                             *ngIf="user.featuredImageId" [alt]="user.name"
+                             [src]="user.images[user.featuredImageId].url"/>
+                        <img *ngIf="!user.featuredImageId"
+                             [src]="'assets/images/ecommerce/user-image-placeholder.png'">
+                    </mat-cell>
+                </ng-container>-->
+
+                <!-- Name Column -->
+                <ng-container matColumnDef="name">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-md>Nome</mat-header-cell>
+                    <mat-cell *matCellDef="let user" fxHide fxShow.gt-md>
+                        <p class="text-truncate">{{user.name}}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Surname Column -->
+                <ng-container matColumnDef="surname">
+                    <mat-header-cell *matHeaderCellDef  mat-sort-header fxHide fxShow.gt-md>Cognome</mat-header-cell>
+                    <mat-cell *matCellDef="let user" fxHide fxShow.gt-md>
+                        <p class="text-truncate">{{user.surname}}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Username Column -->
+                <ng-container matColumnDef="username">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header  fxShow.gt-md>Username</mat-header-cell>
+                    <mat-cell *matCellDef="let user" fxShow.gt-md>
+                        <p class="text-truncate">{{user.username}}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Username Column -->
+                <ng-container matColumnDef="email">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header  >Email</mat-header-cell>
+                    <mat-cell *matCellDef="let user" >
+                        <p class="text-truncate">{{user.email}}</p>
+                    </mat-cell>
+                </ng-container>
+
+               
+
+                <!-- Active Column -->
+                <ng-container matColumnDef="enabled">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header  >Abilitato</mat-header-cell>
+                    <mat-cell *matCellDef="let user" >
+                        <mat-icon *ngIf="user.enabled == 1" class="active-icon green-600 s-16">check</mat-icon>
+                        <mat-icon *ngIf="user.enabled == 0" class="active-icon red-500 s-16">close</mat-icon>
+                    </mat-cell>
+                </ng-container>
+
+
+                <!--<ng-container matColumnDef="role">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Ruolo</mat-header-cell>
+                    <mat-cell *matCellDef="let user" >
+                        <p class="text-truncate"></p>
+                    </mat-cell>
+                </ng-container>-->
+
+                <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></mat-header-row>
+
+                <mat-row *matRowDef="let user; columns: displayedColumns;"
+                         class="user"
+                         matRipple
+                         [routerLink]="'/myusermanager/'+user.oid">
+                </mat-row>
+
+            </mat-table>
+
+            <mat-paginator #paginator
+                           [length]="10"
+                           [pageIndex]="0"
+                           [pageSize]="10"
+                           [pageSizeOptions]="[5, 10, 25, 100]">
+            </mat-paginator>
+
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

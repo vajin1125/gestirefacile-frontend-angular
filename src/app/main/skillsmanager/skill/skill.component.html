@@ -1,0 +1,103 @@
+<div id="skill" class="page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+
+                <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="'/skillsmanager'">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div class="user-image mr-8 mr-sm-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    <img [src]="'assets/images/ecommerce/product-image-placeholder.png'">
+                </div>
+
+                <div fxLayout="column" fxLayoutAlign="start start"
+                    [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    <div class="h2" *ngIf="pageType ==='edit'">
+                        {{skill.descr}}
+                    </div>
+                    <div class="h2" *ngIf="pageType ==='new'">
+                        Nuova Mansione
+                    </div>
+                    <div class="subtitle secondary-text">
+                        <span>Dettaglio mansione</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+
+            <button mat-raised-button class="save-user-button" [disabled]="skillForm.invalid" *ngIf="pageType ==='new'"
+                (click)="addSkill()">
+                <span>Aggiungi</span>
+            </button>
+
+            <button mat-raised-button class="save-user-button" [disabled]="skillForm.invalid || skillForm.pristine"
+                *ngIf="pageType ==='edit'" (click)="saveSkill()">
+                <span>Aggiorna</span>
+            </button>
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+
+            <!-- CONTENT -->
+            <div class="content">
+
+                <form name="skillForm" [formGroup]="skillForm" class="user w-100-p" fxLayout="column" fxFlex>
+
+                    <mat-tab-group>
+
+                        <mat-tab label="Basic Info">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>ID</mat-label>
+                                    <input matInput placeholder="automatic id" name="oid" formControlName="oid" readonly>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Acronimo</mat-label>
+                                    <input matInput placeholder="Acronimo" name="acronym" formControlName="acronym" required>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Descrizione</mat-label>
+                                    <input matInput placeholder="Descrizione" name="descr" formControlName="descr"
+                                        required>
+                                </mat-form-field>
+
+                               
+
+                            </div>
+
+                        </mat-tab>
+
+
+
+
+                    </mat-tab-group>
+
+                </form>
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+    </div>
+    <!-- / CENTER -->
+
+</div>

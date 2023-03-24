@@ -1,0 +1,494 @@
+<div id="package" class="page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+
+                <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="'/packagesmanager'">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div class="user-image mr-8 mr-sm-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    <img [src]="'assets/images/ecommerce/product-image-placeholder.png'">
+                </div>
+
+                <div fxLayout="column" fxLayoutAlign="start start"
+                    [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    <div class="h2" *ngIf="pageType ==='edit'">
+                        {{package.name}}
+                    </div>
+                    <div class="h2" *ngIf="pageType ==='new'">
+                        Nuovo Pacchetto
+                    </div>
+                    <div class="subtitle secondary-text">
+                        <span>Dettaglio pacchetto</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+
+            <button mat-raised-button class="save-user-button" [disabled]="packageForm.invalid"
+                *ngIf="pageType ==='new'" (click)="addPackage()">
+                <span>Aggiungi</span>
+            </button>
+
+            <button mat-raised-button class="save-user-button" [disabled]="packageForm.invalid"
+                *ngIf="pageType ==='edit'" (click)="savePackage()">
+                <span>Aggiorna</span>
+            </button>
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+
+            <!-- CONTENT -->
+            <div class="content">
+
+                <form name="packageForm" [formGroup]="packageForm" class="user w-100-p" fxLayout="column" fxFlex>
+
+                    <mat-tab-group (selectedTabChange)="tabChanged($event)">
+
+                        <mat-tab label="Basic Info">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>ID</mat-label>
+                                    <input matInput placeholder="automatic id" name="oid" formControlName="oid"
+                                        readonly>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Nome Pacchetto</mat-label>
+                                    <input matInput placeholder="Nome Pacchetto" name="name" formControlName="name"
+                                        required>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Descrizione Pacchetto</mat-label>
+                                    <textarea matInput placeholder="Descrizione Pacchetto" name="descr" formControlName="descr"
+                                        required></textarea>
+                                </mat-form-field>
+
+                                <div class="w-100-p">
+                                  <img awesomeTooltip="Hello World!" image="{{logoSrc}}" style="width:100px;height:100px;" *ngIf="logoSrc" src={{logoSrc}} >
+                                </div>
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Foto</mat-label>
+                                    <mat-toolbar><input matInput placeholder="Scegli una foto" name="image"
+                                            formControlName="image" />
+                                        <button mat-flat-button>
+                                            Scegli
+                                        </button>
+                                    </mat-toolbar>
+                                    {{imageError}}
+                                    <input type="file" #UploadFileInput id="fileUpload"
+                                        (change)="fileChangeEvent($event)" name="fileUpload" multiple="multiple"
+                                        accept="image/*" />
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Prezzo Totale del pacchetto</mat-label>
+                                    <input matInput placeholder="Prezzo Totale del pacchetto" name="total_price"
+                                        formControlName="total_price" type="text" mvndrMatCurrencyFormat
+                                        [allowNegative]="false" [currencyCode]="'EUR'" autocomplete="off">
+                                </mat-form-field>
+
+                                
+                                <div class="" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center">
+                                    <mat-checkbox name="enabled" formControlName="enabled">Abilitato
+                                    </mat-checkbox>
+                                </div>
+                            </div>
+
+                        </mat-tab>
+                        <mat-tab label="Dettaglio Pacchetto">
+                            <div style="width:100% !important;">
+                                <mat-toolbar class="accent">
+
+                                    <span style="padding-right: 15px;">Risorse</span>
+
+
+                                    <button *ngIf="tabIndex == 1" mat-raised-button class="save-resource-button"
+                                        (click)="addResource()">
+                                        <span>Aggiungi Risorsa</span>
+                                    </button>
+
+
+
+                                </mat-toolbar>
+                                <mat-table class="events-table" #table [dataSource]='dataSource' matSort
+                                    [@animateStagger]="{value:'50'}" fusePerfectScrollbar formArrayName="package_details">
+
+
+
+
+                                    <ng-container matColumnDef="resourceType">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md
+                                            style="max-width: 180px;">Tipo di Risorsa
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 180px;" *matCellDef="let row; let i = index;"
+                                            [formGroupName]="i">
+                                            <mat-select [compareWith]="compareObjects" placeholder="Tipo Risorsa"
+                                                formControlName="resourceType">
+                                                <mat-option>
+                                                    <ngx-mat-select-search [formControl]="resourceTypesFilterCtrl"
+                                                        [placeholderLabel]="'Search...'"
+                                                        [noEntriesFoundLabel]="'Not found'">
+                                                    </ngx-mat-select-search>
+                                                </mat-option>
+                                                <mat-option [value]="resourceType"
+                                                    *ngFor="let resourceType of filteredResourceTypes | async">
+                                                    {{resourceType.descr}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="category">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md
+                                            style="max-width: 180px;">Categoria
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 180px;" *matCellDef="let row; let i = index;"
+                                            [formGroupName]="i">
+                                            <mat-select [compareWith]="compareObjects" placeholder="Categoria"
+                                                formControlName="category"
+                                                (selectionChange)="onChangeCategory($event.value, i)">
+                                                <mat-option>
+                                                    <ngx-mat-select-search [formControl]="categoriesFilterCtrl"
+                                                        [placeholderLabel]="'Search...'"
+                                                        [noEntriesFoundLabel]="'Not found'">
+                                                    </ngx-mat-select-search>
+                                                </mat-option>
+                                                <mat-option>Cancella</mat-option>
+                                                <mat-option [value]="category"
+                                                    *ngFor="let category of filteredCategories | async">
+                                                    {{category.descr}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="skill">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md
+                                            style="max-width: 180px;">Mansione
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 180px;" *matCellDef="let row; let i = index;"
+                                            [formGroupName]="i">
+                                            <mat-select [compareWith]="compareObjects" placeholder="Mansione"
+                                                formControlName="skill">
+                                                <mat-option>
+                                                    <ngx-mat-select-search [formControl]="skillsFilterCtrl"
+                                                        [placeholderLabel]="'Search...'"
+                                                        [noEntriesFoundLabel]="'Not found'">
+                                                    </ngx-mat-select-search>
+                                                </mat-option>
+                                                <mat-option>Cancella</mat-option>
+                                                <mat-option [value]="skill"
+                                                    *ngFor="let skill of filteredSkills | async">
+                                                    {{skill.descr}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-cell>
+                                    </ng-container>
+
+
+                                    <ng-container matColumnDef="resource">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md
+                                            style="max-width: 250px;">Risorsa
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 250px;" *matCellDef="let row; let i = index;"
+                                            [formGroupName]="i">
+                                            <mat-select [compareWith]="compareObjects" placeholder="Risorsa"
+                                                formControlName="resource"
+                                                (selectionChange)="onChangeResource($event.value, i)">
+                                                <mat-option>
+                                                    <ngx-mat-select-search [formControl]="resourcesFilterCtrl"
+                                                        [placeholderLabel]="'Search...'"
+                                                        [noEntriesFoundLabel]="'Not found'">
+                                                    </ngx-mat-select-search>
+                                                </mat-option>
+                                                <mat-option>Cancella</mat-option>
+                                                <mat-option [value]="resource"
+                                                    *ngFor="let resource of filteredResources | async">
+                                                    <div><img 
+                                                            style="width:50px;height:50px;" *ngIf="resource.image"
+                                                            src="{{getResourceImage(resource)}}"><b>{{getResourceName(resource)}}</b>
+
+                                                    </div>
+
+                                                </mat-option>
+
+                                            </mat-select>
+
+                                            <!--<div *ngIf="showWarn(i)" style="float: right;">
+                                                <mat-icon style="color:red">error</mat-icon>
+                                            </div>-->
+                                        </mat-cell>
+
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="qta">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width: 60px;">
+                                            Quantità
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 60px;" *matCellDef="let element; let index = index"
+                                            [formGroupName]="index">
+                                            <input matInput placeholder="Quantità" name="qta" formControlName="qta"
+                                                type="number" required (change)="updateTotal($event)">
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="days">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width: 60px;">
+                                            Giorni
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 60px;" *matCellDef="let element; let index = index"
+                                            [formGroupName]="index">
+                                            <input matInput placeholder="Giorni" name="days" formControlName="days"
+                                                type="number" required>
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="hours">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width: 60px;">Ore
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 60px;" *matCellDef="let element; let index = index"
+                                            [formGroupName]="index">
+                                            <input matInput placeholder="Ore" name="hours" formControlName="hours"
+                                                type="number" required>
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="price">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width: 100px;">
+                                            Prezzo Unitario
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 100px;" *matCellDef="let element; let index = index"
+                                            [formGroupName]="index">
+                                            <input matInput placeholder="Prezzo Unitario" name="price"
+                                                formControlName="price" type="text" mvndrMatCurrencyFormat
+                                                [allowNegative]="false" [currencyCode]="'EUR'" required
+                                                (blur)="updateTotal($event)" autocomplete="off">
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="pricebt">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width: 75px;">€
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 75px;" *matCellDef="let element; let index = index"
+                                            [formGroupName]="index">
+                                            <button mat-raised-button class="save-user-button"
+                                                style="color:white;background-color:blue" #ddTrigger="matMenuTrigger"
+                                                [matMenuTriggerFor]="dd">
+                                                <span>€</span>
+                                            </button>
+                                            <mat-menu #dd="matMenu" [overlapTrigger]="false">
+                                                <mat-list>
+                                                    <mat-list-item
+                                                        *ngFor="let elem of this.packageDetails.controls[index].value.resource.prices"
+                                                        (click)="onSelectedOptionsChange(elem.price, index)">
+                                                        <button mat-button> {{
+                                                            elem.price.replace(".",",")}}-{{elem.descr}} </button>
+                                                    </mat-list-item>
+                                                </mat-list>
+                                            </mat-menu>
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="total_price">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width: 100px;">
+                                            Prezzo Totale
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 100px;" *matCellDef="let element; let index = index"
+                                            [formGroupName]="index">
+                                            <input matInput placeholder="Prezzo Totale" name="total_price"
+                                                formControlName="total_price" type="text" mvndrMatCurrencyFormat
+                                                [allowNegative]="false" [currencyCode]="'EUR'" required
+                                                autocomplete="off" readonly>
+                                        </mat-cell>
+                                    </ng-container>
+
+
+                                    <ng-container matColumnDef="note">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width: 250px;">
+                                            Nota
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 250px;" *matCellDef="let element; let index = index"
+                                            [formGroupName]="index">
+                                            <input matInput placeholder="Nota" name="note" formControlName="note">
+                                        </mat-cell>
+                                    </ng-container>
+
+
+                                    <ng-container matColumnDef="delete">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width: 75px;">
+                                            Rimuovi
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 75px;" *matCellDef="let element; let index = index"
+                                            [formGroupName]="index">
+                                            <button mat-raised-button class="save-user-button"
+                                                style="color:white;background-color:red;"
+                                                (click)="deleteResource(index)">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </mat-cell>
+                                    </ng-container>
+
+
+
+                                    <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true">
+                                    </mat-header-row>
+
+                                    <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"
+                                        class="event">
+                                    </mat-row>
+                                </mat-table>
+                                <mat-toolbar class="accent">
+
+                                    <span style="padding-right: 15px;">Extra</span>
+
+
+                                    <button *ngIf="tabIndex == 1" mat-raised-button class="save-resource-button"
+                                        (click)="addExtra()">
+                                        <span>Aggiungi Extra</span>
+                                    </button>
+
+
+
+                                </mat-toolbar>
+                                <mat-table class="events-table" #table [dataSource]='dataSourceExtra' matSort
+                                    [@animateStagger]="{value:'50'}" fusePerfectScrollbar formArrayName="extra_details">
+
+
+                                    <ng-container matColumnDef="extra_descr">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                            Descrizione Extra
+                                        </mat-header-cell>
+                                        <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                            <input matInput placeholder="Descrizione Extra" name="extra_descr"
+                                                formControlName="extra_descr" required [matAutocomplete]="auto"
+                                                (keyup)="filter($event.target.value);">
+                                            <mat-autocomplete #auto="matAutocomplete">
+                                                <mat-option *ngFor="let extra of filteredExtras | async"
+                                                    [value]="extra.extra_descr">
+                                                    <span>{{ extra.extra_descr }}</span>
+                                                </mat-option>
+                                            </mat-autocomplete>
+                                        </mat-cell>
+                                    </ng-container>
+
+
+                                    <ng-container matColumnDef="qta">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header>Quantità
+                                        </mat-header-cell>
+                                        <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                            <input matInput placeholder="Quantità" name="qta" formControlName="qta"
+                                                type="number" required (change)="updateTotal($event)">
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="price">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header>Prezzo Unitario
+                                        </mat-header-cell>
+                                        <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                            <input matInput placeholder="Prezzo Unitario" name="price"
+                                                formControlName="price" type="text" mvndrMatCurrencyFormat
+                                                [allowNegative]="false" [currencyCode]="'EUR'" autocomplete="off"
+                                                required (blur)="updateTotal($event)">
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="total_price">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                            Prezzo Totale
+                                        </mat-header-cell>
+                                        <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                            <input matInput placeholder="Prezzo Totale" name="total_price"
+                                                formControlName="total_price" type="text" mvndrMatCurrencyFormat
+                                                [allowNegative]="false" [currencyCode]="'EUR'" required
+                                                autocomplete="off" readonly>
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="note">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                            Nota
+                                        </mat-header-cell>
+                                        <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                            <input matInput placeholder="Note" name="note" formControlName="note">
+                                        </mat-cell>
+                                    </ng-container>
+
+
+                                    <ng-container matColumnDef="delete">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width: 75px;">
+                                            Rimuovi
+                                        </mat-header-cell>
+                                        <mat-cell style="max-width: 75px;" *matCellDef="let element; let index = index"
+                                            [formGroupName]="index">
+                                            <button mat-raised-button class="save-user-button"
+                                                style="color:white;background-color:red;" (click)="deleteExtra(index)">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </mat-cell>
+                                    </ng-container>
+
+
+
+                                    <mat-header-row *matHeaderRowDef="displayedColumnsExtra; sticky:true">
+                                    </mat-header-row>
+
+                                    <mat-row *matRowDef="let row; let i = index; columns: displayedColumnsExtra;"
+                                        class="event">
+                                    </mat-row>
+                                </mat-table>
+
+
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="QR Code">
+                                <div style="width: 100%; text-align: center;">
+
+                                  <qrcode
+                                    #qrCodeElement
+                                    style="text-align: center;margin-top: 50px;"
+                                    [qrdata]="qrData"
+                                    [width]="qrWidth"
+                                    [level]="'M'"
+                                  >
+                                  </qrcode>
+                                  <!-- <button (click)="downloadQRCode(qrCodeElement)">Download QR Code</button> -->
+                                  <button mat-button class="save-resource-button" (click)="downloadQRCode(qrCodeElement)">
+                                      <span>Download QR Code</span>
+                                  </button>
+                                </div>
+                                <!-- / Front -->
+                        </mat-tab>
+
+
+                    </mat-tab-group>
+
+                </form>
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+    </div>
+    <!-- / CENTER -->
+
+</div>

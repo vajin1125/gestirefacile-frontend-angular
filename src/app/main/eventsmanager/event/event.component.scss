@@ -1,0 +1,485 @@
+@import "src/@fuse/scss/fuse";
+
+#event {
+
+
+
+    .header {
+
+        .user-image {
+            overflow: hidden;
+            width: 56px;
+            min-width: 56px;
+            max-width: 56px;
+            height: 56px;
+            min-height: 56px;
+            max-height: 56px;
+            border-radius: 4px;
+
+            img {
+                height: 100%;
+                width: auto;
+                max-width: none;
+            }
+        }
+
+        .subtitle {
+            margin: 6px 0 0 0;
+        }
+    }
+
+    .content {
+
+        .mat-tab-group,
+        .mat-tab-body-wrapper,
+        .tab-content{
+            flex: 1 1 auto;
+            max-width: 100%;
+        }
+
+        .mat-tab-body-content {
+            display: flex;
+        }
+
+
+        .mat-tab-label {
+            height: 64px;
+        }
+
+        .user-image {
+            overflow: hidden;
+            width: 128px;
+            height: 128px;
+            margin-right: 16px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+
+            img {
+                height: 100%;
+                width: auto;
+                max-width: none;
+            }
+        }
+
+        // Temporary prefix alignment fix
+        .mat-form-field-appearance-outline .mat-form-field-prefix,
+        .mat-form-field-appearance-outline .mat-form-field-suffix {
+            top: 0;
+        }
+    }
+
+}
+
+#invoice {
+
+    &.compact {
+        padding: 0;
+
+        .invoice-container {
+            padding: 64px;
+            margin: 0 auto;
+
+            .card {
+                width: 1020px;
+                min-width: 1020px;
+                max-width: 1020px;
+                padding: 64px 88px;
+                overflow: hidden;
+                background: #FFFFFF;
+                //@include mat-elevation(2);
+                border: 1px solid;
+                .header {
+
+                    .invoice-date {
+                        font-size: 14px;
+                        color: rgba(0, 0, 0, 0.54);
+                        margin-bottom: 32px;
+                    }
+
+                    .client {
+
+                        .invoice-number {
+                            font-size: 18px;
+                            padding-bottom: 2px;
+
+                            .title {
+                                color: rgba(0, 0, 0, 0.54);
+                            }
+
+                            .number {
+                                color: rgba(0, 0, 0, 0.87);
+                                padding-left: 6px;
+                            }
+                        }
+
+                        .due-date {
+                            font-size: 18px;
+                            padding-bottom: 16px;
+
+                            .title {
+                                color: rgba(0, 0, 0, 0.54);
+                            }
+
+                            .date {
+                                color: rgba(0, 0, 0, 0.87);
+                                padding-left: 6px;
+                            }
+                        }
+
+                        .info {
+                            color: rgba(0, 0, 0, 0.54);
+                            line-height: 22px;
+                        }
+                    }
+
+                    .issuer {
+                        margin-right: -88px;
+                        padding-right: 66px;
+
+                        .logo {
+                            width: 96px;
+                            padding: 0 8px;
+                            border-right: 1px solid rgba(255, 255, 255, 0.7);
+                        }
+
+                        .info {
+                            padding: 16px;
+                        }
+                    }
+                }
+
+                .content {
+
+                    .invoice-table {
+                        margin-top: 64px;
+                        font-size: 15px;
+
+                        thead {
+
+                            tr {
+
+                                th {
+                                    color: rgba(0, 0, 0, 0.87);
+                                    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+                                    &:first-child {
+                                        padding-left: 8px;
+                                    }
+
+                                    &:last-child {
+                                        padding-right: 8px;
+                                    }
+                                }
+                            }
+                        }
+
+                        tbody {
+
+                            tr {
+
+                                td {
+                                    color: rgba(0, 0, 0, 0.87);
+                                    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+                                    &:first-child {
+                                        padding-left: 8px;
+                                    }
+
+                                    &:last-child {
+                                        padding-right: 8px;
+                                    }
+                                }
+                            }
+                        }
+
+                        .title {
+                            font-size: 16px;
+                        }
+
+                        .detail {
+                            margin-top: 8px;
+                            font-size: 12px;
+                            color: rgba(0, 0, 0, 0.54);
+                            max-width: 360px;
+                        }
+                    }
+
+                    .invoice-table-footer {
+                        margin: 32px 0 72px 0;
+
+                        tr {
+
+                            td {
+                                text-align: right;
+                                font-size: 16px;
+                                font-weight: 600;
+                                color: rgba(0, 0, 0, 0.54);
+                                border-bottom: none;
+                                padding: 4px 8px;
+
+                                &:first-child {
+                                    text-align: left;
+                                }
+                            }
+
+                            &.discount {
+
+                                td {
+                                    padding-bottom: 32px;
+                                }
+                            }
+
+                            &.total {
+
+                                td {
+                                    padding: 24px 8px;
+                                    border-top: 1px solid rgba(0, 0, 0, 0.12);
+                                    font-size: 35px;
+                                    font-weight: 300;
+                                    color: rgba(0, 0, 0, 1);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .footer {
+
+                    .note {
+                        font-size: 15px;
+                        font-weight: 600;
+                        margin-bottom: 24px;
+                    }
+
+                    // IE10 fix
+                    .logo, .small-note {
+                        -ms-flex: 0 1 auto;
+                    }
+
+                    .logo {
+                        width: 32px;
+                        min-width: 32px;
+                        margin-right: 24px;
+                    }
+
+                    .small-note {
+                        font-size: 12px;
+                        font-weight: 600;
+                        color: rgba(0, 0, 0, 0.54);
+                        line-height: 18px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* PRINT STYLES */
+@media print {
+
+    /* Invoice Specific Styles */
+    #invoice {
+
+        &.compact {
+            padding: 0;
+    
+            .invoice-container {
+                padding: 64px;
+                margin: 0 auto;
+    
+                .card {
+                    width: 1020px;
+                    min-width: 1020px;
+                    max-width: 1020px;
+                    padding: 64px 88px;
+                    overflow: hidden;
+                    background: #FFFFFF;
+                    //@include mat-elevation(2);
+                    border: 1px solid;
+                    .header {
+    
+                        .invoice-date {
+                            font-size: 14px;
+                            color: rgba(0, 0, 0, 0.54);
+                            margin-bottom: 32px;
+                        }
+    
+                        .client {
+    
+                            .invoice-number {
+                                font-size: 18px;
+                                padding-bottom: 2px;
+    
+                                .title {
+                                    color: rgba(0, 0, 0, 0.54);
+                                }
+    
+                                .number {
+                                    color: rgba(0, 0, 0, 0.87);
+                                    padding-left: 6px;
+                                }
+                            }
+    
+                            .due-date {
+                                font-size: 18px;
+                                padding-bottom: 16px;
+    
+                                .title {
+                                    color: rgba(0, 0, 0, 0.54);
+                                }
+    
+                                .date {
+                                    color: rgba(0, 0, 0, 0.87);
+                                    padding-left: 6px;
+                                }
+                            }
+    
+                            .info {
+                                color: rgba(0, 0, 0, 0.54);
+                                line-height: 22px;
+                            }
+                        }
+    
+                        .issuer {
+                            margin-right: -88px;
+                            padding-right: 66px;
+    
+                            .logo {
+                                width: 96px;
+                                padding: 0 8px;
+                                border-right: 1px solid rgba(255, 255, 255, 0.7);
+                            }
+    
+                            .info {
+                                padding: 16px;
+                            }
+                        }
+                    }
+    
+                    .content {
+    
+                        .invoice-table {
+                            margin-top: 64px;
+                            font-size: 15px;
+    
+                            thead {
+    
+                                tr {
+    
+                                    th {
+                                        color: rgba(0, 0, 0, 0.87);
+                                        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    
+                                        &:first-child {
+                                            padding-left: 8px;
+                                        }
+    
+                                        &:last-child {
+                                            padding-right: 8px;
+                                        }
+                                    }
+                                }
+                            }
+    
+                            tbody {
+    
+                                tr {
+    
+                                    td {
+                                        color: rgba(0, 0, 0, 0.87);
+                                        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    
+                                        &:first-child {
+                                            padding-left: 8px;
+                                        }
+    
+                                        &:last-child {
+                                            padding-right: 8px;
+                                        }
+                                    }
+                                }
+                            }
+    
+                            .title {
+                                font-size: 16px;
+                            }
+    
+                            .detail {
+                                margin-top: 8px;
+                                font-size: 12px;
+                                color: rgba(0, 0, 0, 0.54);
+                                max-width: 360px;
+                            }
+                        }
+    
+                        .invoice-table-footer {
+                            margin: 32px 0 72px 0;
+    
+                            tr {
+    
+                                td {
+                                    text-align: right;
+                                    font-size: 16px;
+                                    font-weight: 600;
+                                    color: rgba(0, 0, 0, 0.54);
+                                    border-bottom: none;
+                                    padding: 4px 8px;
+    
+                                    &:first-child {
+                                        text-align: left;
+                                    }
+                                }
+    
+                                &.discount {
+    
+                                    td {
+                                        padding-bottom: 32px;
+                                    }
+                                }
+    
+                                &.total {
+    
+                                    td {
+                                        padding: 24px 8px;
+                                        border-top: 1px solid rgba(0, 0, 0, 0.12);
+                                        font-size: 35px;
+                                        font-weight: 300;
+                                        color: rgba(0, 0, 0, 1);
+                                    }
+                                }
+                            }
+                        }
+                    }
+    
+                    .footer {
+    
+                        .note {
+                            font-size: 15px;
+                            font-weight: 600;
+                            margin-bottom: 24px;
+                        }
+    
+                        // IE10 fix
+                        .logo, .small-note {
+                            -ms-flex: 0 1 auto;
+                        }
+    
+                        .logo {
+                            width: 32px;
+                            min-width: 32px;
+                            margin-right: 24px;
+                        }
+    
+                        .small-note {
+                            font-size: 12px;
+                            font-weight: 600;
+                            color: rgba(0, 0, 0, 0.54);
+                            line-height: 18px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+      
+}

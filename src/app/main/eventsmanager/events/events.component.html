@@ -1,0 +1,140 @@
+<div id="eventsmanager" class="page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <div class="header accent"
+             fxLayout="column" fxLayoutAlign="center center"
+             fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+
+            <!-- APP TITLE -->
+            <div class="logo mb-24 mb-md-0"
+                 fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon class="logo-icon s-32 mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    event_note
+                </mat-icon>
+                <span class="logo-text h1" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    {{'EVENTSMANAGER.TITLE' | translate}}
+                </span>
+            </div>
+            <!-- / APP TITLE -->
+
+            <!-- SEARCH -->
+            <div class="search-wrapper mx-32 mx-md-0">
+                <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                    <mat-icon>search</mat-icon>
+                    <input #filter  (keyup)="doFilter($event.target.value)" placeholder="Cerca Evento">
+                </div>
+            </div>
+            <!-- / SEARCH -->
+
+            <!-- ADD BUTTON -->
+            <button mat-raised-button
+                    [routerLink]="'/eventsmanager/new'"
+                    class="add-category-button fuse-white mt-24 mt-md-0">
+                <span>Aggiungi Evento</span>
+            </button>
+            <!-- / ADD BUTTON -->
+
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+
+            <mat-table class="events-table"
+                       #table [dataSource]="dataSource"
+                       matSort
+                       [@animateStagger]="{value:'50'}"
+                       fusePerfectScrollbar>
+                <!-- auto num Column -->
+                <ng-container matColumnDef="num-auto">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>#</mat-header-cell>
+                  <mat-cell *matCellDef="let event; let i = index;">
+                    <div *ngIf="event.warning" style="float: right;"><mat-icon  style="color:red">error</mat-icon></div>
+                    <p class="text-truncate">{{i + 1}}</p>
+                  </mat-cell>
+                </ng-container>
+                <!-- ID Column -->
+                <ng-container matColumnDef="oid">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+                    <mat-cell *matCellDef="let event">
+                        <div *ngIf="event.warning" style="float: right;"><mat-icon  style="color:red">error</mat-icon></div>
+                        <p class="text-truncate">{{event.oid}}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="cliente">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Cliente</mat-header-cell>
+                    <mat-cell *matCellDef="let event">
+                        <!-- <p class="text-truncate">{{event.customer.name}} {{event.customer.surname}}</p> -->
+                        <p class="text-truncate">{{event.cliente}}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="tipo">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</mat-header-cell>
+                    <mat-cell *matCellDef="let event">
+                        <!-- <p class="text-truncate">{{event.type.descr}}</p> -->
+                        <p class="text-truncate">{{event.tipo}}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="orari">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Date e Orari</mat-header-cell>
+                    <mat-cell *matCellDef="let event">
+                        <div>
+                            <!--<div class="firstline">{{event.from.toDate() | date: 'dd/MM/yyyy HH:mm'}}</div>
+                            <div class="secondline">{{event.to.toDate() | date: 'dd/MM/yyyy HH:mm'}}</div>-->
+                            <!-- getFormatDate() -->
+                            <div class="firstline">{{event.orari}}</div>
+                            <!-- <div class="secondline">{{event.dateTo}}</div> -->
+                        </div>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="stato">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Stato</mat-header-cell>
+                    <mat-cell *matCellDef="let event">
+                        <!-- <p class="text-truncate">{{event.status.descr}}</p> -->
+                        <p class="text-truncate">{{event.stato}}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="business">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Attività</mat-header-cell>
+                    <mat-cell *matCellDef="let event">
+                        <!-- <p class="text-truncate">{{event.business.descr}}</p> -->
+                        <p class="text-truncate">{{event.business}}</p>
+                    </mat-cell>
+                </ng-container>
+
+                
+                <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></mat-header-row>
+             
+
+                <mat-row *matRowDef="let event; columns: displayedColumns;"
+                         class="event"
+                         matRipple
+                         [routerLink]="'/eventsmanager/'+event.oid">
+                </mat-row>
+
+            </mat-table>
+
+            <mat-paginator #paginator
+                           [length]="10"
+                           [pageIndex]="0"
+                           [pageSize]="10"
+                           [pageSizeOptions]="[5, 10, 25, 100]">
+            </mat-paginator>
+
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

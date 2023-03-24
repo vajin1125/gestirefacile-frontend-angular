@@ -1,0 +1,103 @@
+<div id="rolemanager" class="page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <div class="header accent"
+             fxLayout="column" fxLayoutAlign="center center"
+             fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+
+            <!-- APP TITLE -->
+            <div class="logo mb-24 mb-md-0"
+                 fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon class="logo-icon s-32 mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    verified_user
+                </mat-icon>
+                <span class="logo-text h1" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    {{'ROLEMANAGER.TITLE' | translate}}
+                </span>
+            </div>
+            <!-- / APP TITLE -->
+
+            <!-- SEARCH -->
+            <div class="search-wrapper mx-32 mx-md-0">
+                <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                    <mat-icon>search</mat-icon>
+                    <input #filter  (keyup)="doFilter($event.target.value)" placeholder="Cerca per ruolo">
+                </div>
+            </div>
+            <!-- / SEARCH -->
+
+            <!-- ADD BUTTON -->
+            <button mat-raised-button
+                    [routerLink]="'/rolemanager/new'"
+                    class="add-role-button fuse-white mt-24 mt-md-0">
+                <span>Aggiungi Ruolo</span>
+            </button>
+            <!-- / ADD BUTTON -->
+
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+
+            <mat-table class="roles-table"
+                       #table [dataSource]="dataSource"
+                       matSort
+                       [@animateStagger]="{value:'50'}"
+                       fusePerfectScrollbar>
+
+                <!-- ID Column -->
+                <ng-container matColumnDef="oid">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+                    <mat-cell *matCellDef="let role">
+                        <p class="text-truncate">{{role.oid}}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Descrizione Column -->
+                <ng-container matColumnDef="descr">
+                    <mat-header-cell *matHeaderCellDef fxHide mat-sort-header fxShow.gt-md>Descrizione</mat-header-cell>
+                    <mat-cell *matCellDef="let role" fxHide fxShow.gt-md>
+                        <p class="text-truncate">{{role.descr}}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Acronimo Column -->
+                <ng-container matColumnDef="acronym">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Acronimo</mat-header-cell>
+                    <mat-cell *matCellDef="let role">
+                        <p class="text-truncate">{{role.acronym}}</p>
+                    </mat-cell>
+                </ng-container>
+
+                
+                <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></mat-header-row>
+             
+
+                <mat-row *matRowDef="let role; columns: displayedColumns;"
+                         class="role"
+                         matRipple
+                         [routerLink]="'/rolemanager/'+role.oid">
+                </mat-row>
+
+            </mat-table>
+
+            <mat-paginator #paginator
+                           [length]="10"
+                           [pageIndex]="0"
+                           [pageSize]="10"
+                           [pageSizeOptions]="[5, 10, 25, 100]">
+            </mat-paginator>
+
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>
