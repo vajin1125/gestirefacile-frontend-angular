@@ -681,7 +681,7 @@ export class PackageComponent implements OnInit, OnDestroy {
     savePackage(): void {
 
         const data = this.packageForm.getRawValue();
-        console.log(">>>>>", data);
+        // console.log(">>>>>", data);
 
         this._packageService.savePackage(data, this.logo)
             .then(() => {

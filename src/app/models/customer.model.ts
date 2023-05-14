@@ -7,6 +7,7 @@ import { User } from './user.model';
 export class Customer {
     oid: number;
     oid_user: number;
+    oid_customer_by_user: number;
     user: User;
     name: string;
     surname: string;
@@ -24,6 +25,7 @@ export class Customer {
         customer = customer || {};
         this.oid = customer.oid || '';
         this.oid_user = customer.oid_user || '';
+        this.oid_customer_by_user = customer.oid_customer_by_user || '';
         this.name = customer.name || '';
         this.surname = customer.surname || '';
         this.email = customer.email || '';

@@ -28,7 +28,7 @@ export class ToDoListComponent implements OnInit, OnDestroy {
      * @param {FuseTranslationLoaderService} _fuseTranslationLoaderService
      */
     private todolist: ToDo[];
-    displayedColumns = ['oid', 'title', 'descr', 'datetime', 'completed']; 
+    displayedColumns = ['auto-num', 'oid', 'title', 'descr', 'datetime', 'completed']; 
     dataSource: MatTableDataSource<ToDo>;
     @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
     @ViewChild(MatSort, {static: true})

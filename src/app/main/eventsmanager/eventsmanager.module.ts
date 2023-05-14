@@ -35,12 +35,20 @@ import { FuseWidgetModule } from '@fuse/components';
 import { ToolTipModule } from 'app/tooltip/tooltip.module';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { ReactiveFormsModule } from '@angular/forms';
+
+import { SatDatepickerModule, SatNativeDateModule } from 'saturn-datepicker';
 
 const routes = [
     {
         path: 'eventsmanager',
         component: EventsComponent,
         canActivate: [AuthGuard]
+    },
+    {
+      path: 'eventsmanager/trash/all',
+      component: EventsComponent,
+      canActivate: [AuthGuard]
     },
     {
         path     : 'eventsmanager/:id',
@@ -88,7 +96,9 @@ const routes = [
         MatListModule,
         ToolTipModule,
         MatDatepickerModule,
-        MatNativeDateModule
+        MatNativeDateModule,
+        ReactiveFormsModule,
+        SatDatepickerModule, SatNativeDateModule
     ],
     exports     : [
         EventsComponent,

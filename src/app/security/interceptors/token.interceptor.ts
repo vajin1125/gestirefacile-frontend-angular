@@ -97,9 +97,9 @@ export class TokenInterceptor implements HttpInterceptor {
         .pipe(
           catchError((error: HttpErrorResponse) => {
             let router = this.inj.get(Router);
-            console.log("Interceptor error ... " + JSON.stringify(error));
+            // console.log("Interceptor error ... " + JSON.stringify(error));
             if (error.status === 401) {
-              console.log("Interceptor code 401 ... ");
+              // console.log("Interceptor code 401 ... ");
               //logout users, redirect to login page
               authService.logout();
               //redirect to the signin page or show login modal here
@@ -137,7 +137,7 @@ export class TokenInterceptor implements HttpInterceptor {
         this.afMessaging.requestToken // getting tokens
         .subscribe(
           (token) => { // USER-REQUESTED-TOKEN
-            console.log('Permission granted! Save to the server!', token);
+            // console.log('Permission granted! Save to the server!', token);
             this.token = token;
             this.receiveMessage();
           },
@@ -159,7 +159,7 @@ export class TokenInterceptor implements HttpInterceptor {
   }
 
   onReceiveMsg(event) {
-    console.log(event.data.notification);
+    // console.log(event.data.notification);
     this.showMessage(event.data.notification.title, event.data.notification.body);
   }
 

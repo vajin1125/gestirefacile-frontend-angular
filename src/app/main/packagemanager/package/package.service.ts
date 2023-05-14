@@ -106,12 +106,13 @@ export class PackageService implements Resolve<any>
     savePackage(pkg, logo: File): Promise<any> {
       const formData = this.toFormData(pkg);
         formData.append('logo', logo);
+        // console.log(formData);
 
         return new Promise((resolve, reject) => {
             this._httpClient.post(Config.prop.apiEndpoint + "package/update.php", formData)
                 .subscribe((response: any) => {
 
-                    this.package = response;
+                    this.package = pkg;
                     this.onMessageChanged.next(this.package);
                     resolve(response);
                 }, reject);

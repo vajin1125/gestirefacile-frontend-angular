@@ -1,8 +1,8 @@
 @import "src/@fuse/scss/fuse";
 
-resourcesmanager {
+app-firstnote {
 
-    #resourcesmanager {
+    #app-firstnote {
 
         .top-bg {
 
@@ -54,60 +54,17 @@ resourcesmanager {
         }
     }
 
-    .resources-table {
+    .firstnotetable-table {
         flex: 1 1 auto;
         border-bottom: 1px solid rgba(0, 0, 0, .12);
         overflow: auto;
         -webkit-overflow-scrolling: touch;
 
-        .mat-row, .mat-header-row {
-            width: 100%; //PERSONALLY I HAD 45 COLUMNS
-          }
-          .mat-header-row { //THIS MAKES THE HEADER STICKY
-            position: sticky;
-            position: -webkit-sticky;
-            top: 0;
-            z-index: 1;
-            background-color: inherit;
-          }
-          .table { //OR WHATEVER YOU CALL THE mat-table
-            overflow: scroll;
-          }
-
-        /*.table-responsive {
-            display: block;
-            width: 100%;
-            overflow-x: auto;
-            .mat-table {
-                width: 100%;
-                max-width: 100%;
-                margin-bottom: 1rem;
-                display: table;
-                border-collapse: collapse;
-                margin: 0px;
-            }
-            .mat-row,
-            .mat-header-row {
-                display: table-row;
-            }
-            .mat-cell,
-            .mat-header-cell {
-                word-wrap: initial;
-                display: table-cell;
-                padding: 0px 5px;
-                line-break: unset;
-                width: auto;
-                white-space: nowrap;
-                overflow: hidden;
-                vertical-align: middle;
-            }
-          }*/
-
-        /*.mat-header-row {
+        .mat-header-row {
             min-height: 64px;
         }
 
-        .user {
+        .todo {
             position: relative;
             cursor: pointer;
             height: 84px;
@@ -119,7 +76,7 @@ resourcesmanager {
             align-items: center;
         }
 
-        .mat-column-oid {
+        .mat-column-id {
             flex: 0 1 84px;
         }
 
@@ -145,7 +102,7 @@ resourcesmanager {
             flex: 0 1 160px;
         }
 
-        .mat-column-enabled {
+        .mat-column-active {
             flex: 0 1 80px;
         }
 
@@ -161,31 +118,10 @@ resourcesmanager {
                 display: inline-block;
                 vertical-align: middle;
             }
-        }*/
+        }
 
         .active-icon {
             border-radius: 50%;
         }
-
-        .table-cell-7vw {
-          max-width: 7vw;
-        }
-        .table-cell-5vw {
-          max-width: 5vw;
-        }
-        .table-cell-10vw {
-          max-width: 10vw;
-        }
-        .table-cell-12vw {
-          max-width: 12vw;
-        }
-        .table-cell-15vw {
-          max-width: 15vw;
-        }
-        .table-cell-20vw {
-          max-width: 20vw;
-        }
     }
 }
-
-

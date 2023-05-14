@@ -56,10 +56,10 @@
         <!-- / HEADER -->
 
         <!-- CONTENT CARD -->
-        <div class="content-card">
+        <div class="content-card" fusePerfectScrollbar>
 
             <!-- CONTENT -->
-            <!-- <div class="content"> -->
+            <!--<div class="content">-->
               <!-- <div class="content-card"> -->
                 <form name="customerForm" [formGroup]="customerForm" class="customer w-100-p" fxLayout="column" fxFlex>
                   <mat-tab-group (selectedTabChange)="tabChanged($event)">
@@ -67,12 +67,18 @@
 
                         <mat-tab label="Basic Info">
 
-                            <div class="tab-content p-24" fusePerfectScrollbar>
+                            <div class="tab-content p-24">
 
                                 <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
-                                    <mat-label>ID</mat-label>
+                                    <mat-label>UniqueID : Questo numero è univoco per questo cliente su questa piattaforma.</mat-label>
                                     <input matInput placeholder="automatic id" name="oid" formControlName="oid"
                                         readonly>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                  <mat-label>ClientiID : Questo numero è univoco per il cliente nell'intervallo creato dall'utente che ha effettuato l'accesso a questa piattaforma.</mat-label>
+                                  <input matInput placeholder="automatic id" name="oid_customer_by_user" formControlName="oid_customer_by_user"
+                                      readonly>
                                 </mat-form-field>
 
                                 <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
@@ -333,7 +339,7 @@
 
                 </form>
               <!-- </div> -->
-            <!-- </div> -->
+            <!--</div>-->
             <!-- / CONTENT -->
 
         </div>

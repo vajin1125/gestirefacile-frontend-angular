@@ -64,8 +64,8 @@
 
                 <!-- Descrizione Column -->
                 <ng-container matColumnDef="descr">
-                    <mat-header-cell *matHeaderCellDef fxHide mat-sort-header fxShow.gt-md>Descrizione Attività</mat-header-cell>
-                    <mat-cell *matCellDef="let business" fxHide fxShow.gt-md>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Descrizione Attività</mat-header-cell>
+                    <mat-cell *matCellDef="let business" fxShow.gt-md>
                         <p class="text-truncate">{{business.descr}}</p>
                     </mat-cell>
                 </ng-container>

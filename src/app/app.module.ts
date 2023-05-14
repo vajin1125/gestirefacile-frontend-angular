@@ -60,6 +60,7 @@ import { EventsmanagerModule } from './main/eventsmanager/eventsmanager.module';
 import { PlansmanagerModule } from './main/plansmanager/plansmanager.module';
 import { PackagesmanagerModule } from './main/packagemanager/packagemanager.module';
 import { TodolistmanagerModule } from './main/todomanager/todomanager.module';
+import { FirstnoteModule } from './main/firstnote/firstnote.module';
 
 
 
@@ -206,6 +207,10 @@ const appRoutes: Routes = [
     {
         path     : 'todolistmanager',
         loadChildren: './main/todomanager/todomanager.module#TodolistmanagerModule'
+    },
+    {
+      path     : 'firstnote',
+      loadChildren: './main/firstnote/firstnote.module#FirstnoteModule'
     }
     
 ];
@@ -233,7 +238,7 @@ export class BaluHammerConfig extends HammerGestureConfig {
 
 @NgModule({
     declarations: [
-        AppComponent
+        AppComponent,
     ],
     imports     : [
         BrowserModule,
@@ -292,7 +297,8 @@ export class BaluHammerConfig extends HammerGestureConfig {
         ServiceWorkerModule.register('combined-sw.js', { enabled: environment.production }),
         AngularFireModule.initializeApp(environment.firebase),
         AngularFireMessagingModule,
-        //NgcCookieConsentModule.forRoot(cookieConfig)
+        //NgcCookieConsentModule.forRoot(cookieConfig),
+        FirstnoteModule
     ],
     providers: [AuthService, httpInterceptorProviders, AuthGuard,{provide: LOCALE_ID, useValue: 'it'},
     {

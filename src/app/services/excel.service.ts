@@ -5,6 +5,10 @@ import * as XLSX from 'xlsx';
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
 
+interface CustomJSON2SheetOpts extends XLSX.JSON2SheetOpts {
+  sheet_split?: string;
+}
+
 @Injectable()
 export class ExcelService {
 
@@ -34,14 +38,52 @@ export class ExcelService {
   }
 
   public exportAsExcelFile(json: any[], excelFileName: string): void {
+
+    function flattenObject(obj, prefix = '') {
+      return Object.keys(obj).reduce((acc, key) => {
+        const pre = prefix.length ? prefix + '.' : '';
+        if (typeof obj[key] === 'object' && obj[key] !== null) {
+          Object.assign(acc, flattenObject(obj[key], pre + key));
+        } else {
+          acc[pre + key] = obj[key];
+        }
+        return acc;
+      }, {});
+    }
     
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(json);
+    function flattenObjectArray(objArray) {
+      return objArray.map(obj => flattenObject(obj));
+    }
+    
+    
+    const flattenedArray = flattenObjectArray(json);
+    console.log(flattenedArray);
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(flattenedArray);
     console.log('worksheet',worksheet);
     const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     //const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
     this.saveAsExcelFile(excelBuffer, excelFileName);
+
+  //   function flattenObject(obj, prefix = '') {
+  //     return Object.keys(obj).reduce((acc, key) => {
+  //       const pre = prefix.length ? prefix + '.' : '';
+  //       if (typeof obj[key] === 'object' && obj[key] !== null) {
+  //         return acc.concat(flattenObject(obj[key], pre + key));
+  //       } else {
+  //         return acc.concat(pre + key + ':' + obj[key]);
+  //       }
+  //     }, []);
+  //   }
+  //   const flatData = json.map(item => flattenObject(item));
+
+  // const sheet = XLSX.utils.json_to_sheet(flatData, { sheet_split: ':' } as CustomJSON2SheetOpts);
+
+  // const workbook = XLSX.utils.book_new();
+  // XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet1');
+  // XLSX.writeFile(workbook, 'output.xlsx');
   }
+  
 
   private saveAsExcelFile(buffer: any, fileName: string): void {
     const data: Blob = new Blob([buffer], {

@@ -37,7 +37,7 @@ export class CustomerService implements Resolve<any>
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> | Promise<any> | any {
         this.routeParams = route.params;
 
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
 
             Promise.all([
                 this.getCustomer()
@@ -49,7 +49,6 @@ export class CustomerService implements Resolve<any>
             );
         });
     }
-
 
     getCustomer(): Promise<any> {
         return new Promise((resolve, reject) => {
@@ -72,13 +71,11 @@ export class CustomerService implements Resolve<any>
         return this._httpClient.get<Attribute[]>(Config.prop.apiEndpoint + "attributes/search.php?oidType=1");
     }
 
-
     saveCustomer(customer): Promise<any> {
         const formData = this.toFormData(customer);
         return new Promise((resolve, reject) => {
             this._httpClient.post(Config.prop.apiEndpoint + "customers/update.php", formData)
                 .subscribe((response: any) => {
-
                     //this.user = response[0];
                     this.customer = response;
                     this.onUserChanged.next(this.customer);
@@ -101,9 +98,9 @@ export class CustomerService implements Resolve<any>
         return formData;
     }
 
-
     addCustomer(customer): Promise<any> {
         const formData = this.toFormData(customer);
+        // console.log(formData);
         return new Promise((resolve, reject) => {
             this._httpClient.post(Config.prop.apiEndpoint + "customers/insert.php", formData)
                 .subscribe((response: any) => {
@@ -114,10 +111,4 @@ export class CustomerService implements Resolve<any>
                 }, reject);
         });
     }
-
-
-
-
-
-
 }

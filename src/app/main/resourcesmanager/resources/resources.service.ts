@@ -22,7 +22,12 @@ export class ResourcesService {
     }
 
 
-    getResources(): Observable<Resource[]> {
+    getResources(isTrash=null): Observable<Resource[]> {
+      if (isTrash === "trash") {
+        return this._httpClient.get<Resource[]>(Config.prop.apiEndpoint + "resources/search.php?trashed=" + 1);
+      } else {
         return this._httpClient.get<Resource[]>(Config.prop.apiEndpoint + "resources/search.php");
+      }
+        
     }
 }

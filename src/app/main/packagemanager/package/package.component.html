@@ -127,11 +127,8 @@
 
 
                                 </mat-toolbar>
-                                <mat-table class="events-table" #table [dataSource]='dataSource' matSort
+                                <mat-table class="events-table" #table [dataSource]="dataSource" matSort
                                     [@animateStagger]="{value:'50'}" fusePerfectScrollbar formArrayName="package_details">
-
-
-
 
                                     <ng-container matColumnDef="resourceType">
                                         <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md
@@ -354,22 +351,17 @@
                                         class="event">
                                     </mat-row>
                                 </mat-table>
+
                                 <mat-toolbar class="accent">
-
                                     <span style="padding-right: 15px;">Extra</span>
-
-
                                     <button *ngIf="tabIndex == 1" mat-raised-button class="save-resource-button"
                                         (click)="addExtra()">
                                         <span>Aggiungi Extra</span>
                                     </button>
-
-
-
                                 </mat-toolbar>
-                                <mat-table class="events-table" #table [dataSource]='dataSourceExtra' matSort
-                                    [@animateStagger]="{value:'50'}" fusePerfectScrollbar formArrayName="extra_details">
 
+                                <mat-table class="events-table" #table [dataSource]="dataSourceExtra" matSort
+                                    [@animateStagger]="{value:'50'}" fusePerfectScrollbar formArrayName="extra_details">
 
                                     <ng-container matColumnDef="extra_descr">
                                         <mat-header-cell *matHeaderCellDef mat-sort-header>

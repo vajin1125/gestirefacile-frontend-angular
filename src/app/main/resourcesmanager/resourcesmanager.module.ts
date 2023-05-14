@@ -20,6 +20,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatSortModule } from '@angular/material/sort';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatMenuModule } from '@angular/material/menu';
 
 import { ResourcesComponent } from './resources/resources.component';
 import { ResourceComponent } from './resource/resource.component';
@@ -46,6 +47,11 @@ const routes = [
         path: 'resourcesmanager',
         component: ResourcesComponent,
         canActivate: [AuthGuard]
+    },
+    {
+      path: 'resourcesmanager/trash/all',
+      component: ResourcesComponent,
+      canActivate: [AuthGuard]
     },
     {
         path     : 'resourcesmanager/:id',
@@ -98,7 +104,7 @@ const routes = [
         MatFabMenuModule,
         ToolTipModule,
         ColorPickerModule,
-
+        MatMenuModule,
         FuseSharedModule,
         FuseConfirmDialogModule,
 

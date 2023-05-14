@@ -28,7 +28,7 @@ export class CustomersComponent implements OnInit, OnDestroy {
      * @param {FuseTranslationLoaderService} _fuseTranslationLoaderService
      */
     private customers: Customer[];
-    displayedColumns = ['num-auto', 'oid', 'name', 'surname', 'email', 'actions'];
+    displayedColumns = ['oid', 'oid_customer_by_user', 'name', 'surname', 'email', 'actions'];
     dataSource: MatTableDataSource<Customer>;
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true })
@@ -55,6 +55,7 @@ export class CustomersComponent implements OnInit, OnDestroy {
         this._customersmanagerService.getCustomers().subscribe((customers: Customer[]) => {
             this.customers = customers;
             this.dataSource = new MatTableDataSource(this.customers);
+            // console.log("MMMM", this.dataSource);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator
         }, error => console.error(error));
@@ -80,6 +81,15 @@ export class CustomersComponent implements OnInit, OnDestroy {
         this.dataSource.filter = value.trim().toLocaleLowerCase();
     }
 
+    public getSequenceNumber(index: number): number {
+      return index + 1 + (this.paginator.pageIndex * this.paginator.pageSize);
+    }
+
+    public getDSequenceNumber(index: number): number {
+      const totalRows = this.dataSource.data.length;
+      return totalRows - (index + (this.paginator.pageIndex * this.paginator.pageSize));
+    }
+    
 
 
     public exportExcel() {
@@ -113,7 +123,7 @@ export class CustomersComponent implements OnInit, OnDestroy {
             reader.readAsBinaryString(target.files[0]);
 
             reader.onloadend = (e) => {
-                console.log(data);
+                // console.log(data);
                 let oid_user = this._authService.getLoggedUser().oid;
                 new Promise((resolve, reject) => {
                     data.data.forEach(element => {

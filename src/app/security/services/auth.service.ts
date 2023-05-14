@@ -35,7 +35,7 @@ export class AuthService {
       .pipe(
         map((response: HttpResponse<any>) => {
           // login successful if there's a jwt token in the response
-          console.log(response.body);
+          // console.log(response.body);
           this.loggedUser = response.body;
           //console.log(this.loggedUser);
           let token = this.loggedUser.token;

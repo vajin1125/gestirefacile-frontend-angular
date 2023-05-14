@@ -8,6 +8,8 @@ export class ResourceAssoc {
     oid: number;
     resourceAssoc: Resource;
     qta: number;
+    address: string;
+    refNumber: string;
 
     constructor(resourceAssoc?)
     {
@@ -15,6 +17,8 @@ export class ResourceAssoc {
         this.oid = resourceAssoc.oid || '';
         this.resourceAssoc = resourceAssoc.resourceAssoc || '';
         this.qta = resourceAssoc.qta || 1;
+        this.address = resourceAssoc.address || '';
+        this.refNumber = resourceAssoc.refNumber || '';
     }
 }
 

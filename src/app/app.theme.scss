@@ -78,33 +78,34 @@ $typography: mat-typography-config(
 // -----------------------------------------------------------------------------------------------------
 
 // Import app and page component themes here to enable theming for them
-@import "src/app/layout/components/chat-panel/chat-panel.theme";
-@import "src/app/layout/components/toolbar/toolbar.theme";
-@import "src/app/main/usermanager/users/users.theme";
-@import "src/app/main/rolemanager/roles/roles.theme";
-@import "src/app/main/businessmanager/businesses/businesses.theme.scss";
-@import "src/app/main/messagemanager/messages/messages.theme.scss";
-@import "src/app/main/accesses/accesses.theme.scss";
-@import "src/app/main/dashboard/calendar.theme.scss";
-@import "src/app/main/categoriesmanager/categories/categories.theme.scss";
-@import "src/app/main/skillsmanager/skills/skills.theme.scss";
-@import "src/app/main/resourcesmanager/resources/resources.theme.scss";
-@import "src/app/main/forgot-password/forgot-password.theme.scss";
-@import "src/app/main/reset-password/reset-password.theme.scss";
-@import "src/app/main/myprofile/profile.theme.scss";
-@import "src/app/main/eventtypesmanager/eventtypes/eventtypes.theme.scss";
-@import "src/app/main/customersmanager/customers/customers.theme.scss";
-@import "src/app/main/vendorsmanager/vendors/vendors.theme.scss";
-@import "src/app/main/circlesmanager/circles/circles.theme.scss";
-@import "src/app/main/mybusiness/mybusinesses/mybusinesses.theme.scss";
-@import "src/app/main/myusers/myusers/myusers.theme";
-@import "src/app/main/myaccesses/myaccesses.theme.scss";
-@import "src/app/main/warehousemanager/warehouses/warehouses.theme.scss";
-@import "src/app/main/eventsmanager/events/events.theme.scss";
-@import "src/app/main/warehousemanager/movements/movements.theme.scss";
-@import "src/app/main/packagemanager/packages/packages.theme.scss";
-@import "src/app/main/plansmanager/plans/plans.theme.scss";
-@import "src/app/main/todomanager/todolist/todolist.theme.scss";
+@import "layout/components/chat-panel/chat-panel.theme";
+@import "layout/components/toolbar/toolbar.theme";
+@import "main/usermanager/users/users.theme";
+@import "main/rolemanager/roles/roles.theme";
+@import "main/businessmanager/businesses/businesses.theme.scss";
+@import "main/messagemanager/messages/messages.theme.scss";
+@import "main/accesses/accesses.theme.scss";
+@import "main/dashboard/calendar.theme.scss";
+@import "main/categoriesmanager/categories/categories.theme.scss";
+@import "main/skillsmanager/skills/skills.theme.scss";
+@import "main/resourcesmanager/resources/resources.theme.scss";
+@import "main/forgot-password/forgot-password.theme.scss";
+@import "main/reset-password/reset-password.theme.scss";
+@import "main/myprofile/profile.theme.scss";
+@import "main/eventtypesmanager/eventtypes/eventtypes.theme.scss";
+@import "main/customersmanager/customers/customers.theme.scss";
+@import "main/vendorsmanager/vendors/vendors.theme.scss";
+@import "main/circlesmanager/circles/circles.theme.scss";
+@import "main/mybusiness/mybusinesses/mybusinesses.theme.scss";
+@import "main/myusers/myusers/myusers.theme";
+@import "main/myaccesses/myaccesses.theme.scss";
+@import "main/warehousemanager/warehouses/warehouses.theme.scss";
+@import "main/eventsmanager/events/events.theme.scss";
+@import "main/warehousemanager/movements/movements.theme.scss";
+@import "main/packagemanager/packages/packages.theme.scss";
+@import "main/plansmanager/plans/plans.theme.scss";
+@import "main/todomanager/todolist/todolist.theme.scss";
+@import "main/firstnote/firstnote.theme.scss";
 
 // Define a mixin for easier access
 @mixin components-theme($theme) {
@@ -137,6 +138,7 @@ $typography: mat-typography-config(
     @include packagesmanager-theme($theme);
     @include plansmanager-theme($theme);
     @include todolistmanager-theme($theme);
+    @include firstnotemanager-theme($theme);
 }
 
 // -----------------------------------------------------------------------------------------------------

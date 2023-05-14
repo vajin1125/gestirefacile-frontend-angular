@@ -9,37 +9,83 @@
 
         <!-- HEADER -->
         <div class="header accent"
-             fxLayout="column" fxLayoutAlign="center center"
-             fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+            fxLayout="column" fxLayoutAlign="center center"
+            fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
 
             <!-- APP TITLE -->
-            <div class="logo mb-24 mb-md-0"
-                 fxLayout="row" fxLayoutAlign="start center">
+            <div class="logo mb-24 mb-md-0" fxLayout="row" fxLayoutAlign="start center">
                 <mat-icon class="logo-icon s-32 mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
                     event_note
                 </mat-icon>
                 <span class="logo-text h1" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
-                    {{'EVENTSMANAGER.TITLE' | translate}}
+                    {{'EVENTSMANAGER.TITLE' | translate}} 
+                    <span *ngIf="isTrash=='trash'">(Trashed)</span>
                 </span>
             </div>
             <!-- / APP TITLE -->
 
             <!-- SEARCH -->
+            <!--div class="search-wrapper mx-32 mx-md-0">
+                <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                    <mat-icon>search</mat-icon>
+                    <input #filter [value]="searchInput" (keyup)="doFilter($event.target.value)" placeholder="Cerca Evento">
+                    <input 
+                      matInput
+                      placeholder="DD/MM/YYYY" 
+                      name="search_date"
+                      [matDatepicker]="picker" 
+                      [matDatepickerFilter]="myHolidayFilter"
+                      (dateChange)="doFilterDate($event.target.value)"
+                      style="margin: 0; padding: 0; width: 0; height: 0;">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker ></mat-datepicker>
+                </div>
+            </div-->
+
             <div class="search-wrapper mx-32 mx-md-0">
                 <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
                     <mat-icon>search</mat-icon>
-                    <input #filter  (keyup)="doFilter($event.target.value)" placeholder="Cerca Evento">
+                    <input #filter [value]="searchInput" (keyup)="doFilter($event.target.value)" placeholder="Cerca Evento">
+                    <input matInput
+                      placeholder="Choose a date"
+                      [satDatepicker]="picker2"
+                      (dateChange)="doFilterDate($event.target.value)"
+                      style="margin: 0; padding: 0; width: 0; height: 0;">
+                      <sat-datepicker #picker2 [rangeMode]="true"></sat-datepicker>
+                      <sat-datepicker-toggle matSuffix [for]="picker2"></sat-datepicker-toggle>
                 </div>
             </div>
-            <!-- / SEARCH -->
 
-            <!-- ADD BUTTON -->
-            <button mat-raised-button
+            <div class="mt-24 mt-md-0">
+                <!-- ADD BUTTON -->
+                <button mat-raised-button
                     [routerLink]="'/eventsmanager/new'"
-                    class="add-category-button fuse-white mt-24 mt-md-0">
-                <span>Aggiungi Evento</span>
-            </button>
-            <!-- / ADD BUTTON -->
+                    class="add-category-button fuse-white">
+                    <span>Aggiungi Evento</span>
+                </button>
+
+                <!-- <mat-fab-menu id="fab" name="fab" class="add-event-button mat-accent"
+                    [fabButtons]="fabButtonsRandom" [direction]="'bottom'"
+                    (onFabMenuItemSelected)="onSelected($event, 'card')" style="z-index: 9999;">
+                </mat-fab-menu> -->
+                <!-- <mat-fab-menu [fabButtons]="fabButtonsRandom" direction="bottom" style="z-index: 999;"></mat-fab-menu> -->
+
+                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button *ngIf="isTrash==''" mat-menu-item [routerLink]="'/eventsmanager/trash/all'">
+                    <mat-icon>delete</mat-icon>
+                    <span>Trashed Events</span>
+                  </button>
+                  <button *ngIf="isTrash=='trash'" mat-menu-item [routerLink]="'/eventsmanager'">
+                    <mat-icon>event_available</mat-icon>
+                    <span>Available Events</span>
+                  </button>
+                </mat-menu>
+                <!-- / ADD BUTTON -->
+            </div>
+            
 
         </div>
         <!-- / HEADER -->
@@ -48,32 +94,30 @@
         <div class="content-card">
 
             <mat-table class="events-table"
-                       #table [dataSource]="dataSource"
-                       matSort
-                       [@animateStagger]="{value:'50'}"
-                       fusePerfectScrollbar>
+                      #table [dataSource]="dataSource"
+                      matSort
+                      [@animateStagger]="{value:'50'}"
+                      fusePerfectScrollbar style="padding: 0 10px">
                 <!-- auto num Column -->
                 <ng-container matColumnDef="num-auto">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>#</mat-header-cell>
-                  <mat-cell *matCellDef="let event; let i = index;">
-                    <div *ngIf="event.warning" style="float: right;"><mat-icon  style="color:red">error</mat-icon></div>
-                    <p class="text-truncate">{{i + 1}}</p>
+                  <mat-header-cell *matHeaderCellDef fxHide fxShow.gt-sm mat-sort-header class="table-cell-7vw">#</mat-header-cell>
+                  <mat-cell *matCellDef="let event; let i = index;" fxHide fxShow.gt-sm  class="table-cell-7vw">
+                    <p class="text-truncate"> {{ getSequenceNumber(i) }} </p>
                   </mat-cell>
                 </ng-container>
                 <!-- ID Column -->
                 <ng-container matColumnDef="oid">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
-                    <mat-cell *matCellDef="let event">
-                        <div *ngIf="event.warning" style="float: right;"><mat-icon  style="color:red">error</mat-icon></div>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header class="table-cell-7vw">ID</mat-header-cell>
+                    <mat-cell *matCellDef="let event" class="table-cell-7vw">
                         <p class="text-truncate">{{event.oid}}</p>
                     </mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="cliente">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Cliente</mat-header-cell>
-                    <mat-cell *matCellDef="let event">
+                    <mat-header-cell *matHeaderCellDef fxShow.gt-md mat-sort-header>Cliente</mat-header-cell>
+                    <mat-cell *matCellDef="let event" fxShow.gt-md>
                         <!-- <p class="text-truncate">{{event.customer.name}} {{event.customer.surname}}</p> -->
-                        <p class="text-truncate">{{event.cliente}}</p>
+                        <p>{{event.cliente}}</p>
                     </mat-cell>
                 </ng-container>
 
@@ -88,49 +132,53 @@
                 <ng-container matColumnDef="orari">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Date e Orari</mat-header-cell>
                     <mat-cell *matCellDef="let event">
-                        <div>
                             <!--<div class="firstline">{{event.from.toDate() | date: 'dd/MM/yyyy HH:mm'}}</div>
                             <div class="secondline">{{event.to.toDate() | date: 'dd/MM/yyyy HH:mm'}}</div>-->
                             <!-- getFormatDate() -->
-                            <div class="firstline">{{event.orari}}</div>
+                            <p>{{event.from}} ~ {{event.to}}</p>
                             <!-- <div class="secondline">{{event.dateTo}}</div> -->
-                        </div>
                     </mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="stato">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Stato</mat-header-cell>
-                    <mat-cell *matCellDef="let event">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header class="table-cell-10vw">Stato</mat-header-cell>
+                    <mat-cell *matCellDef="let event" class="table-cell-10vw">
                         <!-- <p class="text-truncate">{{event.status.descr}}</p> -->
                         <p class="text-truncate">{{event.stato}}</p>
                     </mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="business">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Attività</mat-header-cell>
-                    <mat-cell *matCellDef="let event">
+                    <mat-header-cell *matHeaderCellDef fxHide fxShow.gt-md mat-sort-header>Attività</mat-header-cell>
+                    <mat-cell *matCellDef="let event" fxHide fxShow.gt-md>
                         <!-- <p class="text-truncate">{{event.business.descr}}</p> -->
                         <p class="text-truncate">{{event.business}}</p>
                     </mat-cell>
                 </ng-container>
 
+                <ng-container matColumnDef="status">
+                  <mat-header-cell *matHeaderCellDef fxHide fxShow.gt-sm mat-sort-header class="table-cell-7vw">Status</mat-header-cell>
+                  <mat-cell *matCellDef="let event" fxHide fxShow.gt-sm class="table-cell-7vw">
+                    <span *ngIf="event.is_trash != 1"><mat-icon>delete</mat-icon></span>
+                    <span *ngIf="event.is_trash != 0"><mat-icon>restore</mat-icon></span>
+                  </mat-cell>
+                </ng-container>
                 
-                <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></mat-header-row>
-             
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
 
                 <mat-row *matRowDef="let event; columns: displayedColumns;"
-                         class="event"
-                         matRipple
-                         [routerLink]="'/eventsmanager/'+event.oid">
+                        class="event"
+                        matRipple
+                        [routerLink]="'/eventsmanager/'+event.oid">
                 </mat-row>
 
             </mat-table>
 
             <mat-paginator #paginator
-                           [length]="10"
-                           [pageIndex]="0"
-                           [pageSize]="10"
-                           [pageSizeOptions]="[5, 10, 25, 100]">
+                          [length]="10"
+                          [pageIndex]="0"
+                          [pageSize]="10"
+                          [pageSizeOptions]="[5, 10, 25, 100]">
             </mat-paginator>
 
         </div>

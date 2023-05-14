@@ -9,17 +9,18 @@
 
         <!-- HEADER -->
         <div class="header accent"
-             fxLayout="column" fxLayoutAlign="center center"
-             fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
+            fxLayout="column" fxLayoutAlign="center center"
+            fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center">
 
             <!-- APP TITLE -->
             <div class="logo mb-24 mb-md-0"
-                 fxLayout="row" fxLayoutAlign="start center">
+                fxLayout="row" fxLayoutAlign="start center">
                 <mat-icon class="logo-icon s-32 mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
                     group_work
                 </mat-icon>
                 <span class="logo-text h1" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
                     {{'RESOURCESMANAGER.TITLE' | translate}}
+                    <span *ngIf="isTrash=='trash'">(Trashed)</span>
                 </span>
             </div>
             <!-- / APP TITLE -->
@@ -50,6 +51,20 @@
             </button>
             <input hidden (change)="onChange($event)" #fileInput type="file" id="file">
             <!-- / ADD BUTTON -->
+
+            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button *ngIf="isTrash==''" mat-menu-item [routerLink]="'/resourcesmanager/trash/all'">
+                <mat-icon>delete</mat-icon>
+                <span>Trashed Events</span>
+              </button>
+              <button *ngIf="isTrash=='trash'" mat-menu-item [routerLink]="'/resourcesmanager'">
+                <mat-icon>event_available</mat-icon>
+                <span>Available Events</span>
+              </button>
+            </mat-menu>
         </div>
         </div>
         <!-- / HEADER -->
@@ -57,23 +72,23 @@
         <!-- CONTENT CARD -->
         <div class="content-card">
             <mat-table class="resources-table"
-                       #table [dataSource]="dataSource"
-                       matSort
-                       [@animateStagger]="{value:'50'}"
-                       fusePerfectScrollbar>
+                      #table [dataSource]="dataSource"
+                      matSort
+                      [@animateStagger]="{value:'50'}"
+                      fusePerfectScrollbar>
 
                 <!-- ID Column -->
                 <ng-container matColumnDef="num-auto">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header  fxShow.gt-md>#</mat-header-cell>
-                    <mat-cell *matCellDef="let resource; let i = index;"  fxShow.gt-md>
-                        <p class="text-truncate">{{i + 1}}</p>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header class="table-cell-12vw">#</mat-header-cell>
+                    <mat-cell *matCellDef="let i = index;" class="table-cell-12vw">
+                        <p class="text-truncate"> {{ getDSequenceNumber(i) }} </p>
                     </mat-cell>
                 </ng-container>
-
                 <!-- ID Column -->
+
                 <ng-container matColumnDef="oid">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header  fxShow.gt-md>ID</mat-header-cell>
-                    <mat-cell *matCellDef="let resource"  fxShow.gt-md>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header class="table-cell-12vw">ID</mat-header-cell>
+                    <mat-cell *matCellDef="let resource" class="table-cell-12vw">
                         <p class="text-truncate">{{resource.oid}}</p>
                     </mat-cell>
                 </ng-container>
@@ -92,15 +107,15 @@
 
                 <!-- Name Column -->
                 <ng-container matColumnDef="code">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-md>Codice</mat-header-cell>
-                    <mat-cell *matCellDef="let resource" fxHide fxShow.gt-md>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header class="table-cell-15vw">Codice</mat-header-cell>
+                    <mat-cell *matCellDef="let resource" class="table-cell-15vw">
                         <p class="text-truncate">{{resource.code}}</p>
                     </mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="name">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-md>Nome o Descrizione</mat-header-cell>
-                    <mat-cell *matCellDef="let resource" fxHide fxShow.gt-md>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Nome o Descrizione</mat-header-cell>
+                    <mat-cell *matCellDef="let resource">
                         <!--<p *ngIf="resource.descr" class="text-truncate">{{resource.descr}}</p>
                         <p *ngIf="!resource.descr" class="text-truncate">{{resource.name}}-{{resource.surname}}</p>-->
                         <p class="text-truncate">{{getResourceName(resource)}}</p>
@@ -108,31 +123,39 @@
                 </ng-container>
 
                 <ng-container matColumnDef="type">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-md>Tipo Risorsa</mat-header-cell>
-                    <mat-cell *matCellDef="let resource" fxHide fxShow.gt-md>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header class="table-cell-15vw">Tipo Risorsa</mat-header-cell>
+                    <mat-cell *matCellDef="let resource" class="table-cell-15vw">
                         <p  class="text-truncate">{{resource.resourceType.descr}}</p>
                     </mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="available">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Disponibile</mat-header-cell>
-                    <mat-cell *matCellDef="let resource" >
+                    <mat-header-cell *matHeaderCellDef mat-sort-header class="table-cell-7vw">Disponibile</mat-header-cell>
+                    <mat-cell *matCellDef="let resource" class="table-cell-7vw">
                         <mat-icon *ngIf="resource.available == 1" class="active-icon green-600 s-16">check</mat-icon>
                         <mat-icon *ngIf="resource.available == 0" class="active-icon red-500 s-16">close</mat-icon>
                     </mat-cell>
                 </ng-container>
             
                 <ng-container matColumnDef="qta">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-md>Quantità attuale</mat-header-cell>
-                    <mat-cell *matCellDef="let resource" fxHide fxShow.gt-md>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>Quantità attuale</mat-header-cell>
+                    <mat-cell *matCellDef="let resource" fxHide fxShow.gt-sm>
                         <p  class="text-truncate">{{resource.avail_qta}}</p>
                     </mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="eventCount">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-md>Event Count</mat-header-cell>
-                  <mat-cell *matCellDef="let resource" fxHide fxShow.gt-md>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>Event Count</mat-header-cell>
+                  <mat-cell *matCellDef="let resource" fxHide fxShow.gt-sm>
                       <p  class="text-truncate">{{resource.events.length}}</p>
+                  </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="status">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>Status</mat-header-cell>
+                  <mat-cell *matCellDef="let resource" fxHide fxShow.gt-sm>
+                    <span *ngIf="resource.is_trash != 1"><mat-icon>delete</mat-icon></span>
+                    <span *ngIf="resource.is_trash != 0"><mat-icon>restore</mat-icon></span>
                   </mat-cell>
                 </ng-container>
 
@@ -167,7 +190,7 @@
             <mat-paginator #paginator
                            [length]="10"
                            [pageIndex]="0"
-                           [pageSize]="100"
+                           [pageSize]="10"
                            [pageSizeOptions]="[5, 10, 25, 100]">
             </mat-paginator>
 

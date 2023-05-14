@@ -53,6 +53,12 @@
                        [@animateStagger]="{value:'50'}"
                        fusePerfectScrollbar>
 
+                <ng-container matColumnDef="auto-num">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>#</mat-header-cell>
+                    <mat-cell *matCellDef="let todo; let index = index;">
+                        <p class="text-truncate">{{index + 1}}</p>
+                    </mat-cell>
+                </ng-container>
                 <!-- ID Column -->
                 <ng-container matColumnDef="oid">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>

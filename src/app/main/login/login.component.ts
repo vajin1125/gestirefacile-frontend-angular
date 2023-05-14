@@ -103,8 +103,8 @@ export class LoginComponent implements OnInit {
                 this.disabled = false;
                 this.recaptcha = response;
                 this.changeDetectorRef.detectChanges();
-                console.log(this.recaptcha);
-                console.log(this.disabled);
+                // console.log(this.recaptcha);
+                // console.log(this.disabled);
             },
             'error-callback': (error) => {
                 this.disabled = true;
@@ -140,12 +140,11 @@ export class LoginComponent implements OnInit {
 
     }
 
-
     login() {
         let credentials = this.loginForm.value;
         let pwdEncrypt = SHA256(credentials.password) + "";
-        console.log(">>>>>>>>", credentials);
-        console.log("<<<<<", pwdEncrypt);
+        // console.log(">>>>>>>>", credentials);
+        // console.log("<<<<<", pwdEncrypt);
         this.authService.login(credentials.username, pwdEncrypt, this.recaptcha, this.rememberMe).subscribe(() => {
             this.router.navigate(['/dashboard']);
         },

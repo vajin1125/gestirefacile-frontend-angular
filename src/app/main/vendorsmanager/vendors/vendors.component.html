@@ -82,23 +82,23 @@
 
                 <!-- Name Column -->
                 <ng-container matColumnDef="name">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-md>Nome</mat-header-cell>
-                    <mat-cell *matCellDef="let vendor" fxHide fxShow.gt-md>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Nome</mat-header-cell>
+                    <mat-cell *matCellDef="let vendor" fxShow.gt-md>
                         <p class="text-truncate">{{vendor.name}}</p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Surname Column -->
                 <ng-container matColumnDef="surname">
-                    <mat-header-cell *matHeaderCellDef  mat-sort-header fxHide fxShow.gt-md>Cognome</mat-header-cell>
-                    <mat-cell *matCellDef="let vendor" fxHide fxShow.gt-md>
+                    <mat-header-cell *matHeaderCellDef  mat-sort-header fxShow.gt-md>Cognome</mat-header-cell>
+                    <mat-cell *matCellDef="let vendor" fxShow.gt-md>
                         <p class="text-truncate">{{vendor.surname}}</p>
                     </mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="business_name">
-                    <mat-header-cell *matHeaderCellDef  mat-sort-header fxHide fxShow.gt-md>Nome Attvità</mat-header-cell>
-                    <mat-cell *matCellDef="let vendor" fxHide fxShow.gt-md>
+                    <mat-header-cell *matHeaderCellDef  mat-sort-header fxShow.gt-md>Nome Attvità</mat-header-cell>
+                    <mat-cell *matCellDef="let vendor" fxShow.gt-md>
                         <p class="text-truncate">{{vendor.business_name}}</p>
                     </mat-cell>
                 </ng-container>

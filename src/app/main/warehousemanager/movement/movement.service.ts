@@ -37,7 +37,7 @@ export class MovementService implements Resolve<any>
     {
         this.routeParams = route.params;
 
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
 
             Promise.all([
                 this.getMovement()

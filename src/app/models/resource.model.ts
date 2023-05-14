@@ -22,6 +22,7 @@ export class Resource {
     email: string;
     tel?: string;
     cell?: string;
+    address?: string;
     image?: string;
     gender: string;
     own_car: boolean;
@@ -41,6 +42,9 @@ export class Resource {
     movements?: Movement[];
     prices?: Price[];
     warning: boolean = false;
+    servicePropertyNote: string;
+    events?: any;
+    is_trash: number;
 
     constructor(resource?)
     {
@@ -56,6 +60,7 @@ export class Resource {
         this.available = (resource.available == 1 || resource.available == "true")  || false;
         this.tel = resource.tel || '';
         this.cell = resource.cell || '';
+        this.address = resource.address || '';
         this.email = resource.email || '';
         this.gender = resource.gender || '';
         this.image = resource.image || '';
@@ -75,10 +80,10 @@ export class Resource {
         this.skills_assoc = resource.skills_assoc || [];
         this.movements = resource.movements || [];
         this.prices = resource.prices || [];
+        this.servicePropertyNote = resource.servicePropertyNote || '';
+        this.events = resource.events || [];
+        this.is_trash = resource.is_trash || '';
     }
-
-
-    
 }
 
 

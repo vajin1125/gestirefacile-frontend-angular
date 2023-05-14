@@ -46,6 +46,7 @@ export class Event
     vat: number = 0;
     total_taxable: string;
     attach_file: string;
+    is_trash: number;
 
     constructor(event?)
     {
@@ -83,6 +84,7 @@ export class Event
         this.vat = event.vat || 0;
         this.total_taxable = event.total_taxable || '';
         this.attach_file = event.attach_file || '';
+        this.is_trash = event.is_trash || 0;
     }
 }
 

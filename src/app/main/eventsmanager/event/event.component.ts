@@ -186,7 +186,7 @@ export class EventComponent implements OnInit, OnDestroy {
     displayedColumnsSummary = ["avatar", "category", "skill", "name", "qta", "hours", "days", "note"];
     displayedColumnsSummaryExtra = ["descr", "qta", "note"];
     //
-    disabledDate = new Date('2023-03-21');
+    // disabledDate = new Date('2023-03-21');
 
     // Private
     private _unsubscribeAll: Subject<any>;
@@ -230,7 +230,8 @@ export class EventComponent implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
-        let customerId = this.route.snapshot.queryParamMap.get('customerId');
+        let customerId = this.route.snapshot.queryParamMap.get('id');
+        console.log(customerId);
         this._businessService.getBusinesses().subscribe((businesses: Business[]) => {
             this.businesses = businesses;
             this.filteredBusinesses.next(this.businesses.slice());
@@ -565,6 +566,9 @@ export class EventComponent implements OnInit, OnDestroy {
                 this.eventForm.get(name).setValue(null);
             }
         }
+        // if (name === 'from_ts_hh') {
+        //   this.eventForm.get("to_ts_hh").setValue(event.target.value + 3);
+        // }
     }
 
 
@@ -927,7 +931,7 @@ export class EventComponent implements OnInit, OnDestroy {
     // }
 
 
-    print(elem) {
+    print1(elem) {
       // console.log("here is elem");
         /*let divToPrint = document.getElementById('invoice').innerHTML;
         let newWindow = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
@@ -989,6 +993,34 @@ export class EventComponent implements OnInit, OnDestroy {
         //         PDF.save("RIEPILOGO_" + this.event.customer.name + "_" + this.event.customer.surname + "_" + this.event.oid + ".pdf");
         //     }
         // });
+    }
+
+    public print(elem) {
+      const content = document.getElementById(elem);
+      content.style.border = "none";
+      html2canvas(content).then(canvas => {
+        // Convert the image to a base64-encoded string
+        const imgData = canvas.toDataURL('image/png');
+    
+        // Create a new PDF document
+        const pdf = new jspdf('p', 'mm', 'a4');
+    
+        // Set the width and height of the PDF document to the same as the image
+        // const width = 220;
+        const width = pdf.internal.pageSize.getWidth();
+        const height = canvas.height * width / canvas.width;
+        // const height = pdf.internal.pageSize.getHeight();
+
+        setTimeout(() => {
+          pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+        
+          // Set the filename
+          const filename = `${this.event.status.descr}${'_'}${this.event.customer.name}${'_'}${this.event.customer.surname}${'_'}${this.event.oid}${'.pdf'}`;
+          // Save the PDF document
+          pdf.save(filename);
+        })
+        
+      });
     }
 
 
@@ -1329,6 +1361,38 @@ export class EventComponent implements OnInit, OnDestroy {
             attach_file: this.event.attach_file
         });
 
+        ////////////////////////////////////////// Change date and hour and mins ///////////////////////
+
+        // this.eventForm.get('from_ts_hh').valueChanges.subscribe(fromHH => {
+        //   // console.log(fromHH);
+        //   if(fromHH != '') {
+        //     let toHH = parseInt(fromHH) + 3;
+        //     let toDate = this.eventForm.get("from").value;
+        //     if(fromHH >= 21) {
+        //       // console.log(this.eventForm.get("to").value);
+        //       let incToDate = new Date(toDate).setDate(new Date(toDate).getDate() + 1);
+        //       var formattedDate = this.datepipe.transform(incToDate, 'yyyy-MM-dd');
+        //       // console.log(formattedDate)
+        //       this.eventForm.get("to").setValue(formattedDate);
+        //       toHH = toHH % 24;
+        //     } else {
+        //       this.eventForm.get("to").setValue(toDate);
+        //     }
+        //     let vtoHH = toHH <= 9 ? '0'+toHH.toString() : toHH.toString();
+
+        //     // console.log(vtoHH);
+        //     this.eventForm.get('to_ts_hh').setValue(vtoHH);
+        //   }
+        //   this.calculateDiff();
+        // });
+
+        this.eventForm.get('from_ts_mi').valueChanges.subscribe(fromMM => {
+          this.eventForm.get('to_ts_mi').setValue(fromMM);
+        })
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+
         this.eventForm.get('from').valueChanges
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe(() => {
@@ -1337,8 +1401,28 @@ export class EventComponent implements OnInit, OnDestroy {
 
         this.eventForm.get('from_ts_hh').valueChanges
             .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe(() => {
-                this.calculateDiff();
+            .subscribe((fromHH) => {
+              // console.log(fromHH);
+              if(fromHH != '') {
+                let toHH = parseInt(fromHH) + 3;
+                let toDate = this.eventForm.get("from").value;
+                if(fromHH >= 21) {
+                  // console.log(this.eventForm.get("to").value);
+                  let incToDate = new Date(toDate).setDate(new Date(toDate).getDate() + 1);
+                  var formattedDate = this.datepipe.transform(incToDate, 'yyyy-MM-dd');
+                  // console.log(formattedDate)
+                  this.eventForm.get("to").setValue(formattedDate);
+                  toHH = toHH % 24;
+                } else {
+                  var formattedDate = this.datepipe.transform(toDate, 'yyyy-MM-dd');
+                  this.eventForm.get("to").setValue(formattedDate);
+                }
+                let vtoHH = toHH <= 9 ? '0'+toHH.toString() : toHH.toString();
+    
+                // console.log(vtoHH);
+                this.eventForm.get('to_ts_hh').setValue(vtoHH);
+              }
+              this.calculateDiff();
             });
 
         this.eventForm.get('from_ts_mi').valueChanges
@@ -1837,7 +1921,14 @@ export class EventComponent implements OnInit, OnDestroy {
       // console.log(this.eventForm.get('from').value);
       // console.log(this.datepipe.transform(this.eventForm.get('from').value, 'yyyy-MM-dd'))
       let dateFrom = this.datepipe.transform(this.eventForm.get('from').value, 'yyyy-MM-dd');
-      let dateTo = this.datepipe.transform(this.eventForm.get('to').value, 'yyyy-MM-dd')
+      let dateTo = this.datepipe.transform(this.eventForm.get('to').value, 'yyyy-MM-dd');
+
+      // var date1: any = new Date(dateFrom + "T" + this.eventForm.get('from_ts_hh').value + ":" + this.eventForm.get('from_ts_mi').value);
+      // var date2: any = new Date(dateTo + "T" + this.eventForm.get('to_ts_hh').value + ":" + this.eventForm.get('to_ts_mi').value);
+
+      // console.log("From: ", date1);
+      // console.log("to: ", date2);
+
         if (this.eventForm.get('from').value) {
             this.isDisabled = false;
         }
@@ -1855,14 +1946,14 @@ export class EventComponent implements OnInit, OnDestroy {
                 var date2: any = new Date(dateTo);
             }
 
-            if (date2 < date1) {
-                this._matSnackBar.open('La data di fine deve essere maggiore o uguale della data di inizio!', 'OK', {
-                    verticalPosition: 'top',
-                    duration: 2000
-                });
-                this.eventForm.get('to').setValue(null);
-                return;
-            }
+            // if (date2 < date1) {
+            //     this._matSnackBar.open('La data di fine deve essere maggiore o uguale della data di inizio!', 'OK', {
+            //         verticalPosition: 'top',
+            //         duration: 2000
+            //     });
+            //     this.eventForm.get('to').setValue(null);
+            //     return;
+            // }
             var diffDays: any = Math.floor((date2 - date1) / (1000 * 60 * 60 * 24));
             var diffHours: any = Math.floor((date2 - date1) / (1000 * 60 * 60));
             if (diffDays > 0) {
@@ -1942,6 +2033,7 @@ export class EventComponent implements OnInit, OnDestroy {
 
     async addEvent(): Promise<void> {
         const data = this.eventForm.getRawValue();
+        console.log(data);
         let arrayPkg = [];
         if (data.packages_assoc && data.packages_assoc.length > 0) {
             data.packages_assoc.forEach(element => {
@@ -2061,7 +2153,6 @@ export class EventComponent implements OnInit, OnDestroy {
       new Date("08/15/" + new Date().getFullYear()), // Ferragosto
       new Date("11/01/" + new Date().getFullYear()), // All Saints'Day
       new Date("12/08/" + new Date().getFullYear()), // Feast of the Immaculate Conception
-      new Date("12/25/" + new Date().getFullYear()), // Chrismas
       new Date("12/25/" + new Date().getFullYear()), // Chrismas in Italy
       new Date("12/26/" + new Date().getFullYear()), // Saint Stephen's Day
     ];
@@ -2074,11 +2165,24 @@ export class EventComponent implements OnInit, OnDestroy {
 
     }
 
-    onDateSelected(event: any) {
-      const formattedDate = this.datepipe.transform(event.value, 'yyyy-MM-dd');
-      // console.log(formattedDate); // Outputs the selected date in 'yyyy-MM-dd' string format
+    toDisableDatesFilter = (d: Date): boolean => {
+      const disabledDate = new Date(this.eventForm.get("from").value);
+      return d >= disabledDate;
+    }
+
+    onDateSelected(event: any, flag: any) {
+      var formattedDate = this.datepipe.transform(event.value, 'yyyy-MM-dd');
+      if(!flag) {
+        // console.log("from");
+        // console.log(formattedDate); // Outputs the selected date in 'yyyy-MM-dd' string format
+        this.eventForm.get("to").setValue(formattedDate);
+      } else {
+        // console.log("to")
+      }
       return formattedDate;
     }
+
+
     
     fileChangeEvent(fileInput: any) {
       console.log(fileInput.target.files);
@@ -2153,6 +2257,70 @@ export class EventComponent implements OnInit, OnDestroy {
         });
         console.log("Error addEvent " + error);
     });
+  }
+
+  moveToTrash(eventOid:any) {
+    console.log("move to trash", eventOid)
+    const data = this.eventForm.getRawValue();
+    console.log(data.oid);
+    let arrayPkg = [];
+    if (data.packages_assoc && data.packages_assoc.length > 0) {
+        data.packages_assoc.forEach(element => {
+            delete element.descr;
+            delete element.total_price;
+            arrayPkg.push(element.package);
+        });
+    }
+    data.packages_assoc = arrayPkg;
+    data.from = this.datepipe.transform(data.from, 'yyyy-MM-dd') + " " + data.from_ts_hh + ":" + data.from_ts_mi + ":" + "00";
+    data.to = this.datepipe.transform(data.to, 'yyyy-MM-dd') + " " + data.to_ts_hh + ":" + data.to_ts_mi + ":" + "00";
+    data.is_trash = 1;
+
+    this._eventService.moveToTrash(eventOid, data)
+      .then(() => {
+        this._matSnackBar.open('Evento spostato nel cestino', 'OK', {
+          verticalPosition: 'top',
+          duration: 2000
+        });
+      },
+      error => {
+        this._matSnackBar.open('Errore nel funzionamento!', 'OK', {
+          verticalPosition: 'top',
+          duration: 2000
+        });
+      })
+  }
+
+  restoreFromTrash(eventOid:any) {
+    console.log("restore from trash")
+    const data = this.eventForm.getRawValue();
+    console.log(data.oid);
+    let arrayPkg = [];
+    if (data.packages_assoc && data.packages_assoc.length > 0) {
+        data.packages_assoc.forEach(element => {
+            delete element.descr;
+            delete element.total_price;
+            arrayPkg.push(element.package);
+        });
+    }
+    data.packages_assoc = arrayPkg;
+    data.from = this.datepipe.transform(data.from, 'yyyy-MM-dd') + " " + data.from_ts_hh + ":" + data.from_ts_mi + ":" + "00";
+    data.to = this.datepipe.transform(data.to, 'yyyy-MM-dd') + " " + data.to_ts_hh + ":" + data.to_ts_mi + ":" + "00";
+    data.is_trash = 0;
+
+    this._eventService.restoreFromTrash(eventOid, data)
+      .then(() => {
+        this._matSnackBar.open('Evento ripristinato dal cestino', 'OK', {
+          verticalPosition: 'top',
+          duration: 2000
+        });
+      },
+      error => {
+        this._matSnackBar.open('Errore nel funzionamento!', 'OK', {
+          verticalPosition: 'top',
+          duration: 2000
+        });
+      })
   }
 
 }

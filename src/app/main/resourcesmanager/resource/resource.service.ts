@@ -64,6 +64,7 @@ export class ResourceService implements Resolve<any>
                 this._httpClient.get(Config.prop.apiEndpoint + "resources/search.php?oid=" + this.routeParams.id)
                     .subscribe((response: any) => {
                         this.resource = response[0];
+                        console.log(this.resource);
                         this.onUserChanged.next(this.resource);
                         resolve(response);
                     }, reject);
@@ -88,13 +89,14 @@ export class ResourceService implements Resolve<any>
 
         const formData = this.toFormData(resource);
         formData.append('logo', logo);
-
+        // console.log(formData);
         return new Promise((resolve, reject) => {
             this._httpClient.post(Config.prop.apiEndpoint + "resources/update.php", formData)
                 .subscribe((response: any) => {
 
                     //this.user = response[0];
-                    this.resource = response;
+                    this.resource = resource;
+                    // console.log(this.resource);
                     this.onUserChanged.next(this.resource);
                     resolve(response);
                 }, reject);
@@ -106,10 +108,12 @@ export class ResourceService implements Resolve<any>
         const formData = this.toFormData(resource);
         formData.append('logo', logo);
 
+        // console.log(formData);
+
         return new Promise((resolve, reject) => {
             this._httpClient.post(Config.prop.apiEndpoint + "resources/delete.php", formData)
                 .subscribe((response: any) => {
-
+                  // console.log(response);
                     //this.user = response[0];
                     //this.resource = response;
                     //this.onUserChanged.next(this.resource);
@@ -120,7 +124,6 @@ export class ResourceService implements Resolve<any>
 
     public toFormData<T>(formValue: T) {
         const formData = new FormData();
-
         for (const key of Object.keys(formValue)) {
             const value = formValue[key];
             if (value instanceof Array) {
@@ -146,12 +149,11 @@ export class ResourceService implements Resolve<any>
 
         const formData = this.toFormData(resource);
         formData.append('logo', logo);
-
-
+        // console.log(resource);
         return new Promise((resolve, reject) => {
             this._httpClient.post(Config.prop.apiEndpoint + "resources/insert.php", formData)
                 .subscribe((response: any) => {
-                    this.resource = response;
+                    this.resource = resource;
                     this.onUserChanged.next(this.resource);
                     resolve(response);
                 }, reject);
@@ -168,6 +170,36 @@ export class ResourceService implements Resolve<any>
     }
 
 
+    moveToTrash(resourceOid): Promise<any> {
+      let data = {
+        oid: resourceOid
+      };
+      return new Promise((resolve, reject) => {
+        this._httpClient.post(Config.prop.apiEndpoint + "resources/trash.php", data)
+          .subscribe((response:any) => {
+            // console.log(response)
+            // console.log(event_data)
+            // this.event = event_data
+            // this.onUserChanged.next(this.resource.is_trash = 1)
+            resolve(this.resource.is_trash = 1)
+          }, reject)
+      })
+    }
 
+    restoreFromTrash(resourceOid): Promise<any> {
+      let data = {
+        oid: resourceOid
+      };
+      return new Promise((resolve, reject) => {
+        this._httpClient.post(Config.prop.apiEndpoint + "resources/restore.php", data)
+          .subscribe((response:any) => {
+            // console.log(response)
+            // console.log(event_data)
+            // this.event = event_data
+            // this.onUserChanged.next(this.resource.is_trash = 0)
+            resolve(this.resource.is_trash = 0)
+          }, reject)
+      })
+    }
 
 }

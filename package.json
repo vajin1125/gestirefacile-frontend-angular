@@ -79,6 +79,7 @@
         "perfect-scrollbar": "1.4.0",
         "prismjs": "1.16.0",
         "rxjs": "6.5.2",
+        "saturn-datepicker": "8.0.5",
         "web-animations-js": "2.3.2",
         "xlsx": "0.16.9",
         "zone.js": "0.9.1"

@@ -3,6 +3,9 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { fuseAnimations } from '@fuse/animations';
+import { MatFabMenu } from '@angular-material-extensions/fab-menu';
+import { Location } from '@angular/common';
+import { includes } from 'lodash';
 
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Resource } from 'app/models/resource.model';
@@ -29,14 +32,14 @@ export class ResourcesComponent implements OnInit, OnDestroy, AfterViewInit {
      * @param {FuseTranslationLoaderService} _fuseTranslationLoaderService
      */
     private resources: Resource[];
-    displayedColumns = ['num-auto', 'oid', 'code', 'name', 'type', 'available', 'qta', 'eventCount'];
+    displayedColumns = ['num-auto', 'oid', 'code', 'name', 'type', 'available', 'qta', 'eventCount', 'status'];
 
     //dataSource: MatTableDataSource<Resource>;
     dataSource = new MatTableDataSource<Resource>();
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
-
+    isTrash:string = '';
 
     @ViewChild('filter', { static: true })
     filter: ElementRef;
@@ -49,7 +52,8 @@ export class ResourcesComponent implements OnInit, OnDestroy, AfterViewInit {
         private excelService: ExcelService,
         private _authService: AuthService,
         private _resourceService: ResourceService,
-        private _matSnackBar: MatSnackBar
+        private _matSnackBar: MatSnackBar,
+        private location: Location
     ) {
         this._fuseTranslationLoaderService.loadTranslations(english, italian);
     }
@@ -57,7 +61,11 @@ export class ResourcesComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
     ngOnInit(): void {
-        this._resourcesService.getResources().subscribe((resources: Resource[]) => {
+      const currentUrl = this.location.path();
+      // console.log(currentUrl);
+      this.isTrash = includes(currentUrl, 'trash') ? 'trash' : '';
+        this._resourcesService.getResources(this.isTrash).subscribe((resources: Resource[]) => {
+            // console.log(resources);
             this.resources = resources;
             this.dataSource.data = this.resources;
             //this.dataSource.sort = this.sort;
@@ -107,6 +115,15 @@ export class ResourcesComponent implements OnInit, OnDestroy, AfterViewInit {
 
     }
 
+    public getSequenceNumber(index: number): number {
+      return index + 1 + (this.paginator.pageIndex * this.paginator.pageSize);
+    }
+
+    public getDSequenceNumber(index: number): number {
+      const totalRows = this.dataSource.data.length;
+      return totalRows - (index + (this.paginator.pageIndex * this.paginator.pageSize));
+    }
+
     ngOnDestroy(): void {
 
     }
@@ -129,6 +146,7 @@ export class ResourcesComponent implements OnInit, OnDestroy, AfterViewInit {
             delete resource.oid;
 
         })
+        console.log(resourcesExcel);
         this.excelService.exportAsExcelFile(resourcesExcel, 'risorse');
     }
 

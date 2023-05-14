@@ -65,7 +65,19 @@
                     (click)="addMovement()">
                     <span>Aggiungi Movimento</span>
                 </button>
-               
+
+                &nbsp;
+                <div *ngIf="pageType !=='new' && this.resource.is_trash != 1; then moveTrash else restoreTrash"></div>
+                <ng-template #moveTrash>
+                  <button mat-raised-button class="save-resource-button" (click)="moveToTrash(this.resource.oid)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </ng-template>
+                <ng-template #restoreTrash>
+                  <button mat-raised-button class="save-resource-button" (click)="restoreFromTrash(this.resource.oid)">
+                    <mat-icon>restore</mat-icon>
+                  </button>
+                </ng-template>
             </div>
 
         </div>
@@ -84,7 +96,6 @@
                         <mat-tab label="Basic Info">
 
                             <div class="tab-content p-24" fusePerfectScrollbar>
-
 
                                 <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
 
@@ -187,6 +198,11 @@
                                                 target="_blank">WhatsApp</a></span></button>
                                 </mat-form-field>
 
+                                <mat-form-field *ngIf="showHuman || showOther" appearance="outline" floatLabel="always"
+                                    class="w-100-p">
+                                    <mat-label>Address</mat-label>
+                                    <input matInput placeholder="Address" name="address" formControlName="address">
+                                </mat-form-field>
 
                                 <mat-form-field *ngIf="showOther" appearance="outline" floatLabel="always"
                                     class="w-100-p">
@@ -276,13 +292,6 @@
                                     <input type="file" #UploadFileInput id="fileUpload"
                                         (change)="fileChangeEvent($event)" name="fileUpload" multiple="multiple"
                                         accept="image/*" />
-                                </mat-form-field>
-                                
-
-                                <mat-form-field *ngIf="showHuman || showOther" appearance="outline" floatLabel="always"
-                                    class="w-100-p">
-                                    <mat-label>Note</mat-label>
-                                    <textarea matInput placeholder="Note" name="note" formControlName="note"></textarea>
                                 </mat-form-field>
 
                                 <mat-form-field *ngIf="showHuman || showOther" appearance="outline" floatLabel="always"
@@ -448,7 +457,6 @@
                             <mat-table class="resources-table" #table [dataSource]='dataSource' matSort
                                 [@animateStagger]="{value:'50'}" fusePerfectScrollbar formArrayName="resources_assoc">
 
-
                                 <ng-container matColumnDef="resourceAssoc">
                                     <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Risorsa Associata
                                     </mat-header-cell>
@@ -479,6 +487,20 @@
                                     </mat-cell>
                                 </ng-container>
 
+                                <!-- <ng-container matColumnDef="address">
+                                  <mat-header-cell *matHeaderCellDef mat-sort-header>casella indirizzo
+                                  </mat-header-cell>
+                                  <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                      <input matInput placeholder="casella indirizzo" name="address" formControlName="address" type="text">
+                                  </mat-cell>
+                                </ng-container>
+
+                                <ng-container matColumnDef="refNumber">
+                                  <mat-header-cell *matHeaderCellDef mat-sort-header>numero referente</mat-header-cell>
+                                  <mat-cell *matCellDef="let element; let index = index" [formGroupName]="index">
+                                    <input matInput placeholder="numero referente" name="refNumber" formControlName="refNumber" type="text">
+                                  </mat-cell>
+                                </ng-container> -->
 
                                 <ng-container matColumnDef="delete">
                                     <mat-header-cell *matHeaderCellDef mat-sort-header>Rimuovi
@@ -499,12 +521,6 @@
                                     class="resource">
                                 </mat-row>
                             </mat-table>
-
-
-
-
-
-
                         </mat-tab>
 
                         <mat-tab *ngIf="this.resource && this.resource.resourceType.oid == 2"
@@ -596,6 +612,73 @@
 
 
                         </mat-tab>
+
+                        <mat-tab *ngIf="this.resource" label="Servizio e Immobile">
+                          <div class="tab-content p-24" fusePerfectScrollbar>
+                            <mat-form-field *ngIf="showHuman || showOther" appearance="outline" floatLabel="always" class="w-100-p">
+                              <mat-label>Servizio e Immobile</mat-label>
+                              <textarea matInput placeholder="Servizio e Immobile" name="servicePropertyNote" formControlName="servicePropertyNote" rows="20"></textarea>
+                            </mat-form-field>
+                          </div>
+                        </mat-tab>
+
+                        <mat-tab label="Related Events">
+                          <mat-table class="resources-table" #table [dataSource]='dataSourceEvents' matSort
+                              [@animateStagger]="{value:'50'}" fusePerfectScrollbar>
+
+
+                              <ng-container matColumnDef="oid">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header  fxShow.gt-md>EventID</mat-header-cell>
+                                  <mat-cell *matCellDef="let event; let i = index;" fxShow.gt-md>
+                                      <p class="text-truncate">{{event.oid_event}}</p>
+                                  </mat-cell>
+                              </ng-container>
+
+                              <ng-container matColumnDef="clientName">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header  fxShow.gt-md>Client Name</mat-header-cell>
+                                  <mat-cell *matCellDef="let event; let i = index;" fxShow.gt-md>
+                                      <p class="text-truncate">{{event.clientName}}</p>
+                                  </mat-cell>
+                              </ng-container>
+
+                              <ng-container matColumnDef="event_info">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header  fxShow.gt-md>Event Info</mat-header-cell>
+                                  <mat-cell *matCellDef="let event; let i = index;" fxShow.gt-md>
+                                      <p class="text-truncate">{{event.info_event}}</p>
+                                  </mat-cell>
+                              </ng-container>
+
+                              <ng-container matColumnDef="fromto">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header  fxShow.gt-md>From-To</mat-header-cell>
+                                  <mat-cell *matCellDef="let event; let i = index;" fxShow.gt-md>
+                                    <p>{{event.from}} ~ {{event.to}}</p>
+                                  </mat-cell>
+                              </ng-container>
+
+                              <ng-container matColumnDef="total_price">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header  fxShow.gt-md>Total Price</mat-header-cell>
+                                  <mat-cell *matCellDef="let event; let i = index;" fxShow.gt-md>
+                                      <p class="text-truncate">{{event.total_price}}</p>
+                                  </mat-cell>
+                              </ng-container>
+
+                              <ng-container matColumnDef="created_ts">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header  fxShow.gt-md>Created</mat-header-cell>
+                                  <mat-cell *matCellDef="let event; let i = index;" fxShow.gt-md>
+                                      <p class="text-truncate">{{event.creation_ts}}</p>
+                                  </mat-cell>
+                              </ng-container>
+
+                              <mat-header-row *matHeaderRowDef="displayedColumnsEvents; sticky:true">
+                              </mat-header-row>
+
+                              <mat-row *matRowDef="let event; let i = index; columns: displayedColumnsEvents;"
+                                  class="resource" matRipple [routerLink]="'/eventsmanager/'+event.oid_event">
+                              </mat-row>
+                          </mat-table>
+
+
+                      </mat-tab>
 
                         <mat-tab *ngIf="this.resource && this.resource.resourceType.oid == 2"
                             label="QR Code">

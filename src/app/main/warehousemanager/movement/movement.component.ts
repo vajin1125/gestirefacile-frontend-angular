@@ -167,10 +167,7 @@ export class MovementComponent implements OnInit, OnDestroy {
 
 
     async addMovement(): Promise<void> {
-
-
         const data = this.movementForm.getRawValue();
-
         this._movementService.addMovement(data)
             .then(() => {
 

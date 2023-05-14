@@ -69,7 +69,7 @@ export class MovementsComponent implements OnInit, OnDestroy {
 
     public doFilter = (value: string) => {
         this.dataSource.filterPredicate = (data, filter) =>{
-            console.log(JSON.stringify(data))
+            // console.log(JSON.stringify(data))
             return JSON.stringify(data).toLocaleLowerCase().indexOf(filter) != -1;
         } 
         this.dataSource.filter = value.trim().toLocaleLowerCase();

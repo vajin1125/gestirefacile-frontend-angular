@@ -60,14 +60,14 @@ export class EventService implements Resolve<any>
                 resolve(false);
             }
             else {
-              console.log("asdfasdfasdf");
-                this._httpClient.get(Config.prop.apiEndpoint + "events/search.php?oid=" + this.routeParams.id)
-                    .subscribe((response: any) => {
-                      console.log(response);
-                        this.event = response[0];
-                        this.onRoleChanged.next(this.event);
-                        resolve(response);
-                    }, reject);
+              console.log("aaaa", this.routeParams.id);
+              this._httpClient.get(Config.prop.apiEndpoint + "events/search.php?oid=" + this.routeParams.id)
+                  .subscribe((response: any) => {
+                    this.event = response[0];
+                    console.log(this.event);
+                    this.onRoleChanged.next(this.event);
+                    resolve(response);
+                  }, reject);
             }
         });
     }
@@ -110,8 +110,8 @@ export class EventService implements Resolve<any>
         return new Promise((resolve, reject) => {
             this._httpClient.post(Config.prop.apiEndpoint + "events/update.php", formData)
                 .subscribe((response: any) => {
-
-                    this.event = response;
+                    // console.log(response);
+                    this.event = evt;
                     this.onRoleChanged.next(this.event);
                     resolve(response);
                 }, reject);
@@ -134,11 +134,11 @@ export class EventService implements Resolve<any>
 
 
     addEvent(evt): Promise<any> {
-        console.log(">>>>>>>>>>>", evt);
+        // console.log(">>>>>>>>>>>", evt);
         return new Promise((resolve, reject) => {
             this._httpClient.post(Config.prop.apiEndpoint + "events/insert.php", evt)
                 .subscribe((response: any) => {
-                    this.event = response;
+                    this.event = evt;
                     this.onRoleChanged.next(this.event);
                     resolve(response);
                 }, reject);
@@ -176,7 +176,7 @@ export class EventService implements Resolve<any>
     uploadAttFile(oid, attFile: File): Promise<any> {
       const formData = this.toFormData(oid);
       formData.append('attch_file', attFile);
-      console.log(">>>>>>>>>>>", formData);
+      // console.log(">>>>>>>>>>>", formData);
 
         return new Promise((resolve, reject) => {
             this._httpClient.post(Config.prop.apiEndpoint + "events/update.php", formData)
@@ -205,5 +205,37 @@ export class EventService implements Resolve<any>
           }
       }
       return formData;
-  }
+    }
+
+    moveToTrash(eventOid, event_data): Promise<any> {
+      let data = {
+        oid: eventOid
+      };
+      return new Promise((resolve, reject) => {
+        this._httpClient.post(Config.prop.apiEndpoint + "events/trash.php", data)
+          .subscribe((response:any) => {
+            console.log(response)
+            console.log(event_data)
+            this.event = event_data
+            this.onRoleChanged.next(this.event)
+            resolve(event_data)
+          }, reject)
+      })
+    }
+
+    restoreFromTrash(eventOid, event_data): Promise<any> {
+      let data = {
+        oid: eventOid
+      };
+      return new Promise((resolve, reject) => {
+        this._httpClient.post(Config.prop.apiEndpoint + "events/restore.php", data)
+          .subscribe((response:any) => {
+            console.log(response)
+            console.log(event_data)
+            this.event = event_data
+            this.onRoleChanged.next(this.event)
+            resolve(event_data)
+          }, reject)
+      })
+    }
 }

@@ -61,6 +61,19 @@
                     class="save-resource-button" (click)="addPaymentAssoc()">
                     <span>Aggiungi Pagamento</span>
                 </button>
+                &nbsp;
+
+                <div *ngIf="pageType !=='new' && this.event.is_trash != 1; then moveTrash else restoreTrash"></div>
+                <ng-template #moveTrash>
+                  <button mat-raised-button class="save-resource-button" (click)="moveToTrash(this.event.oid)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </ng-template>
+                <ng-template #restoreTrash>
+                  <button mat-raised-button class="save-resource-button" (click)="restoreFromTrash(this.event.oid)">
+                    <mat-icon>restore</mat-icon>
+                  </button>
+                </ng-template>
             </div>
 
         </div>
@@ -215,7 +228,7 @@
                                           formControlName="from"
                                           [matDatepicker]="picker" 
                                           [matDatepickerFilter]="myHolidayFilter"
-                                          (dateChange)="onDateSelected($event)"
+                                          (dateChange)="onDateSelected($event, 0)"
                                           required>
                                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                                         <mat-datepicker #picker ></mat-datepicker>
@@ -275,8 +288,8 @@
                                           name="to" 
                                           formControlName="to"
                                           [matDatepicker]="picker1" 
-                                          [matDatepickerFilter]="myHolidayFilter"
-                                          (dateChange)="onDateSelected($event)"
+                                          [matDatepickerFilter]="toDisableDatesFilter"
+                                          (dateChange)="onDateSelected($event, 1)"
                                           required>
                                         <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
                                         <mat-datepicker #picker1 ></mat-datepicker>
@@ -318,14 +331,14 @@
                                     <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
                                         <mat-label>Duranta in giorni</mat-label>
                                         <input matInput placeholder="Durante in giorni dell'evento" name="total_days" formControlName="total_days" type="number" required
-                                            (input)="onChangeDurationDay($event.target.value)">
+                                            (input)="onChangeDurationDay($event.target.value)" min="0">
                                     </mat-form-field>
 
                                     <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
                                         <mat-label>Duranta in ore</mat-label>
                                         <input matInput placeholder="Durante in ore dell'evento" name="total_hours"
                                             formControlName="total_hours" type="number" required
-                                            (input)="onChangeDurationHour($event.target.value)">
+                                            (input)="onChangeDurationHour($event.target.value)" min="0" max="24">
                                     </mat-form-field>
 
                                 </div>
@@ -454,7 +467,7 @@
 
                                 </mat-toolbar>
                                 <mat-table class="events-table" #table [dataSource]='dataSourcePackage' matSort
-                                     formArrayName="packages_assoc">
+                                    formArrayName="packages_assoc">
 
 
                                     <ng-container matColumnDef="package">
@@ -1611,7 +1624,6 @@
                             </div>
                             <!-- / WIDGET GROUP -->
                         </mat-tab>
-                        
                         <mat-tab label="Pagamenti">
                             <mat-table class="events-table" #table [dataSource]='dataSourcePayment' matSort
                                  formArrayName="payment_assoc">
@@ -1733,31 +1745,22 @@
 
                         </mat-tab>
                         <mat-tab label="Allegati">
-                            <!--<mat-table class="events-table" #table [dataSource]='dataSource' matSort
-                                [@animateStagger]="{value:'50'}" fusePerfectScrollbar formArrayName="eventDetails">
-                                <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true">
-                                </mat-header-row>
-
-                                <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;" class="event">
-                                </mat-row>
-                            </mat-table>-->
-                            <div style="width: 100%; text-align: center;">
-                              <mat-form-field appearance="outline" floatLabel="always" class="w-50-p">
+                            <div style="width: 100%; text-align: center;" class="p-24">
+                              <mat-form-field appearance="outline" floatLabel="always" class="w-100-p" style="margin-top: 50px;">
                                 <mat-label>Attache File: </mat-label>
                                 <mat-toolbar>
                                   <input matInput placeholder="Scegli una foto" id="attach_file" name="attach_file" formControlName="attach_file" />
                                     <button mat-flat-button> Scegli </button>
                                 </mat-toolbar>
-                                <input type="file" #UploadFileInput (change)="fileChangeEvent($event)" name="uploadAttachFile" multiple="multiple" accept="*" />
+                                <input type="file" #UploadFileInput (change)="fileChangeEvent($event)" id="uploadAttachFile" name="uploadAttachFile" multiple="multiple" accept="*" />
                               </mat-form-field>
                               
-                              <div  
-                                  class="w-100-p">
+                              <div class="w-100-p">
                                   <!-- <img awesomeTooltip="Hello World!" image="{{fileSrc}}" style="width:100px;height:100px;" *ngIf="fileSrc" src={{fileSrc}} > -->
                                   <!-- <ul>
                                     <li *ngFor="let file of attFile"> -->
                                       <p *ngIf="pageType !=='new' || event.attach_file !== ''">{{event.attach_file}}
-                                      <a href={{attSrc}}>Download</a></p>
+                                      <a *ngIf="event.attach_file !== ''" href={{attSrc}}>Download</a></p>
                                     <!-- </li> -->
                                   <!-- </ul> -->
                               </div>

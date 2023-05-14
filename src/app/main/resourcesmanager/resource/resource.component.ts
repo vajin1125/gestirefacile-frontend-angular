@@ -82,6 +82,7 @@ export class ResourceComponent implements OnInit, OnDestroy {
     dataSource: any;
     dataSourceMov: any;
     dataSourcePrice: any;
+    dataSourceEvents: any;
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
@@ -101,6 +102,7 @@ export class ResourceComponent implements OnInit, OnDestroy {
     displayedColumns = ['resourceAssoc', 'qta', 'delete'];
     displayedColumnsMov = ['oid', 'qta', 'reason', 'time'];
     displayedColumnsPrice = ['descr', 'price', 'default', 'delete'];
+    displayedColumnsEvents = ['oid', 'clientName', 'event_info', 'fromto', 'total_price', 'created_ts']
 
     @ViewChild('qrCodeElement', {static: false}) qrCodeElement: ElementRef;
     qrData: string;
@@ -240,6 +242,7 @@ export class ResourceComponent implements OnInit, OnDestroy {
                     this.dataSource = this.resource.resources_assoc;
                     this.dataSourceMov = this.resource.movements;
                     this.dataSourcePrice = this.resource.prices;
+                    this.dataSourceEvents = this.resource.events;
                 }
                 else {
                     this.pageType = 'new';
@@ -508,6 +511,7 @@ export class ResourceComponent implements OnInit, OnDestroy {
             gender: [this.resource.gender],
             tel: [this.resource.tel],
             cell: [this.resource.cell],
+            address: [this.resource.address],
             image: [{ value: this.resource.image, disabled: true }],
             own_car: this.resource.own_car,
             resourceType: this.resource.resourceType,
@@ -527,7 +531,8 @@ export class ResourceComponent implements OnInit, OnDestroy {
             categories_assoc: this.getCategories(),
             skills_assoc: this.getSkills(),
             movements: this.resource.movements,
-            prices: this.getPrices()
+            prices: this.getPrices(),
+            servicePropertyNote: this.resource.servicePropertyNote,
         });
 
         return this.resourceForm;
@@ -541,7 +546,9 @@ export class ResourceComponent implements OnInit, OnDestroy {
     getResources(): FormArray {
         return new FormArray(this.resource.resources_assoc.map(item => new FormGroup({
             resourceAssoc: new FormControl(item.resourceAssoc),
-            qta: new FormControl(item.qta)
+            qta: new FormControl(item.qta),
+            address: new FormControl(item.address),
+            refNumber: new FormControl(item.refNumber)
         })));
     }
 
@@ -554,7 +561,9 @@ export class ResourceComponent implements OnInit, OnDestroy {
     addResourceAssoc() {
         this.resourcesAssoc.push(new FormGroup({
             resourceAssoc: new FormControl(null),
-            qta: new FormControl(null)
+            qta: new FormControl(null),
+            address: new FormControl(null),
+            refNumber: new FormControl(null)
         }));
         this.dataSource = this.resourcesAssoc.value;
     }
@@ -888,6 +897,71 @@ export class ResourceComponent implements OnInit, OnDestroy {
             });
     }
 
+    moveToTrash(resourceOid:any) {
+      console.log("move to trash", resourceOid)
+      // const data = this.eventForm.getRawValue();
+      // console.log(data.oid);
+      // let arrayPkg = [];
+      // if (data.packages_assoc && data.packages_assoc.length > 0) {
+      //     data.packages_assoc.forEach(element => {
+      //         delete element.descr;
+      //         delete element.total_price;
+      //         arrayPkg.push(element.package);
+      //     });
+      // }
+      // data.packages_assoc = arrayPkg;
+      // data.from = this.datepipe.transform(data.from, 'yyyy-MM-dd') + " " + data.from_ts_hh + ":" + data.from_ts_mi + ":" + "00";
+      // data.to = this.datepipe.transform(data.to, 'yyyy-MM-dd') + " " + data.to_ts_hh + ":" + data.to_ts_mi + ":" + "00";
+      // data.is_trash = 1;
+  
+      this._resourceService.moveToTrash(resourceOid)
+        .then(() => {
+          this.resource.is_trash = 1;
+          this._matSnackBar.open('Evento spostato nel cestino', 'OK', {
+            verticalPosition: 'top',
+            duration: 2000
+          });
+        },
+        error => {
+          this._matSnackBar.open('Errore nel funzionamento!', 'OK', {
+            verticalPosition: 'top',
+            duration: 2000
+          });
+        })
+    }
+  
+    restoreFromTrash(resourceOid:any) {
+      console.log("restore from trash")
+      // const data = this.eventForm.getRawValue();
+      // console.log(data.oid);
+      // let arrayPkg = [];
+      // if (data.packages_assoc && data.packages_assoc.length > 0) {
+      //     data.packages_assoc.forEach(element => {
+      //         delete element.descr;
+      //         delete element.total_price;
+      //         arrayPkg.push(element.package);
+      //     });
+      // }
+      // data.packages_assoc = arrayPkg;
+      // data.from = this.datepipe.transform(data.from, 'yyyy-MM-dd') + " " + data.from_ts_hh + ":" + data.from_ts_mi + ":" + "00";
+      // data.to = this.datepipe.transform(data.to, 'yyyy-MM-dd') + " " + data.to_ts_hh + ":" + data.to_ts_mi + ":" + "00";
+      // data.is_trash = 0;
+  
+      this._resourceService.restoreFromTrash(resourceOid)
+        .then(() => {
+          this.resource.is_trash = 0;
+          this._matSnackBar.open('Evento ripristinato dal cestino', 'OK', {
+            verticalPosition: 'top',
+            duration: 2000
+          });
+        },
+        error => {
+          this._matSnackBar.open('Errore nel funzionamento!', 'OK', {
+            verticalPosition: 'top',
+            duration: 2000
+          });
+        })
+    }
 }
 
 

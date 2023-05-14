@@ -58,20 +58,27 @@
             <mat-table class="customers-table" #table [dataSource]="dataSource" matSort [@animateStagger]="{value:'50'}" fusePerfectScrollbar>
 
                 <!-- # Column -->
-                <ng-container matColumnDef="num-auto">
+                <!-- <ng-container matColumnDef="num-auto">
                   <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>#</mat-header-cell>
-                  <mat-cell *matCellDef="let customer; let i = index;" fxShow.gt-md>
-                      <p class="text-truncate">{{i + 1}}</p>
+                  <mat-cell *matCellDef="let i = index;" fxShow.gt-md>
+                      <p class="text-truncate"> {{ getSequenceNumber(i) }} </p>
                   </mat-cell>
-              </ng-container>
+              </ng-container> -->
 
                 <!-- ID Column -->
                 <ng-container matColumnDef="oid">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>ID</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>UniqeID</mat-header-cell>
                     <mat-cell *matCellDef="let customer" fxShow.gt-md>
                         <p class="text-truncate">{{customer.oid}}</p>
                     </mat-cell>
                 </ng-container>
+
+                <ng-container matColumnDef="oid_customer_by_user">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>ClientiID</mat-header-cell>
+                  <mat-cell *matCellDef="let customer" fxShow.gt-md>
+                      <p class="text-truncate">{{customer.oid_customer_by_user}}</p>
+                  </mat-cell>
+              </ng-container>
 
                 <!-- Image Column 
                 <ng-container matColumnDef="image">
@@ -87,16 +94,16 @@
 
                 <!-- Name Column -->
                 <ng-container matColumnDef="name">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-md>Nome</mat-header-cell>
-                    <mat-cell *matCellDef="let customer" fxHide fxShow.gt-md>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Nome</mat-header-cell>
+                    <mat-cell *matCellDef="let customer" fxShow.gt-md>
                         <p class="text-truncate">{{customer.name}}</p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Surname Column -->
                 <ng-container matColumnDef="surname">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-md>Cognome</mat-header-cell>
-                    <mat-cell *matCellDef="let customer" fxHide fxShow.gt-md>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxShow.gt-md>Cognome</mat-header-cell>
+                    <mat-cell *matCellDef="let customer" fxShow.gt-md>
                         <p class="text-truncate">{{customer.surname}}</p>
                     </mat-cell>
                 </ng-container>
@@ -104,8 +111,8 @@
 
                 <!-- Username Column -->
                 <ng-container matColumnDef="email">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Email</mat-header-cell>
-                    <mat-cell *matCellDef="let customer">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-md>Email</mat-header-cell>
+                    <mat-cell *matCellDef="let customer" fxHide fxShow.gt-md>
                         <p class="text-truncate">{{customer.email}}</p>
                     </mat-cell>
                 </ng-container>
@@ -138,7 +145,7 @@
 
             </mat-table>
 
-            <mat-paginator #paginator [length]="10" [pageIndex]="0" [pageSize]="10"
+            <mat-paginator #paginator [length]="dataSource?.data?.length" [pageIndex]="0" [pageSize]="10"
                 [pageSizeOptions]="[5, 10, 25, 100]">
             </mat-paginator>
 

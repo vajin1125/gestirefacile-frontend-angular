@@ -100,7 +100,7 @@ export class CustomerComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.route.params.subscribe(params => {
           this.customer_id = params['id']; // get the value of the 'id' parameter
-          console.log(this.customer_id);
+          // console.log(this.customer_id);
         });
         this._circlemanagerService.getCircles().subscribe((circles: Circle[]) => {
             this.circles = circles;
@@ -176,7 +176,7 @@ export class CustomerComponent implements OnInit, OnDestroy {
           this.dataSourceEvent = new MatTableDataSource(extractData);
           this.dataSourceEvent.sort = this.sort;
           this.dataSourceEvent.paginator = this.paginator
-          console.log(this.dataSourceEvent)
+          // console.log(this.dataSourceEvent)
         }, error => console.error(error));
         //setTimeout(() => this.dataSourceEvent.paginator = this.paginator)
 
@@ -200,7 +200,7 @@ export class CustomerComponent implements OnInit, OnDestroy {
           this.dataSourceEventNew = new MatTableDataSource(extractData);
           this.dataSourceEventNew.sort = this.sort;
           this.dataSourceEventNew.paginator = this.paginator
-          console.log(this.dataSourceEventNew)
+          // console.log(this.dataSourceEventNew)
         }, error => console.error(error));
     }
 
@@ -248,6 +248,7 @@ export class CustomerComponent implements OnInit, OnDestroy {
     createCustomerForm(): FormGroup {
         this.customerForm = this._formBuilder.group({
             oid: [this.customer.oid],
+            oid_customer_by_user: [this.customer.oid_customer_by_user],
             name: [this.customer.name, Validators.required],
             surname: [this.customer.surname, Validators.required],
             address: [this.customer.address, Validators.required],
