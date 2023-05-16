@@ -37,7 +37,7 @@ export class AuthService {
           // login successful if there's a jwt token in the response
           // console.log(response.body);
           this.loggedUser = response.body;
-          //console.log(this.loggedUser);
+          // console.log(this.loggedUser);
           let token = this.loggedUser.token;
           let superuser = this.loggedUser.superuser;
           //let refreshToken = response.body.refreshToken;
@@ -177,6 +177,23 @@ export class AuthService {
       }
     })
     return isEditor;
+  }
+
+  isEntertrainer(): boolean {
+    let isEntertrainer: boolean = false;
+    let loggedUser:User;
+    if (localStorage.getItem('loggedUser')) {
+      loggedUser = JSON.parse(localStorage.getItem('loggedUser'));
+    }
+    if (sessionStorage.getItem('loggedUser')) {
+      loggedUser = JSON.parse(sessionStorage.getItem('loggedUser'));
+    }
+    loggedUser.role_user_assoc.forEach((roleassoc)=> {
+      if (roleassoc.role.acronym == "ENTERTRAINER") {
+        isEntertrainer = true;
+      }
+    })
+    return isEntertrainer;
   }
 
   isResource(): boolean {

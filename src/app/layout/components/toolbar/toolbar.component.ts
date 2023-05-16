@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 import { FuseConfigService } from '@fuse/services/config.service';
 import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
 
-import { navigation, navigationManager, navigationSuper, navigationColleborator, navigationCustomer } from 'app/navigation/navigation';
+import { navigation, navigationManager, navigationSuper, navigationColleborator, navigationCustomer, navigationEntertrainer } from 'app/navigation/navigation';
 import { AuthService } from 'app/security/services/auth.service';
 import { Router } from '@angular/router';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
@@ -137,6 +137,9 @@ export class ToolbarComponent implements OnInit, OnDestroy {
         }
         else if (this.currentUser && this.authService.isCustomer()) {
           this.navigation = navigationCustomer;
+        }
+        else if (this.currentUser && this.authService.isEntertrainer()) {
+          this.navigation = navigationEntertrainer;
         }
         this._fuseNavigationService.unregister('main');
         // Register the navigation to the service

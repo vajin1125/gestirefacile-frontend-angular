@@ -95,6 +95,9 @@ export const locale = {
             },
             'EVENTS_RESOURCE' : {
                 'TITLE' : 'Eventi e Risorse'
+            },
+            'ENTERTRAINER_AVAILABILITY' : {
+              'TITLE' : 'Disponibilità di animatori'
             }
         }
     }

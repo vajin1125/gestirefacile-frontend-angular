@@ -282,7 +282,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });*/
       this._eventsService.getEvents().subscribe((events: Event[]) => {
         this.allEvents = events;
-        // console.log("<<<<<< Load available events:", events);
+        console.log("<<<<<< Load available events:", events);
             events.forEach(element => {
                 if (element.status.oid == 2) {// SOLO CONFERMATI
                   let evt = new CalendarEventModel();
@@ -307,6 +307,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                   this.refresh.next();
                 }
             });
+          console.log(this.events);
         }, error => console.error(error));
     }
 

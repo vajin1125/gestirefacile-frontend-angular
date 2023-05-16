@@ -95,6 +95,9 @@ export const locale = {
             },
             'EVENTS_RESOURCE' : {
                 'TITLE' : 'Events & Resources'
+            },
+            'ENTERTRAINER_AVAILABILITY' : {
+              'TITLE' : 'Availability of Entertrainer'
             }
         }
     }

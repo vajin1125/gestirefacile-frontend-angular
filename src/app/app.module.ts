@@ -61,6 +61,7 @@ import { PlansmanagerModule } from './main/plansmanager/plansmanager.module';
 import { PackagesmanagerModule } from './main/packagemanager/packagemanager.module';
 import { TodolistmanagerModule } from './main/todomanager/todomanager.module';
 import { FirstnoteModule } from './main/firstnote/firstnote.module';
+import { EntertrainersmanagerModule } from './main/entertrainersmanager/entertrainersmanager.module';
 
 
 
@@ -211,6 +212,10 @@ const appRoutes: Routes = [
     {
       path     : 'firstnote',
       loadChildren: './main/firstnote/firstnote.module#FirstnoteModule'
+    },
+    {
+      path     : 'entertrainersmanager',
+      loadChildren: './main/entertrainersmanager/entertrainersmanager.module#EntertrainersmanagerModule'
     }
     
 ];
@@ -298,7 +303,8 @@ export class BaluHammerConfig extends HammerGestureConfig {
         AngularFireModule.initializeApp(environment.firebase),
         AngularFireMessagingModule,
         //NgcCookieConsentModule.forRoot(cookieConfig),
-        FirstnoteModule
+        FirstnoteModule,
+        EntertrainersmanagerModule
     ],
     providers: [AuthService, httpInterceptorProviders, AuthGuard,{provide: LOCALE_ID, useValue: 'it'},
     {
