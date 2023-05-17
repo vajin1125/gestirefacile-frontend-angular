@@ -96,7 +96,11 @@ export class EntertrainersComponent implements OnInit, OnDestroy {
     this.isEntertrainer = this.authService.isEntertrainer();
     // console.log(this.authService.getLoggedUser());
     this._calendarService.onEventsUpdated.subscribe(events => {
-      // this.setEntertrainers();
+      if (this.isEntertrainer) {
+        this.setEntertrainers(this.loggeduserInfo.oid);
+      } else {
+        this.setEntertrainers();
+      }
       // this.setTodo();
       this.refresh.next();
   });
@@ -117,7 +121,7 @@ export class EntertrainersComponent implements OnInit, OnDestroy {
   }
 
 filterEventByBusiness(business:Business[], status:any,) {
-    console.log('Filtro per business', business);
+    // console.log('Filtro per business', business);
     this.events = [];
     business.forEach(b => {
         this.allEntertrainers.forEach(element => {
@@ -147,7 +151,7 @@ setEntertrainers(user_oid=null): void {
   });*/
   this._entertrainersService.getEntertrainers(user_oid).subscribe((events: EntertrainerAvailability[]) => {
     this.allEntertrainers = events;
-    console.log("<<<<<< Load available events:", events);
+    // console.log("<<<<<< Load available events:", events);
         events.forEach(element => {
           // if (element.oid == 2) {// SOLO CONFERMATI
             let evt = new CalendarEventModel();
@@ -165,7 +169,7 @@ setEntertrainers(user_oid=null): void {
             // console.log(this.events)
           // }
         });
-        console.log(this.events)
+        // console.log(this.events)
     }, error => console.error(error));
 }
 
@@ -238,7 +242,7 @@ eventTimesChanged({ event, newStart, newEnd }: CalendarEventTimesChangedEvent): 
 
 async deleteAvailability(event): Promise<void> {
 
-  console.log(event);
+  // console.log(event);
   this.confirmDialogRef = this._matDialog.open(FuseConfirmDialogComponent, {
       disableClose: false
   });
@@ -303,7 +307,29 @@ async editAvailability(action: string, event): Promise<void> {
                 // console.log(formData.value);
 
                 await this._entertrainersService.updatevAilability(formData.value)
-                  .then(() => {
+                  .then((response) => {
+
+                    // console.log(response)
+                    
+                    let evt = new CalendarEventModel();
+                    evt.id = response.id;
+                    evt.actions = this.actions;
+                    evt.start = new Date(response.start);
+                    evt.end = new Date(response.end);
+                    evt.title = response.title;
+                    evt.color = { primary: response.color.primary, secondary: response.color.secondary };
+                    evt.meta.type = 0;
+                    evt.meta.location = response.meta.location;
+                    evt.meta.notes = response.meta.notes;
+
+                    const eventIndex = this.events.findIndex(event => event.id === formData.value.id);
+                    // console.log(eventIndex);
+                    // console.log(evt);
+                    // this.events.push(evt);
+                    this.events.splice(eventIndex, 1, evt);
+                    // console.log(this.events);
+                    this.refresh.next(true);
+
                     this._matSnackBar.open('Updated Availability', 'OK', {
                       verticalPosition: 'top',
                       duration: 2000
@@ -315,8 +341,8 @@ async editAvailability(action: string, event): Promise<void> {
                     })
                   })
 
-                this.events[eventIndex] = Object.assign(this.events[eventIndex], formData.getRawValue());
-                this.refresh.next(true);
+                // this.events[eventIndex] = Object.assign(this.events[eventIndex], formData.getRawValue());
+                // this.refresh.next(true);
 
                 break;
 
@@ -334,7 +360,7 @@ async editAvailability(action: string, event): Promise<void> {
 * Add Event
 */
 async addAvailability(): Promise<void> {
-  console.log(">>>>>>calendar event click");
+  // console.log(">>>>>>calendar event click");
   this.dialogRef = this._matDialog.open(ModalformComponent, {
       panelClass: 'event-form-dialog',
       data: {
@@ -349,11 +375,26 @@ async addAvailability(): Promise<void> {
         }
         const newEvent = response.getRawValue();
         newEvent.actions = this.actions;
-        const A:EntertrainerAvailability = new EntertrainerAvailability(newEvent);
-        console.log(A);
 
         await this._entertrainersService.addAvailability(newEvent)
-          .then(response => {
+        .then(response => {
+          // console.log(response)
+          
+            let evt = new CalendarEventModel();
+            evt.id = response.id;
+            evt.actions = this.actions;
+            evt.start = new Date(response.start);
+            evt.end = new Date(response.end);
+            evt.title = response.title;
+            evt.color = { primary: response.color.primary, secondary: response.color.secondary };
+            evt.meta.type = 0;
+            evt.meta.location = response.meta.location;
+            evt.meta.notes = response.meta.notes;
+            
+            // console.log(evt);
+            this.events.push(evt);
+            this.refresh.next(true);
+
             this._matSnackBar.open('Added Availability', 'OK', {
               verticalPosition: 'top',
               duration: 2000
@@ -364,9 +405,6 @@ async addAvailability(): Promise<void> {
               duration: 2000
             })
           })
-
-        this.events.push(newEvent);
-        this.refresh.next(true);
     });
 }
 

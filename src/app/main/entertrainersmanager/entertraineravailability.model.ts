@@ -6,8 +6,8 @@ export class CalendarEntertrainerAvailiabilityModel
     id?: number;
     start: Date;
     end?: Date;
-    startTime: string;
-    endTime: string;
+    // startTime: string;
+    // endTime: string;
     title: string;
     color: {
         primary: string;
@@ -39,8 +39,8 @@ export class CalendarEntertrainerAvailiabilityModel
         this.id = data.id;
         this.start = new Date(data.start) || startOfDay(new Date());
         this.end = new Date(data.end) || endOfDay(new Date());
-        this.startTime = '';
-        this.endTime = '';
+        // this.startTime = '';
+        // this.endTime = '';
         this.title = data.title || '';
         this.color = {
             primary  : data.color && data.color.primary || '#1e90ff',

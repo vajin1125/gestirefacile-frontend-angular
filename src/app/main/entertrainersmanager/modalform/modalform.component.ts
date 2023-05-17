@@ -70,6 +70,8 @@ export class ModalformComponent {
       start : new FormControl(this.event.start),
       end   : new FormControl(this.event.end),
       allDay: new FormControl(this.event.allDay),
+      startTime: new FormControl(this.extractTime(this.event.start)),
+      endTime: new FormControl(this.extractTime(this.event.end)),
       color : this._formBuilder.group({
         primary  : new FormControl(this.event.color.primary),
         secondary: new FormControl(this.event.color.secondary)
@@ -80,6 +82,14 @@ export class ModalformComponent {
           notes   : new FormControl(this.event.meta.notes)
         })
     });
+  }
+
+  extractTime(dateString:any): string {
+    const date = new Date(dateString);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const result = hours + ':' + minutes;
+    return result;
   }
 
 }

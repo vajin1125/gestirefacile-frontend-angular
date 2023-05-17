@@ -168,7 +168,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     filterEventByStatus(status:any, business:Business[]) {
-        console.log('Filtro per status', status);
+        // console.log('Filtro per status', status);
         this.events = [];
         status.forEach(st => {
             this.allEvents.forEach(element => {
@@ -214,7 +214,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     filterEventByBusiness(business:Business[], status:any,) {
-        console.log('Filtro per business', business);
+        // console.log('Filtro per business', business);
         this.events = [];
         business.forEach(b => {
             this.allEvents.forEach(element => {
@@ -241,7 +241,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
 
     filterTodo(status:any) {
-      console.log("<<<<<< Click event");
+      // console.log("<<<<<< Click event");
         
         if (status.length == 1) {
             this.allTodo.forEach(element => {
@@ -282,7 +282,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });*/
       this._eventsService.getEvents().subscribe((events: Event[]) => {
         this.allEvents = events;
-        console.log("<<<<<< Load available events:", events);
+        // console.log("<<<<<< Load available events:", events);
             events.forEach(element => {
                 if (element.status.oid == 2) {// SOLO CONFERMATI
                   let evt = new CalendarEventModel();
@@ -307,7 +307,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                   this.refresh.next();
                 }
             });
-          console.log(this.events);
+          // console.log(this.events);
         }, error => console.error(error));
     }
 
@@ -361,7 +361,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
 
     onSelected(event) {
-        console.log(event)
+        // console.log(event)
         if (event == 1) {
             //this.addEvent();
             //this.router.navigateByUrl('/eventsmanager/new');

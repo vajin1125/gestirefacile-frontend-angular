@@ -77,17 +77,19 @@ export class EntertrainersService {
     // console.log(objectData.start.toDateString());
     // objectData.start = new Date(objectData.start.toLocaleString()).toISOString();
     // objectData.end = new Date(objectData.end.toLocaleString()).toISOString();
+    objectData.start = this.extractDate(objectData.start) + 'T' + objectData.startTime;
+    objectData.end = this.extractDate(objectData.end) + 'T' + objectData.endTime;
     const jsonString = JSON.stringify(objectData);
     return jsonString;
   }
 
   deleteAvailability(event): Promise<any> {
     const data = this.toJsonStringData(event);
-    console.log(JSON.stringify(event));
+    // console.log(JSON.stringify(event));
     return new Promise((resolve, reject) => {
         this._httpClient.post(Config.prop.apiEndpoint + "entertrainers/delete.php", data)
             .subscribe((response: any) => {
-              console.log(response);
+              // console.log(response);
                 //this.user = response[0];
                 //this.resource = response;
                 //this.onUserChanged.next(this.resource);
@@ -97,9 +99,12 @@ export class EntertrainersService {
   }
 
   addAvailability(event): Promise<any> {
-    console.log(event);
+    // console.log(event);
     const data = this.toJsonStringData(event);
-    console.log(data);
+    // console.log(data);
+
+    // console.log(this.extractDate(event.start))
+
     return new Promise((resolve, reject) => {
       this._httpClient.post(Config.prop.apiEndpoint + "entertrainers/insert.php", data)
         .subscribe((response: any) => {
@@ -110,7 +115,7 @@ export class EntertrainersService {
   }
 
   updatevAilability(event): Promise<any> {
-    console.log(event);
+    // console.log(event);
     const data = this.toJsonStringData(event);
     return new Promise((resolve, reject) => {
       this._httpClient.post(Config.prop.apiEndpoint + "entertrainers/update.php", data)
@@ -119,5 +124,15 @@ export class EntertrainersService {
           resolve(response);
         }, reject);
     });
+  }
+
+  extractDate(d: Date): any {
+
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so we add 1 and pad with leading zeros
+    const day = String(d.getDate()).padStart(2, '0'); // Pad with leading zeros
+
+    const dateString = `${year}-${month}-${day}`;
+    return dateString;
   }
 }
