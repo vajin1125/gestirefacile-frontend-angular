@@ -79,33 +79,20 @@
 
                 <!-- ID Column -->
                 <ng-container matColumnDef="num-auto">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header class="table-cell-12vw">#</mat-header-cell>
-                    <mat-cell *matCellDef="let i = index;" class="table-cell-12vw">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width:70px">#</mat-header-cell>
+                    <mat-cell *matCellDef="let i = index;" style="max-width:70px">
                         <p class="text-truncate"> {{ getDSequenceNumber(i) }} </p>
                     </mat-cell>
                 </ng-container>
                 <!-- ID Column -->
 
                 <ng-container matColumnDef="oid">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header class="table-cell-12vw">ID</mat-header-cell>
-                    <mat-cell *matCellDef="let resource" class="table-cell-12vw">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width:70px">ID</mat-header-cell>
+                    <mat-cell *matCellDef="let resource" style="max-width:70px">
                         <p class="text-truncate">{{resource.oid}}</p>
                     </mat-cell>
                 </ng-container>
 
-                <!-- Image Column 
-                <ng-container matColumnDef="image">
-                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                    <mat-cell *matCellDef="let user">
-                        <img class="user-image"
-                             *ngIf="user.featuredImageId" [alt]="user.name"
-                             [src]="user.images[user.featuredImageId].url"/>
-                        <img *ngIf="!user.featuredImageId"
-                             [src]="'assets/images/ecommerce/user-image-placeholder.png'">
-                    </mat-cell>
-                </ng-container>-->
-
-                <!-- Name Column -->
                 <ng-container matColumnDef="code">
                     <mat-header-cell *matHeaderCellDef mat-sort-header class="table-cell-15vw">Codice</mat-header-cell>
                     <mat-cell *matCellDef="let resource" class="table-cell-15vw">
@@ -130,30 +117,30 @@
                 </ng-container>
 
                 <ng-container matColumnDef="available">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header class="table-cell-7vw">Disponibile</mat-header-cell>
-                    <mat-cell *matCellDef="let resource" class="table-cell-7vw">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header class="table-cell-7vw" style="max-width:70px">Disponibile</mat-header-cell>
+                    <mat-cell *matCellDef="let resource" class="table-cell-7vw" style="max-width:70px">
                         <mat-icon *ngIf="resource.available == 1" class="active-icon green-600 s-16">check</mat-icon>
                         <mat-icon *ngIf="resource.available == 0" class="active-icon red-500 s-16">close</mat-icon>
                     </mat-cell>
                 </ng-container>
             
                 <ng-container matColumnDef="qta">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>Quantità attuale</mat-header-cell>
-                    <mat-cell *matCellDef="let resource" fxHide fxShow.gt-sm>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm style="max-width:60px">Quantità attuale</mat-header-cell>
+                    <mat-cell *matCellDef="let resource" fxHide fxShow.gt-sm style="max-width:60px">
                         <p  class="text-truncate">{{resource.avail_qta}}</p>
                     </mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="eventCount">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>Event Count</mat-header-cell>
-                  <mat-cell *matCellDef="let resource" fxHide fxShow.gt-sm>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm style="max-width:60px">Event Count</mat-header-cell>
+                  <mat-cell *matCellDef="let resource" fxHide fxShow.gt-sm style="max-width:60px">
                       <p  class="text-truncate">{{resource.events.length}}</p>
                   </mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="status">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>Status</mat-header-cell>
-                  <mat-cell *matCellDef="let resource" fxHide fxShow.gt-sm>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm style="max-width:60px">Status</mat-header-cell>
+                  <mat-cell *matCellDef="let resource" fxHide fxShow.gt-sm style="max-width:60px">
                     <span *ngIf="resource.is_trash != 1"><mat-icon>delete</mat-icon></span>
                     <span *ngIf="resource.is_trash != 0"><mat-icon>restore</mat-icon></span>
                   </mat-cell>

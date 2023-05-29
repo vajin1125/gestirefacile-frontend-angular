@@ -1059,6 +1059,32 @@
                                             </div>
                                         </div>
 
+                                        <div class="footer mt-40">
+                                          <div class="note" style="margin-bottom:0px" >Note: </div>
+                                          <span>{{event.note}}</span>
+                                          <br>
+                                          <div style="margin-bottom:0px" class="note">Informazioni aggiuntive: </div>
+                                          <br>
+                                          <div *ngFor="let attribute of event.attribute_assoc">
+                                              - <span>{{attribute.name}}</span>: <span>{{attribute.value}}</span>
+                                          </div>
+                                          <br>
+                                          <div *ngIf="this.event.status.acronym=='COMPLETED'" class="note">Si prega di
+                                              pagare entro 15 giorni. Grazie per averci scelto.</div>
+                                          <div *ngIf="this.event.status.acronym!='COMPLETED'" class="note">I prezzi
+                                              dei preventivi potrebbero variare con il passare del tempo. Grazie per
+                                              averci scelto.</div>
+                                          <div fxLayout="row" fxLayoutAlign="start start">
+                                              <div class="logo">
+                                                  <img src={{logoSrc}}>
+
+                                              </div>
+                                              <div class="small-note">
+                                                  {{this.event.business.name}} {{this.event.business.descr}}
+                                              </div>
+                                          </div>
+                                        </div>
+
                                         <div class="content">
 
                                             <table class="simple invoice-table">
@@ -1097,7 +1123,34 @@
                                                             {{detail.price.replace(',','.') | currency:'EUR':'symbol'}}
                                                         </td>
                                                     </tr>
+
+                                                    <tr *ngFor="let package of event.packages_assoc">
+                                                      <td *ngIf="package.total_price !='0.00' && package.total_price !='0,00'">
+                                                        <div class="title">
+                                                            <img src="{{getPackageImg(package)}}" style="width: 50%;">
+                                                        </div>
+                                                      </td>
+                                                      <td *ngIf="package.total_price !='0.00' && package.total_price !='0,00'">
+                                                          <div class="title">
+                                                              {{package.descr}}
+                                                          </div>
+                                                      </td>
+                                                      <td>
+                                                          -
+                                                      </td>
+                                                      <td *ngIf="package.total_price !='0.00' && package.total_price !='0,00'" class="text-right">
+                                                          -
+                                                      </td>
+                                                      <td *ngIf="package.total_price !='0.00' && package.total_price !='0,00'" class="text-right">
+                                                          -
+                                                      </td>
+                                                      <td *ngIf="package.total_price !='0.00' && package.total_price !='0,00'" class="text-right">
+                                                          {{package.total_price.replace(',','.') | currency:'EUR':'symbol'}}
+                                                      </td>
+                                                    </tr>
+
                                                     <tr *ngFor="let extra of event.extra_details">
+                                                        <td></td>
                                                         <td *ngIf="extra.price !='0.00' && extra.price !='0,00'">
                                                             <div class="title">
                                                                 {{extra.extra_descr}}
@@ -1152,31 +1205,7 @@
                                             </table>
                                         </div>
 
-                                        <div class="footer">
-                                            <div class="note" style="margin-bottom:0px" >Note: </div>
-                                            <span>{{event.note}}</span>
-                                            <br>
-                                            <div style="margin-bottom:0px" class="note">Informazioni aggiuntive: </div>
-                                            <br>
-                                            <div *ngFor="let attribute of event.attribute_assoc">
-                                                - <span>{{attribute.name}}</span>: <span>{{attribute.value}}</span>
-                                            </div>
-                                            <br>
-                                            <div *ngIf="this.event.status.acronym=='COMPLETED'" class="note">Si prega di
-                                                pagare entro 15 giorni. Grazie per averci scelto.</div>
-                                            <div *ngIf="this.event.status.acronym!='COMPLETED'" class="note">I prezzi
-                                                dei preventivi potrebbero variare con il passare del tempo. Grazie per
-                                                averci scelto.</div>
-                                            <div fxLayout="row" fxLayoutAlign="start start">
-                                                <div class="logo">
-                                                    <img src={{logoSrc}}>
-
-                                                </div>
-                                                <div class="small-note">
-                                                    {{this.event.business.name}} {{this.event.business.descr}}
-                                                </div>
-                                            </div>
-                                        </div>
+                                        
 
 
                                     </div>

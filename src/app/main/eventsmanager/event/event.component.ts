@@ -1,4 +1,4 @@
-import { Component, ElementRef, Injectable, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, Injectable, OnDestroy, OnInit, ViewChild, ViewEncapsulation, ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
@@ -43,6 +43,7 @@ import { V } from '@angular/cdk/keycodes';
 import { Package } from 'app/models/package.model';
 import { PackagesService } from 'app/main/packagemanager/packages/packages.service';
 import { ThemeService } from 'ng2-charts';
+import { PackageDetail } from 'app/models/packageDetail';
 // import { ConsoleReporter } from 'jasmine';
 
 
@@ -534,8 +535,6 @@ export class EventComponent implements OnInit, OnDestroy {
             }
             index = index + 1;
         });
-
-
     }
 
     checkMin(event, name) {
@@ -634,7 +633,7 @@ export class EventComponent implements OnInit, OnDestroy {
 
 
     onChangePackage(pkg: Package, index) {
-
+      console.log("adfasdfasdf")
 
         if (this.oldPackages && this.oldPackages != null) {
 
@@ -722,7 +721,7 @@ export class EventComponent implements OnInit, OnDestroy {
             this.updateTotal(this.extraDetails.value);
         }
 
-
+        this.updateTotal(this.eventDetails.value);
     }
 
     onChangeResource(res: Resource, index) {
@@ -1578,8 +1577,14 @@ export class EventComponent implements OnInit, OnDestroy {
                 idx = idx + 1;
             }
         });
+        // console.log(this.packagesAssoc.value)
+        this.packagesAssoc.value.forEach(element => {
+          if(element.total_price) {
+            total += Number(element.total_price.replace(',', '.'))
+          }
+        })
         let totalStr = (Math.round((total + Number.EPSILON) * 100) / 100 + "").replace(".", ",");
-
+        // console.log(totalStr)
         if (!this.eventForm.get('total_real').value || this.eventForm.get('total').value == this.eventForm.get('total_real').value) {
             this.event.total_real = totalStr;
             this.eventForm.get('total_real').patchValue(totalStr);
@@ -1746,6 +1751,7 @@ export class EventComponent implements OnInit, OnDestroy {
 
         this.packagesAssoc.removeAt(idx);
         this.dataSourcePackage = this.packagesAssoc.value;
+        this.updateTotal(this.packagesAssoc.value);
         this.eventForm.markAsDirty();
     }
 
@@ -1997,20 +2003,20 @@ export class EventComponent implements OnInit, OnDestroy {
 
         const data = this.eventForm.getRawValue();
 
-        console.log(data.oid);
-
         let arrayPkg = [];
+        // let package_total_price: number = 0;
         if (data.packages_assoc && data.packages_assoc.length > 0) {
             data.packages_assoc.forEach(element => {
-                delete element.descr;
-                delete element.total_price;
-                arrayPkg.push(element.package);
+              // console.log(element.total_price)
+              // package_total_price += Number(element.total_price.replace(',', '.'))
+              delete element.descr;
+              delete element.total_price;
+              arrayPkg.push(element.package);
             });
         }
         data.packages_assoc = arrayPkg;
         data.from = this.datepipe.transform(data.from, 'yyyy-MM-dd') + " " + data.from_ts_hh + ":" + data.from_ts_mi + ":" + "00";
         data.to = this.datepipe.transform(data.to, 'yyyy-MM-dd') + " " + data.to_ts_hh + ":" + data.to_ts_mi + ":" + "00";
-        //this.normalizeCurrency(data);
         this._eventService.saveEvent(data, this.attFile)
             .then(() => {
                 // Trigger the subscription with new data
@@ -2121,6 +2127,15 @@ export class EventComponent implements OnInit, OnDestroy {
         }
     }
 
+    getPackageImg(detail: Package): string {
+      if (detail.image) {
+          return detail.image;
+      }
+      else {
+          return "https://st3.depositphotos.com/23594922/31822/v/600/depositphotos_318221368-stock-illustration-missing-picture-page-for-website.jpg";
+      }
+  }
+
     onChangeCustomer(value) {
         if (value) {
             this.isNewCustomerDisabled = true;
@@ -2185,7 +2200,7 @@ export class EventComponent implements OnInit, OnDestroy {
 
     
     fileChangeEvent(fileInput: any) {
-      console.log(fileInput.target.files);
+      // console.log(fileInput.target.files);
       if (fileInput.target.files && fileInput.target.files[0]) {
           const max_size = 10485760;
           // const allowed_types = ['image/png', 'image/jpeg', 'image/gif', 'image/jpg', 'image/pjpeg'];
@@ -2201,7 +2216,7 @@ export class EventComponent implements OnInit, OnDestroy {
           this.attFile = fileInput.target.files;
           this.disabledUploadBtn = false;
           Array.from(fileInput.target.files).forEach((file: File) => {
-              console.log(file);
+              // console.log(file);
               this.event.attach_file = file.name;
               this.eventForm.get("attach_file").setValue(file.name);
               this.eventForm.get("attach_file").markAsDirty();
@@ -2228,11 +2243,11 @@ export class EventComponent implements OnInit, OnDestroy {
           this.eventForm.get("attach_file").setValue('');
           this.attFile = null;
       }
-      console.log("attach_file");
+      // console.log("attach_file");
   }
 
   attachUpload() {
-    console.log("UPload>>>>>>>>>go");
+    // console.log("UPload>>>>>>>>>go");
     const oid = this.eventForm.getRawValue().oid;
     const attFile = this.attFile;
 
@@ -2260,9 +2275,9 @@ export class EventComponent implements OnInit, OnDestroy {
   }
 
   moveToTrash(eventOid:any) {
-    console.log("move to trash", eventOid)
+    // console.log("move to trash", eventOid)
     const data = this.eventForm.getRawValue();
-    console.log(data.oid);
+    // console.log(data.oid);
     let arrayPkg = [];
     if (data.packages_assoc && data.packages_assoc.length > 0) {
         data.packages_assoc.forEach(element => {
@@ -2292,9 +2307,9 @@ export class EventComponent implements OnInit, OnDestroy {
   }
 
   restoreFromTrash(eventOid:any) {
-    console.log("restore from trash")
+    // console.log("restore from trash")
     const data = this.eventForm.getRawValue();
-    console.log(data.oid);
+    // console.log(data.oid);
     let arrayPkg = [];
     if (data.packages_assoc && data.packages_assoc.length > 0) {
         data.packages_assoc.forEach(element => {
